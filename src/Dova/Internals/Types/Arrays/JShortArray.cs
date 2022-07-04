@@ -6,9 +6,17 @@ namespace Dova.Internals.Types.Arrays;
 [StructLayout(LayoutKind.Explicit)]
 internal struct JShortArray
 {
-    [FieldOffset(0)]
-    public JArray arr;
+    [FieldOffset(0)] 
+    private JArray arr;
 
-    [FieldOffset(0)]
-    public JObject obj;
+    [FieldOffset(0)] 
+    private JObject obj;
+    
+    public static implicit operator JShortArray(JArray value) => new() { arr = value };
+    
+    public static implicit operator JShortArray(JObject value) => new() { obj = value };
+
+    public static implicit operator JObject(JShortArray value) => value.obj;
+    
+    public static implicit operator JArray(JShortArray value) => value.arr;
 }

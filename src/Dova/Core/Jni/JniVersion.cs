@@ -1,4 +1,4 @@
-namespace Dova.Core;
+namespace Dova.Core.Jni;
 
 public enum JniVersion : int
 {

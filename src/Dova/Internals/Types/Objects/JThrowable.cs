@@ -3,8 +3,19 @@ using System.Runtime.InteropServices;
 namespace Dova.Internals.Types.Objects;
 
 [StructLayout(LayoutKind.Explicit)]
-internal struct JThrowable
+internal readonly struct JThrowable
 {
-    [FieldOffset(0)]
-    public JObject obj;
+    [FieldOffset(0)] 
+    private readonly JObject obj;
+
+    private JThrowable(JObject value)
+    {
+        this.obj = value;
+    }
+
+    public override string ToString() => obj.ToString();
+
+    public static implicit operator JThrowable(JObject value) => new (value);
+
+    public static implicit operator JObject(JThrowable value) => value.obj;
 }
