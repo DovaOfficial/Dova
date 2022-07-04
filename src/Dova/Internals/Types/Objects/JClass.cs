@@ -16,6 +16,10 @@ internal readonly struct JClass
     public override string ToString() => obj.ToString();
 
     public static implicit operator JClass(JObject value) => new (value);
+    
+    public static implicit operator JClass(IntPtr value) => new (value);
 
     public static implicit operator JObject(JClass value) => value.obj;
+    
+    public static implicit operator IntPtr(JClass value) => value.obj;
 }
