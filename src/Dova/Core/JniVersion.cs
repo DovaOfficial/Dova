@@ -1,0 +1,12 @@
+namespace Dova.Core;
+
+public enum JniVersion : int
+{
+    JNI_VERSION_1_1 = 0x00010001,
+    JNI_VERSION_1_2 = 0x00010002,
+    JNI_VERSION_1_4 = 0x00010004,
+    JNI_VERSION_1_6 = 0x00010006,
+    JNI_VERSION_1_8 = 0x00010008,
+    JNI_VERSION_9   = 0x00090000,
+    JNI_VERSION_10  = 0x000a0000,
+}
