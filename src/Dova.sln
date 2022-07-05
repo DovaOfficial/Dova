@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{71E5836B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dova.Tools.JavaRuntimeFunctionsGenerator", "Tools\Dova.Tools.JavaRuntimeFunctionsGenerator\Dova.Tools.JavaRuntimeFunctionsGenerator.csproj", "{CAD55D9B-78CD-4485-86E2-5FD74FAEBFEB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dova.Tools.DocumentationGenerator", "Tools\Dova.Tools.DocumentationGenerator\Dova.Tools.DocumentationGenerator.csproj", "{BB71A377-EF39-4163-9DA9-B3A0DE8C5E43}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,9 +29,14 @@ Global
 		{CAD55D9B-78CD-4485-86E2-5FD74FAEBFEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAD55D9B-78CD-4485-86E2-5FD74FAEBFEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAD55D9B-78CD-4485-86E2-5FD74FAEBFEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB71A377-EF39-4163-9DA9-B3A0DE8C5E43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB71A377-EF39-4163-9DA9-B3A0DE8C5E43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB71A377-EF39-4163-9DA9-B3A0DE8C5E43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB71A377-EF39-4163-9DA9-B3A0DE8C5E43}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CEA5DD25-210F-4593-9181-21DED5F9E15E} = {D43BCD12-E9B1-4104-9860-BB26EE846471}
 		{CAD55D9B-78CD-4485-86E2-5FD74FAEBFEB} = {71E5836B-76C9-4354-931A-236E8A0911CE}
+		{BB71A377-EF39-4163-9DA9-B3A0DE8C5E43} = {71E5836B-76C9-4354-931A-236E8A0911CE}
 	EndGlobalSection
 EndGlobal
