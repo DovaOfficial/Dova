@@ -33,7 +33,6 @@ internal struct JValue
     [FieldOffset(0)] 
     private JObject l;
     
-
     public static implicit operator JValue(JBoolean value) => new() { z = value };
     
     public static implicit operator JValue(JByte value) => new() { b = value };

@@ -4,6 +4,11 @@ using Dova.Internals.Interop;
 
 namespace Dova.Core;
 
+/// <summary>
+/// </summary>
+/// <author>
+/// https://github.com/Sejoslaw/Dova
+/// </author>
 public unsafe class DovaVM : IDisposable
 {
     private DovaConfiguration? Config { get; }
