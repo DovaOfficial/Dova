@@ -31,7 +31,7 @@ var fileLinesWithMethods = methodsSignatures
 
 foreach (var kvp in fileLinesWithMethods)
 {
-    var responseText = dividedResponse.FirstOrDefault(x => x.ToLower().StartsWith(kvp.Key.ToLower()));
+    var responseText = dividedResponse.FirstOrDefault(x => x.Split("\">")[0].ToLower().Equals(kvp.Key.ToLower()));
 
     if (string.IsNullOrWhiteSpace(responseText))
     {
