@@ -16,6 +16,10 @@ internal readonly struct JString
     public override string ToString() => obj.ToString();
 
     public static implicit operator JString(JObject value) => new (value);
+    
+    public static implicit operator JString(IntPtr value) => new (value);
 
     public static implicit operator JObject(JString value) => value.obj;
+    
+    public static implicit operator IntPtr(JString value) => value.obj;
 }

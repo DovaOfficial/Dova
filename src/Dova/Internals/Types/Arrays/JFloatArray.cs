@@ -15,8 +15,12 @@ internal struct JFloatArray
     public static implicit operator JFloatArray(JArray value) => new() { arr = value };
     
     public static implicit operator JFloatArray(JObject value) => new() { obj = value };
+    
+    public static implicit operator JFloatArray(IntPtr value) => new() { obj = value, arr = value };
 
     public static implicit operator JObject(JFloatArray value) => value.obj;
     
     public static implicit operator JArray(JFloatArray value) => value.arr;
+    
+    public static implicit operator IntPtr(JFloatArray value) => value.arr != IntPtr.Zero ? value.arr : value.obj;
 }

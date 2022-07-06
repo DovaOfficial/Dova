@@ -15,8 +15,12 @@ internal struct JLongArray
     public static implicit operator JLongArray(JArray value) => new() { arr = value };
     
     public static implicit operator JLongArray(JObject value) => new() { obj = value };
+    
+    public static implicit operator JLongArray(IntPtr value) => new() { obj = value, arr = value };
 
     public static implicit operator JObject(JLongArray value) => value.obj;
     
     public static implicit operator JArray(JLongArray value) => value.arr;
+    
+    public static implicit operator IntPtr(JLongArray value) => value.arr != IntPtr.Zero ? value.arr : value.obj;
 }

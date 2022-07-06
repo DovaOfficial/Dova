@@ -16,6 +16,10 @@ internal readonly struct JWeak
     public override string ToString() => obj.ToString();
 
     public static implicit operator JWeak(JObject value) => new (value);
+    
+    public static implicit operator JWeak(IntPtr value) => new (value);
 
     public static implicit operator JObject(JWeak value) => value.obj;
+    
+    public static implicit operator IntPtr(JWeak value) => value.obj;
 }
