@@ -1,0 +1,12 @@
+namespace Dova.Tools.JavaClassStructureGenerator;
+
+internal class JavaClassDetailsModel
+{
+    public HttpClient Client { get; set; } = new();
+    public string JavaModuleUrlPostfix { get; set; }
+    public string JavaModuleName { get; set; }
+    public string JavaPackageUrlPostfix { get; set; }
+    public string JavaPackageName { get; set; }
+    public string JavaClassUrlPostfix { get; set; }
+    public string JavaClassName { get; set; }
+}
