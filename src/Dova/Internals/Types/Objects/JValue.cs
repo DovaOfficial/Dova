@@ -34,6 +34,7 @@ internal struct JValue
     [FieldOffset(0)] 
     private JObject l;
     
+    // Primitives
     public static implicit operator JValue(JBoolean value) => new() { z = value };
     public static implicit operator JValue(bool value) => new() { z = value };
     public static implicit operator JValue(JByte value) => new() { b = value };
@@ -50,13 +51,17 @@ internal struct JValue
     public static implicit operator JValue(float value) => new() { f = value };
     public static implicit operator JValue(JDouble value) => new() { d = value };
     public static implicit operator JValue(double value) => new() { d = value };
+    
+    // Objects
     public static implicit operator JValue(JObject value) => new() { l = value };
     public static implicit operator JValue(JClass value) => new() { l = value };
     public static implicit operator JValue(JString value) => new() { l = value };
-    public static implicit operator JValue(JArray value) => new() { l = value };
     public static implicit operator JValue(JThrowable value) => new() { l = value };
     public static implicit operator JValue(JWeak value) => new() { l = value };
     public static implicit operator JValue(IntPtr value) => new() { l = value };
+    
+    // Arrays
+    public static implicit operator JValue(JArray value) => new() { l = value };
     public static implicit operator JValue(JBooleanArray value) => new() { l = value };
     public static implicit operator JValue(JByteArray value) => new() { l = value };
     public static implicit operator JValue(JCharArray value) => new() { l = value };

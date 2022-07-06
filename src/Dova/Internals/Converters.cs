@@ -37,10 +37,41 @@ public static class Converters
         { typeof(JInt), typeof(int) },
         { typeof(JLong), typeof(long) },
         { typeof(JShort), typeof(short) },
-        // Extra
-        { typeof(string), typeof(string) },
     };
 
     internal static JValue[] ToArray(params object[] values) => 
-        values.Cast<JValue>().ToArray();
+        values.Select(ToJValue).ToArray();
+
+    internal static JValue ToJValue(object obj) => obj switch
+    {
+        // Primitives
+        bool b => b,
+        byte b => b,
+        char c => c,
+        double d => d,
+        float f => f,
+        int i => i,
+        long l => l,
+        short s => s,
+        
+        // Objects
+        JObject jo => jo,
+        JClass jc => jc,
+        JString js => js,
+        JThrowable jt => jt,
+        JWeak jw => jw,
+        IntPtr ptr => ptr,
+        
+        // Arrays
+        JArray ja => ja,
+        JBooleanArray jba => jba,
+        JByteArray jba => jba,
+        JCharArray jca => jca,
+        JDoubleArray jda => jda,
+        JFloatArray jfa => jfa,
+        JIntArray jia => jia,
+        JLongArray jla => jla,
+        JObjectArray joa => joa,
+        JShortArray jsa => jsa,
+    };
 }
