@@ -9,4 +9,6 @@ internal class JavaClassDetailsModel
     public string JavaPackageName { get; set; }
     public string JavaClassUrlPostfix { get; set; }
     public string JavaClassName { get; set; }
+    public string JavaClassDetailsUrl { get; set; }
+    public string JavaClassDetails { get; set; }
 }
