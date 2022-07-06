@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Dova.Internals.Types.Arrays;
 using Dova.Internals.Types.Primitives;
 
 namespace Dova.Internals.Types.Objects;
@@ -34,38 +35,35 @@ internal struct JValue
     private JObject l;
     
     public static implicit operator JValue(JBoolean value) => new() { z = value };
-    
+    public static implicit operator JValue(bool value) => new() { z = value };
     public static implicit operator JValue(JByte value) => new() { b = value };
-    
+    public static implicit operator JValue(byte value) => new() { b = value };
     public static implicit operator JValue(JChar value) => new() { c = value };
-    
+    public static implicit operator JValue(char value) => new() { c = value };
     public static implicit operator JValue(JShort value) => new() { s = value };
-    
+    public static implicit operator JValue(short value) => new() { s = value };
     public static implicit operator JValue(JInt value) => new() { i = value };
-    
+    public static implicit operator JValue(int value) => new() { i = value };
     public static implicit operator JValue(JLong value) => new() { j = value };
-    
+    public static implicit operator JValue(long value) => new() { j = value };
     public static implicit operator JValue(JFloat value) => new() { f = value };
-    
+    public static implicit operator JValue(float value) => new() { f = value };
     public static implicit operator JValue(JDouble value) => new() { d = value };
-    
+    public static implicit operator JValue(double value) => new() { d = value };
     public static implicit operator JValue(JObject value) => new() { l = value };
-
-    public static implicit operator JBoolean(JValue value) => value.z;
-
-    public static implicit operator JByte(JValue value) => value.b;
-    
-    public static implicit operator JChar(JValue value) => value.c;
-    
-    public static implicit operator JShort(JValue value) => value.s;
-    
-    public static implicit operator JInt(JValue value) => value.i;
-    
-    public static implicit operator JLong(JValue value) => value.j;
-    
-    public static implicit operator JFloat(JValue value) => value.f;
-    
-    public static implicit operator JDouble(JValue value) => value.d;
-    
-    public static implicit operator JObject(JValue value) => value.l;
+    public static implicit operator JValue(JClass value) => new() { l = value };
+    public static implicit operator JValue(JString value) => new() { l = value };
+    public static implicit operator JValue(JArray value) => new() { l = value };
+    public static implicit operator JValue(JThrowable value) => new() { l = value };
+    public static implicit operator JValue(JWeak value) => new() { l = value };
+    public static implicit operator JValue(IntPtr value) => new() { l = value };
+    public static implicit operator JValue(JBooleanArray value) => new() { l = value };
+    public static implicit operator JValue(JByteArray value) => new() { l = value };
+    public static implicit operator JValue(JCharArray value) => new() { l = value };
+    public static implicit operator JValue(JDoubleArray value) => new() { l = value };
+    public static implicit operator JValue(JFloatArray value) => new() { l = value };
+    public static implicit operator JValue(JIntArray value) => new() { l = value };
+    public static implicit operator JValue(JLongArray value) => new() { l = value };
+    public static implicit operator JValue(JObjectArray value) => new() { l = value };
+    public static implicit operator JValue(JShortArray value) => new() { l = value };
 }
