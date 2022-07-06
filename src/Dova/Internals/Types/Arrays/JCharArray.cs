@@ -15,8 +15,12 @@ internal struct JCharArray
     public static implicit operator JCharArray(JArray value) => new() { arr = value };
     
     public static implicit operator JCharArray(JObject value) => new() { obj = value };
+    
+    public static implicit operator JCharArray(IntPtr value) => new() { obj = value, arr = value };
 
     public static implicit operator JObject(JCharArray value) => value.obj;
     
     public static implicit operator JArray(JCharArray value) => value.arr;
+    
+    public static implicit operator IntPtr(JCharArray value) => value.arr != IntPtr.Zero ? value.arr : value.obj;
 }

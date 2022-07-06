@@ -17,6 +17,10 @@ internal readonly struct JArray
     public override string ToString() => obj.ToString();
 
     public static implicit operator JArray(JObject value) => new (value);
+    
+    public static implicit operator JArray(IntPtr value) => new (value);
 
     public static implicit operator JObject(JArray value) => value.obj;
+    
+    public static implicit operator IntPtr(JArray value) => value.obj;
 }

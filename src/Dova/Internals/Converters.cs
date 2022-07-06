@@ -40,4 +40,7 @@ public static class Converters
         // Extra
         { typeof(string), typeof(string) },
     };
+
+    internal static JValue[] ToArray(params object[] values) => 
+        values.Cast<JValue>().ToArray();
 }

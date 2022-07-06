@@ -16,6 +16,10 @@ internal readonly struct JThrowable
     public override string ToString() => obj.ToString();
 
     public static implicit operator JThrowable(JObject value) => new (value);
+    
+    public static implicit operator JThrowable(IntPtr value) => new (value);
 
     public static implicit operator JObject(JThrowable value) => value.obj;
+    
+    public static implicit operator IntPtr(JThrowable value) => value.obj;
 }
