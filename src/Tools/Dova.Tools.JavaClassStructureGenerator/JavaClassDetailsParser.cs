@@ -8,12 +8,17 @@ internal static class JavaClassDetailsParser
 
         descriptionModel.Type = GetDefinitionType(detailsModel.JavaClassDetails);
         descriptionModel.ParentClass = GetParentClass(detailsModel.JavaClassDetails);
+        // descriptionModel.Interfaces = GetInterfaces(detailsModel.JavaClassDetails);
+        // descriptionModel.ClassComment = GetClassComment(detailsModel.JavaClassDetails);
+        // descriptionModel.Constructors = GetConstructors(detailsModel.JavaClassDetails);
+        // descriptionModel.Fields = GetFields(detailsModel.JavaClassDetails);
+        // descriptionModel.Methods = GetMethods(detailsModel.JavaClassDetails);
 
         return descriptionModel;
     }
 
     private static string GetDefinitionType(string html) => 
-        html.Split("<h1 title=\"")[1].Split(" ")[0];
+        html.Split("<h1 title=\"")[1].Split(" ")[0].ToLower();
 
     private static string GetParentClass(string html)
     {
