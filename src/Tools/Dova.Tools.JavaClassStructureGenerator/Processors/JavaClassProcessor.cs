@@ -1,4 +1,8 @@
-namespace Dova.Tools.JavaClassStructureGenerator;
+using Dova.Tools.JavaClassStructureGenerator.Generators;
+using Dova.Tools.JavaClassStructureGenerator.Models;
+using Dova.Tools.JavaClassStructureGenerator.Parsers;
+
+namespace Dova.Tools.JavaClassStructureGenerator.Processors;
 
 internal class JavaClassProcessor
 {

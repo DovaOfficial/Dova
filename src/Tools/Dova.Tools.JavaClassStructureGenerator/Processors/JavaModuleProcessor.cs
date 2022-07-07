@@ -1,4 +1,6 @@
-namespace Dova.Tools.JavaClassStructureGenerator;
+using Dova.Tools.JavaClassStructureGenerator.Models;
+
+namespace Dova.Tools.JavaClassStructureGenerator.Processors;
 
 internal class JavaModuleProcessor
 {
