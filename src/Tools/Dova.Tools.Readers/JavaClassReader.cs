@@ -12,6 +12,21 @@ public partial class JavaClassReader
 {
     public virtual JavaClassDefinitionModel Read(FileInfo javaFile)
     {
-        throw new NotImplementedException();
+        var lines = File.ReadAllLines(javaFile.FullName);
+
+        var model = new JavaClassDefinitionModel
+        {
+            Package = GetPackage(javaFile, lines),
+        };
+        
+        return model;
+    }
+
+    protected virtual string? GetPackage(FileInfo javaFile, string[] lines)
+    {
+        var line = lines.FirstOrDefault(x => x.StartsWith("package") && x.EndsWith(";"));
+        line = line?.Trim().Split(" ")[1].Replace(";", "");
+
+        return line;
     }
 }
