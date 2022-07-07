@@ -17,6 +17,7 @@ public partial class JavaClassReader
         var model = new JavaClassDefinitionModel
         {
             Package = GetPackage(javaFile, lines),
+            Imports = GetImports(javaFile, lines).ToArray(),
         };
         
         return model;
@@ -28,5 +29,21 @@ public partial class JavaClassReader
         line = line?.Trim().Split(" ")[1].Replace(";", "");
 
         return line;
+    }
+    
+    protected virtual IEnumerable<string> GetImports(FileInfo javaFile, string[] lines)
+    {
+        var importLines = lines
+            .Where(x => x.Contains("import ") && x.Contains(";"))
+            .Select(x => x.Trim())
+            .Where(x => x.StartsWith("import ") && x.EndsWith(";"))
+            .ToList();
+
+        foreach (var importLine in importLines)
+        {
+            var import = importLine.Split(" ")[1].Replace(";", "");
+            
+            yield return import;
+        }
     }
 }
