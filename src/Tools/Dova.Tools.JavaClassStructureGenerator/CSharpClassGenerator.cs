@@ -1,4 +1,4 @@
-using Dova.Tools.JavaClassStructureGenerator.Models;
+using Dova.Tools.Readers.Models;
 
 namespace Dova.Tools.JavaClassStructureGenerator;
 

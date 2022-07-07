@@ -1,12 +1,16 @@
+using Dova.Tools.Readers;
+
 namespace Dova.Tools.JavaClassStructureGenerator;
 
 internal class StructureGenerator
 {
     private GeneratorConfiguration Config { get; }
+    private JavaClassReader Reader { get; }
 
     public StructureGenerator(GeneratorConfiguration config)
     {
         Config = config;
+        Reader = new();
     }
 
     public void Run()
@@ -41,7 +45,7 @@ internal class StructureGenerator
 
         javaFiles.ForEach(javaFile =>
         {
-            var javaClassDefinitionModel = JavaFileProcessor.Process(javaFile);
+            var javaClassDefinitionModel = Reader.Read(javaFile);
             CSharpClassGenerator.Run(Config.OutputDirectoryPath, javaModuleName, javaClassDefinitionModel);
         });
 
