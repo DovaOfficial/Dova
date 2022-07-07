@@ -15,6 +15,6 @@ internal class JavaClassDescriptionGenerator
 
     public void Run()
     {
-        throw new NotImplementedException();
+        // TODO: Save file in appropriate path (java package)
     }
 }

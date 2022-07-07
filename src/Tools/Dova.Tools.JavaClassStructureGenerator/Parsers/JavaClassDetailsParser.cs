@@ -11,12 +11,32 @@ internal static class JavaClassDetailsParser
         descriptionModel.Type = GetDefinitionType(detailsModel.JavaClassDetails);
         descriptionModel.ParentClass = GetParentClass(detailsModel.JavaClassDetails);
         descriptionModel.Interfaces = GetInterfaces(detailsModel.JavaClassDetails);
-        // descriptionModel.ClassComment = GetClassComment(detailsModel.JavaClassDetails);
-        // descriptionModel.Constructors = GetConstructors(detailsModel.JavaClassDetails);
-        // descriptionModel.Fields = GetFields(detailsModel.JavaClassDetails);
-        // descriptionModel.Methods = GetMethods(detailsModel.JavaClassDetails);
+        descriptionModel.ClassComments = GetClassComments(detailsModel.JavaClassDetails).ToList();
+        
+        // descriptionModel.Constructors = JavaClassConstructorParser.Parse(detailsModel.JavaClassDetails);
+        // descriptionModel.Fields = JavaClassFieldParser.Parse(detailsModel.JavaClassDetails);
+        // descriptionModel.Methods = JavaClassMethodParser.Parse(detailsModel.JavaClassDetails);
 
         return descriptionModel;
+    }
+
+    private static IEnumerable<string> GetClassComments(string html)
+    {
+        var comment = html.Split("<div class=\"block\">")[1].Split("</div>")[0];
+
+        foreach (var commentSentence in comment.Split(". "))
+        {
+            var formattedSentence = commentSentence
+                .Replace("\n", "")
+                .Replace("  ", " ");
+
+            if (!formattedSentence.EndsWith("."))
+            {
+                formattedSentence += ".";
+            }
+
+            yield return formattedSentence;
+        }
     }
 
     private static IEnumerable<string> GetInterfaces(string html)
@@ -61,7 +81,7 @@ internal static class JavaClassDetailsParser
 
     private static string GetParentClass(string html)
     {
-        var inheritanceTree = html.Split("<div class=\"inheritanc");
+        var inheritanceTree = html.Split("<div class=\"inheritance");
         var parentIndex = inheritanceTree.Length - 2;
         var parentClass = inheritanceTree[parentIndex].Split("\">")[2].Split("</a>")[0];
 
