@@ -6,4 +6,5 @@ internal class JavaClassDescriptionModel
     public string ParentClass { get; set; }
     public IEnumerable<string> Interfaces { get; set; }
     public IEnumerable<string> ClassComments { get; set; }
+    public IEnumerable<JavaConstructorModel> Constructors { get; set; }
 }

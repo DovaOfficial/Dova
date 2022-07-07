@@ -13,11 +13,30 @@ internal static class JavaClassDetailsParser
         descriptionModel.Interfaces = GetInterfaces(detailsModel.JavaClassDetails);
         descriptionModel.ClassComments = GetClassComments(detailsModel.JavaClassDetails).ToList();
         
-        // descriptionModel.Constructors = JavaClassConstructorParser.Parse(detailsModel.JavaClassDetails);
+        descriptionModel.Constructors = GetConstructors(detailsModel.JavaClassDetails);
         // descriptionModel.Fields = JavaClassFieldParser.Parse(detailsModel.JavaClassDetails);
         // descriptionModel.Methods = JavaClassMethodParser.Parse(detailsModel.JavaClassDetails);
 
         return descriptionModel;
+    }
+
+    private static IEnumerable<JavaConstructorModel> GetConstructors(string html)
+    {
+        var constructors = html
+            .Split("Constructor Details")[1]
+            .Split(" METHOD DETAIL ")[0]
+            .Split("<section class=\"detail\" id=\"");
+
+        for (var i = 1; i < constructors.Length; ++i)
+        {
+            var constructorDef = constructors[i]
+                .Replace("&lt;", "<")
+                .Replace("&gt;", ">");
+
+            var constructorSignature = constructorDef.Split("\">")[0];
+        }
+        
+        return null;
     }
 
     private static IEnumerable<string> GetClassComments(string html)
