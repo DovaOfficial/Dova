@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dova.Tools.JavaRuntimeFunct
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dova.Tools.JavaClassStructureGenerator", "Tools\Dova.Tools.JavaClassStructureGenerator\Dova.Tools.JavaClassStructureGenerator.csproj", "{751EA9E1-3445-4BD0-B3FC-5EE2CF14F9BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dova.Tools.Readers", "Tools\Dova.Tools.Readers\Dova.Tools.Readers.csproj", "{1C37658C-7D3C-442F-875A-7142F1E43232}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,10 +45,6 @@ Global
 		{751EA9E1-3445-4BD0-B3FC-5EE2CF14F9BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{751EA9E1-3445-4BD0-B3FC-5EE2CF14F9BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{751EA9E1-3445-4BD0-B3FC-5EE2CF14F9BC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1C37658C-7D3C-442F-875A-7142F1E43232}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1C37658C-7D3C-442F-875A-7142F1E43232}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1C37658C-7D3C-442F-875A-7142F1E43232}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1C37658C-7D3C-442F-875A-7142F1E43232}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CEA5DD25-210F-4593-9181-21DED5F9E15E} = {D43BCD12-E9B1-4104-9860-BB26EE846471}
@@ -58,6 +52,5 @@ Global
 		{BB71A377-EF39-4163-9DA9-B3A0DE8C5E43} = {71E5836B-76C9-4354-931A-236E8A0911CE}
 		{3042E656-2A85-48FA-BB0E-A276E2C47974} = {71E5836B-76C9-4354-931A-236E8A0911CE}
 		{751EA9E1-3445-4BD0-B3FC-5EE2CF14F9BC} = {71E5836B-76C9-4354-931A-236E8A0911CE}
-		{1C37658C-7D3C-442F-875A-7142F1E43232} = {71E5836B-76C9-4354-931A-236E8A0911CE}
 	EndGlobalSection
 EndGlobal

@@ -1,58 +1,40 @@
-using Dova.Tools.Readers;
-
 namespace Dova.Tools.JavaClassStructureGenerator;
 
 internal class StructureGenerator
 {
     private GeneratorConfiguration Config { get; }
-    private JavaClassReader Reader { get; }
+    private JavaFileFinder Finder { get; }
+    // private JavaClassDefinitionGenerator ClassDefinitionGenerator { get; }
+    // private CSharpClassGenerator ClassGenerator { get; }
 
     public StructureGenerator(GeneratorConfiguration config)
     {
         Config = config;
-        Reader = new();
+
+        Finder = new(Config.JdkDirectoryPath);
+        // ClassDefinitionGenerator = new(Config.JavaClassDefinitionGeneratorPath);
+        // ClassGenerator = new(Config.OutputDirectoryPath);
     }
 
     public void Run()
     {
-        var jdkSrcPath = Path.Combine(Config.JdkDirectoryPath, "src");
-
-        var javaModulePaths = Directory.GetDirectories(jdkSrcPath)
-            .OrderBy(x => x)
-            .ToList();
-
-        foreach (var javaModulePath in javaModulePaths)
+        Finder.OnJavaFileFind((javaModuleDir, javaPackageDir, javaFile) =>
         {
-            var javaModuleDir = new DirectoryInfo(javaModulePath);
+            var tempOutputPath = javaFile.FullName.Replace(javaModuleDir.FullName, "");
+            var tempOutputPathFull = $"{Config.TempDirPath}{tempOutputPath}.gen";
 
-            if (!javaModuleDir.Name.StartsWith("j")) // java, jdk
-            {
-                continue;
-            }
+            var javaClassFullName = tempOutputPath
+                .Replace("/share/classes/", "")
+                .Replace("/", ".")
+                .Replace(".java", "");
 
-            var javaPackageStartPath = Path.Combine(javaModuleDir.FullName, "share", "classes");
-            
-            ProcessJavaPackage(javaModuleDir.Name, new DirectoryInfo(javaPackageStartPath));
-        }
-    }
+            // ClassDefinitionGenerator.Run(tempOutputPathFull, javaClassFullName);
 
-    private void ProcessJavaPackage(string javaModuleName, DirectoryInfo javaPackageDir)
-    {
-        var javaFiles = javaPackageDir.GetFiles()
-            .Where(x => x.Extension.Equals(".java") && !x.Name.Equals("module-info.java"))
-            .OrderBy(x => x.Name)
-            .ToList();
+            // var javaClassDefinitionModel = JavaClassDefinitionReader.Read(tempOutputPathFull);
 
-        javaFiles.ForEach(javaFile =>
-        {
-            var javaClassDefinitionModel = Reader.Read(javaFile);
-            CSharpClassGenerator.Run(Config.OutputDirectoryPath, javaModuleName, javaClassDefinitionModel);
+            // ClassGenerator.Generate(javaModuleDir, javaClassDefinitionModel);
         });
-
-        var javaSubPackagesPaths = Directory.GetDirectories(javaPackageDir.FullName)
-            .OrderBy(x => x)
-            .ToList();
         
-        javaSubPackagesPaths.ForEach(javaSubPackagesPath => ProcessJavaPackage(javaModuleName, new DirectoryInfo(javaSubPackagesPath)));
+        Finder.Run();
     }
 }
