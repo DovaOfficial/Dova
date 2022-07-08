@@ -350,4 +350,6 @@ MigrationBackup/
 .ionide/
 
 # Rider
-src/.idea
+*/.idea
+*/.gradle
+*/.gradlew
