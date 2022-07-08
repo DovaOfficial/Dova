@@ -23,7 +23,12 @@ public class JavaClassReader
         var imports = GetImports(package.Lines);
         var classComment = GetComment(imports.Lines);
 
-        return null;
+        return new JavaClassDefinitionModel
+        {
+            Package = package.Package,
+            Imports = imports.Imports,
+            ClassComment = classComment.Comments
+        };
     }
 
     protected virtual IEnumerable<string> CleanLines(string[] javaFileLines)
