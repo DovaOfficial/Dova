@@ -4,7 +4,7 @@ internal class StructureGenerator
 {
     private GeneratorConfiguration Config { get; }
     private JavaFileFinder Finder { get; }
-    private JavaClassDefinitionGenerator ClassDefinitionGenerator { get; }
+    private JavaClassDefinitionGenerator DefinitionGenerator { get; }
     // private CSharpClassGenerator ClassGenerator { get; }
 
     public StructureGenerator(GeneratorConfiguration config)
@@ -12,7 +12,7 @@ internal class StructureGenerator
         Config = config;
 
         Finder = new(Config.JdkDirectoryPath);
-        ClassDefinitionGenerator = new(Config.JavaClassDefinitionGeneratorPath);
+        DefinitionGenerator = new(Config.JavaClassDefinitionGeneratorPath);
         // ClassGenerator = new(Config.OutputDirectoryPath);
     }
 
@@ -28,7 +28,7 @@ internal class StructureGenerator
                 .Replace("/", ".")
                 .Replace(".java", "");
 
-            ClassDefinitionGenerator.Generate(tempOutputPathFull, javaClassFullName);
+            DefinitionGenerator.Generate(tempOutputPathFull, javaClassFullName);
 
             // var javaClassDefinitionModel = JavaClassDefinitionReader.Read(tempOutputPathFull);
 
