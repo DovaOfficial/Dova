@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Dova.Tools.Readers.Models;
 
 namespace Dova.Tools.Readers;
@@ -8,42 +9,95 @@ namespace Dova.Tools.Readers;
 /// <author>
 /// https://github.com/Sejoslaw/Dova
 /// </author>
-public partial class JavaClassReader
+public class JavaClassReader
 {
-    public virtual JavaClassDefinitionModel Read(FileInfo javaFile)
-    {
-        var lines = File.ReadAllLines(javaFile.FullName);
+    public virtual JavaClassDefinitionModel Read(FileInfo javaFile) => 
+        Read(File.ReadAllLines(javaFile.FullName));
 
-        var model = new JavaClassDefinitionModel
-        {
-            Package = GetPackage(javaFile, lines),
-            Imports = GetImports(javaFile, lines).ToArray(),
-        };
+    public virtual JavaClassDefinitionModel Read(string[] javaFileLines)
+    {
+        var cleanedLines = CleanLines(javaFileLines);
         
-        return model;
+        var fileComment = GetComment(cleanedLines);
+        var package = GetPackage(fileComment.Lines);
+        var imports = GetImports(package.Lines);
+        var classComment = GetComment(imports.Lines);
+
+        return null;
     }
 
-    protected virtual string? GetPackage(FileInfo javaFile, string[] lines)
+    protected virtual IEnumerable<string> CleanLines(string[] javaFileLines)
     {
-        var line = lines.FirstOrDefault(x => x.StartsWith("package") && x.EndsWith(";"));
-        line = line?.Trim().Split(" ")[1].Replace(";", "");
-
-        return line;
-    }
-    
-    protected virtual IEnumerable<string> GetImports(FileInfo javaFile, string[] lines)
-    {
-        var importLines = lines
-            .Where(x => x.Contains("import ") && x.Contains(";"))
+        var lines = javaFileLines
+            .Where(x => !string.IsNullOrWhiteSpace(x))
             .Select(x => x.Trim())
-            .Where(x => x.StartsWith("import ") && x.EndsWith(";"))
+            .ToArray();
+
+        return lines;
+    }
+
+    protected virtual CommentModel GetComment(IEnumerable<string> javaFileLines)
+    {
+        if (!javaFileLines.ElementAt(0).StartsWith("/*"))
+        {
+            return new CommentModel(Array.Empty<string>(), javaFileLines);
+        }
+        
+        var comment = new List<string>();
+        
+        var lines = javaFileLines
+            .SkipWhile(x =>
+            {
+                comment.Add(x);
+                return !Regex.Replace(x, @"\s+", "").Equals("*/");
+            })
+            .Skip(1)
             .ToList();
 
-        foreach (var importLine in importLines)
+        return new CommentModel(comment, lines);
+    }
+    
+    protected virtual PackageModel GetPackage(IEnumerable<string> javaFileLines)
+    {
+        var packageLine = javaFileLines.ElementAt(0);
+        
+        if (!packageLine.StartsWith("package "))
         {
-            var import = importLine.Split(" ")[1].Replace(";", "");
-            
-            yield return import;
+            // Sub-class / Inner class
+            return new PackageModel(string.Empty, javaFileLines);
         }
+        
+        var lines = javaFileLines.Skip(1).ToList();
+
+        return new PackageModel(packageLine, lines);
+    }
+    
+    protected virtual ImportsModel GetImports(IEnumerable<string> javaFileLines)
+    {
+        const string importPrefix = "import ";
+
+        if (!javaFileLines.ElementAt(0).StartsWith(importPrefix))
+        {
+            // Sub-class / Inner class
+            return new ImportsModel(Array.Empty<string>(), javaFileLines);
+        }
+
+        var imports = new List<string>();
+
+        var lines = javaFileLines
+            .SkipWhile(x =>
+            {
+                var isImportLine = x.StartsWith(importPrefix);
+
+                if (isImportLine)
+                {
+                    imports.Add(x);
+                }
+                
+                return isImportLine;
+            })
+            .ToList();
+
+        return new ImportsModel(imports, lines);
     }
 }
