@@ -10,7 +10,7 @@ internal class JavaFileFinder
         JdkDirectoryPath = jdkDirectoryPath;
     }
 
-    public void OnJavaFileFind(Action<DirectoryInfo, DirectoryInfo, FileInfo> callback) => 
+    public void OnJavaFileFound(Action<DirectoryInfo, DirectoryInfo, FileInfo> callback) => 
         this.Callback = callback;
 
     public void Run()

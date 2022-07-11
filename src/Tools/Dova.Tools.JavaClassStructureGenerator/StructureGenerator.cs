@@ -18,7 +18,7 @@ internal class StructureGenerator
 
     public void Run()
     {
-        Finder.OnJavaFileFind((javaModuleDir, javaPackageDir, javaFile) =>
+        Finder.OnJavaFileFound((javaModuleDir, javaPackageDir, javaFile) =>
         {
             var tempOutputPath = javaFile.FullName.Replace(javaModuleDir.FullName, "");
             var tempOutputPathFull = $"{Config.TempDirPath}/{javaModuleDir.Name}{tempOutputPath}.gen";
