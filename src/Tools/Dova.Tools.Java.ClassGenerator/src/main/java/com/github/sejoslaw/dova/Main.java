@@ -29,7 +29,16 @@ public class Main {
 
         model.modifiers = GetModifiers(clazz.getModifiers());
 
-        // TODO: GetInterfaces(clazz, model.interfaceModels);
+        for (var interfaceClass : clazz.getInterfaces()) {
+            var interfaceModel = new ClassDefinitionModel();
+
+            ProcessClass(interfaceClass, interfaceModel);
+
+            model.interfaceModels.add(interfaceModel);
+        }
+
+        // TODO: GetGenericInfo(clazz, model);
+
         GetConstructors(clazz, model.constructorModels);
         // TODO: Fields - GetFields(clazz, model.fieldModels);
         // TODO: Methods - GetMethods(clazz, model.methodModels);

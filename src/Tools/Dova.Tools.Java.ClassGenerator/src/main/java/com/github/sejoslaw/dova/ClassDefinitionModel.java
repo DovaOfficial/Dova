@@ -9,6 +9,7 @@ public class ClassDefinitionModel {
     public String baseClass;
     public boolean isEnum;
     public String modifiers;
+    public Collection<ClassDefinitionModel> interfaceModels = new ArrayList<>();
     public Collection<ConstructorDefinitionModel> constructorModels = new ArrayList<>();
     public Collection<ClassDefinitionModel> innerClassModels = new ArrayList<>();
 }
