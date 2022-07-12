@@ -26,21 +26,12 @@ public class Main {
         model.className = clazz.getSimpleName();
         model.baseClass = clazz.getSuperclass().getName();
         model.isEnum = clazz.isEnum();
-
         model.modifiers = GetModifiers(clazz.getModifiers());
 
-        for (var interfaceClass : clazz.getInterfaces()) {
-            var interfaceModel = new ClassDefinitionModel();
-
-            ProcessClass(interfaceClass, interfaceModel);
-
-            model.interfaceModels.add(interfaceModel);
-        }
-
-        // TODO: GetGenericInfo(clazz, model);
-
+        GetInterfaces(clazz, model.interfaceModels);
+        // TODO: GetGenericInfo(???, model);
         GetConstructors(clazz, model.constructorModels);
-        // TODO: Fields - GetFields(clazz, model.fieldModels);
+        GetFields(clazz, model.fieldModels);
         // TODO: Methods - GetMethods(clazz, model.methodModels);
 
         for (Class<?> innerClass : clazz.getDeclaredClasses()) {
@@ -49,6 +40,32 @@ public class Main {
             ProcessClass(innerClass, innerModel);
 
             model.innerClassModels.add(innerModel);
+        }
+    }
+
+    private static void GetInterfaces(Class<?> clazz, Collection<InterfaceDefinitionModel> models) {
+        for (var interfaceClass : clazz.getInterfaces()) {
+            var model = new InterfaceDefinitionModel();
+
+            model.className = interfaceClass.getName();
+
+            // TODO: Add generic info
+
+            models.add(model);
+        }
+    }
+
+    private static void GetFields(Class<?> clazz, Collection<FieldDefinitionModel> fieldModels) {
+        for (var field : clazz.getDeclaredFields()) {
+            var model = new FieldDefinitionModel();
+
+            model.modifiers = GetModifiers(field.getModifiers());
+            model.returnType = field.getType().getName();
+            model.fieldName = field.getName();
+
+            // TODO: Add generic info
+
+            fieldModels.add(model);
         }
     }
 
@@ -74,6 +91,8 @@ public class Main {
 
             model.name = parameter.getName();
             model.type = parameter.getType().getName();
+
+            // TODO: Add generic info
 
             models.add(model);
         }
