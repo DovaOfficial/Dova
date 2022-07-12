@@ -32,7 +32,7 @@ public class Main {
         // TODO: GetGenericInfo(???, model);
         GetConstructors(clazz, model.constructorModels);
         GetFields(clazz, model.fieldModels);
-        // TODO: Methods - GetMethods(clazz, model.methodModels);
+        GetMethods(clazz, model.methodModels);
 
         for (Class<?> innerClass : clazz.getDeclaredClasses()) {
             var innerModel = new ClassDefinitionModel();
@@ -40,6 +40,22 @@ public class Main {
             ProcessClass(innerClass, innerModel);
 
             model.innerClassModels.add(innerModel);
+        }
+    }
+
+    private static void GetMethods(Class<?> clazz, Collection<MethodDefinitionModel> models) {
+        for (var method : clazz.getDeclaredMethods()) {
+            var model = new MethodDefinitionModel();
+
+            model.modifiers = GetModifiers(method.getModifiers());
+            model.returnType = method.getReturnType().getName();
+            model.methodName = method.getName();
+
+            GetParameters(method.getParameters(), model.parameterModels);
+
+            // TODO: Add generic info
+
+            models.add(model);
         }
     }
 

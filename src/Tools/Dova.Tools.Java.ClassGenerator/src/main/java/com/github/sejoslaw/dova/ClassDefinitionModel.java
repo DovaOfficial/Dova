@@ -12,5 +12,6 @@ public class ClassDefinitionModel {
     public Collection<InterfaceDefinitionModel> interfaceModels = new ArrayList<>();
     public Collection<ConstructorDefinitionModel> constructorModels = new ArrayList<>();
     public Collection<FieldDefinitionModel> fieldModels = new ArrayList<>();
+    public Collection<MethodDefinitionModel> methodModels = new ArrayList<>();
     public Collection<ClassDefinitionModel> innerClassModels = new ArrayList<>();
 }
