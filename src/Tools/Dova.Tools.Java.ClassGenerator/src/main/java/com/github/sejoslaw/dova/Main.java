@@ -1,7 +1,6 @@
 package com.github.sejoslaw.dova;
 
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.*;
 import java.util.Collection;
 
 public class Main {
@@ -14,33 +13,85 @@ public class Main {
 
     private static void ProcessClass(String tempOutputPathFull, String javaClassFullName) throws ClassNotFoundException {
         var clazz = Class.forName(javaClassFullName);
-
         var model = new ClassDefinitionModel();
+
         ProcessClass(clazz, model);
 
         ModelWriter.Write(tempOutputPathFull, model);
     }
 
     private static void ProcessClass(Class<?> clazz, ClassDefinitionModel model) {
-        model.packageName = clazz.getPackageName();
-        model.className = clazz.getSimpleName();
-        model.baseClass = clazz.getSuperclass().getName();
-        model.isEnum = clazz.isEnum();
-        model.modifiers = GetModifiers(clazz.getModifiers());
-
+        GetClassDetails(clazz, model.classDetailsModel);
+        GetBaseClass(clazz, model.baseClassModel);
         GetInterfaces(clazz, model.interfaceModels);
-        // TODO: GetGenericInfo(???, model);
         GetConstructors(clazz, model.constructorModels);
         GetFields(clazz, model.fieldModels);
         GetMethods(clazz, model.methodModels);
+        GetInnerClasses(clazz, model.innerClassModels);
+    }
 
-        for (Class<?> innerClass : clazz.getDeclaredClasses()) {
-            var innerModel = new ClassDefinitionModel();
+    private static void GetClassDetails(Class<?> clazz, ClassDetailsDefinitionModel model) {
+        model.packageName = clazz.getPackageName();
+        model.className = clazz.getSimpleName();
+        model.isEnum = clazz.isEnum();
+        model.modifiers = GetModifiers(clazz.getModifiers());
 
-            ProcessClass(innerClass, innerModel);
+        GetTypeParameters(clazz.getTypeParameters(), model.typeParameterModels);
+    }
 
-            model.innerClassModels.add(innerModel);
+    private static void GetTypeParameters(TypeVariable<? extends Class<?>>[] typeParameters, Collection<TypeParameterModel> models) {
+        for (var typeParameter : typeParameters) {
+            var model = new TypeParameterModel();
+
+            GetTypeParameter(typeParameter, model);
+
+            models.add(model);
         }
+    }
+
+    private static void GetTypeParameters(Type type, Collection<TypeParameterModel> models) {
+        if (type instanceof ParameterizedType) {
+            var typeParameters = ((ParameterizedType) type).getActualTypeArguments();
+
+            for (var typeParameter : typeParameters) {
+                var model = new TypeParameterModel();
+
+                GetTypeParameter(typeParameter, model);
+
+                models.add(model);
+            }
+        }
+    }
+
+    private static void GetTypeParameter(TypeVariable<?> typeParameter, TypeParameterModel model) {
+        model.variableName = typeParameter.getName();
+        model.typeName = typeParameter.getTypeName();
+
+        GetBounds(typeParameter.getBounds(), model.boundModels);
+    }
+
+    private static void GetTypeParameter(Type type, TypeParameterModel model) {
+        if (type instanceof TypeVariable<?>) {
+            GetTypeParameter((TypeVariable<?>) type, model);
+        }
+    }
+
+    private static void GetBounds(Type[] bounds, Collection<BoundDefinitionModel> models) {
+        for (var bound : bounds) {
+            var model = new BoundDefinitionModel();
+
+            model.name = bound.getTypeName();
+
+            models.add(model);
+        }
+    }
+
+    private static void GetBaseClass(Class<?> clazz, BaseClassDefinitionModel model) {
+        var baseClass = clazz.getGenericSuperclass();
+
+        model.typeName = baseClass.getTypeName();
+
+        GetTypeParameters(baseClass, model.typeParameterModels);
     }
 
     private static void GetMethods(Class<?> clazz, Collection<MethodDefinitionModel> models) {
@@ -48,24 +99,27 @@ public class Main {
             var model = new MethodDefinitionModel();
 
             model.modifiers = GetModifiers(method.getModifiers());
-            model.returnType = method.getReturnType().getName();
             model.methodName = method.getName();
 
             GetParameters(method.getParameters(), model.parameterModels);
 
-            // TODO: Add generic info
+            var type = method.getGenericReturnType();
+
+            model.returnType = type.getTypeName();
+
+            GetTypeParameters(type, model.typeParameterModels);
 
             models.add(model);
         }
     }
 
     private static void GetInterfaces(Class<?> clazz, Collection<InterfaceDefinitionModel> models) {
-        for (var interfaceClass : clazz.getInterfaces()) {
+        for (var interfaceType : clazz.getGenericInterfaces()) {
             var model = new InterfaceDefinitionModel();
 
-            model.className = interfaceClass.getName();
+            model.typeName = interfaceType.getTypeName();
 
-            // TODO: Add generic info
+            GetTypeParameters(interfaceType, model.typeParameterModels);
 
             models.add(model);
         }
@@ -76,10 +130,13 @@ public class Main {
             var model = new FieldDefinitionModel();
 
             model.modifiers = GetModifiers(field.getModifiers());
-            model.returnType = field.getType().getName();
             model.fieldName = field.getName();
 
-            // TODO: Add generic info
+            var type = field.getGenericType();
+
+            model.returnType = type.getTypeName();
+
+            GetTypeParameter(type, model.typeParameterModel);
 
             fieldModels.add(model);
         }
@@ -106,9 +163,22 @@ public class Main {
             var model = new ParameterDefinitionModel();
 
             model.name = parameter.getName();
-            model.type = parameter.getType().getName();
 
-            // TODO: Add generic info
+            var type = parameter.getParameterizedType();
+
+            model.type = type.getTypeName();
+
+            GetTypeParameters(type, model.typeParameterModels);
+
+            models.add(model);
+        }
+    }
+
+    private static void GetInnerClasses(Class<?> clazz, Collection<ClassDefinitionModel> models) {
+        for (Class<?> innerClass : clazz.getDeclaredClasses()) {
+            var model = new ClassDefinitionModel();
+
+            ProcessClass(innerClass, model);
 
             models.add(model);
         }

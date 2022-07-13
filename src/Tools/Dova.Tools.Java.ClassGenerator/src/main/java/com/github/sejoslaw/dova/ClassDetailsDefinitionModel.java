@@ -3,10 +3,10 @@ package com.github.sejoslaw.dova;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class MethodDefinitionModel {
+public class ClassDetailsDefinitionModel {
+    public String packageName;
+    public String className;
+    public boolean isEnum;
     public String modifiers;
-    public String returnType;
-    public String methodName;
-    public Collection<ParameterDefinitionModel> parameterModels = new ArrayList<>();
     public Collection<TypeParameterModel> typeParameterModels = new ArrayList<>();
 }
