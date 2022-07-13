@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class MethodDefinitionModel {
-    public String modifiers;
-    public String returnType;
-    public String methodName;
-    public Collection<ParameterDefinitionModel> parameterModels = new ArrayList<>();
-    public Collection<TypeParameterModel> typeParameterModels = new ArrayList<>();
+    public String Modifiers;
+    public String ReturnType;
+    public String MethodName;
+    public Collection<ParameterDefinitionModel> ParameterModels = new ArrayList<>();
+    public Collection<TypeParameterModel> TypeParameterModels = new ArrayList<>();
 }

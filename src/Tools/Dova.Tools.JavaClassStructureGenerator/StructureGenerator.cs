@@ -4,6 +4,7 @@ internal class StructureGenerator
 {
     private GeneratorConfiguration Config { get; }
     private JavaFileFinder Finder { get; }
+
     private JavaClassDefinitionGenerator DefinitionGenerator { get; }
     // private CSharpClassGenerator ClassGenerator { get; }
 
@@ -30,11 +31,11 @@ internal class StructureGenerator
 
             DefinitionGenerator.Generate(tempOutputPathFull, javaClassFullName);
 
-            // var javaClassDefinitionModel = JavaClassDefinitionReader.Read(tempOutputPathFull);
+            var javaClassDefinitionModel = JavaClassDefinitionReader.Read(tempOutputPathFull);
 
             // ClassGenerator.Generate(javaModuleDir, javaClassDefinitionModel);
         });
-        
+
         Finder.Run();
     }
 }

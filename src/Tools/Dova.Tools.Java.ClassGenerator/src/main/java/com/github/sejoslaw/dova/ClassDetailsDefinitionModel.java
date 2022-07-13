@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class ClassDetailsDefinitionModel {
-    public String packageName;
-    public String className;
-    public boolean isEnum;
-    public String modifiers;
-    public Collection<TypeParameterModel> typeParameterModels = new ArrayList<>();
+    public String PackageName;
+    public String ClassName;
+    public boolean IsEnum;
+    public String Modifiers;
+    public Collection<TypeParameterModel> TypeParameterModels = new ArrayList<>();
 }

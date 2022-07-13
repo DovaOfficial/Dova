@@ -26,22 +26,22 @@ public class Main {
     }
 
     private static void ProcessClass(Class<?> clazz, ClassDefinitionModel model) {
-        GetClassDetails(clazz, model.classDetailsModel);
-        GetBaseClass(clazz, model.baseClassModel);
-        GetInterfaces(clazz, model.interfaceModels);
-        GetConstructors(clazz, model.constructorModels);
-        GetFields(clazz, model.fieldModels);
-        GetMethods(clazz, model.methodModels);
-        GetInnerClasses(clazz, model.innerClassModels);
+        GetClassDetails(clazz, model.ClassDetailsModel);
+        GetBaseClass(clazz, model.BaseClassModel);
+        GetInterfaces(clazz, model.InterfaceModels);
+        GetConstructors(clazz, model.ConstructorModels);
+        GetFields(clazz, model.FieldModels);
+        GetMethods(clazz, model.MethodModels);
+        GetInnerClasses(clazz, model.InnerClassModels);
     }
 
     private static void GetClassDetails(Class<?> clazz, ClassDetailsDefinitionModel model) {
-        model.packageName = clazz.getPackageName();
-        model.className = clazz.getSimpleName();
-        model.isEnum = clazz.isEnum();
-        model.modifiers = GetModifiers(clazz.getModifiers());
+        model.PackageName = clazz.getPackageName();
+        model.ClassName = clazz.getSimpleName();
+        model.IsEnum = clazz.isEnum();
+        model.Modifiers = GetModifiers(clazz.getModifiers());
 
-        GetTypeParameters(clazz.getTypeParameters(), model.typeParameterModels);
+        GetTypeParameters(clazz.getTypeParameters(), model.TypeParameterModels);
     }
 
     private static void GetTypeParameters(TypeVariable<? extends Class<?>>[] typeParameters, Collection<TypeParameterModel> models) {
@@ -69,10 +69,10 @@ public class Main {
     }
 
     private static void GetTypeParameter(TypeVariable<?> typeParameter, TypeParameterModel model) {
-        model.variableName = typeParameter.getName();
-        model.typeName = typeParameter.getTypeName();
+        model.VariableName = typeParameter.getName();
+        model.TypeName = typeParameter.getTypeName();
 
-        GetBounds(typeParameter.getBounds(), model.boundModels);
+        GetBounds(typeParameter.getBounds(), model.BoundModels);
     }
 
     private static void GetTypeParameter(Type type, TypeParameterModel model) {
@@ -85,7 +85,7 @@ public class Main {
         for (var bound : bounds) {
             var model = new BoundDefinitionModel();
 
-            model.name = bound.getTypeName();
+            model.Name = bound.getTypeName();
 
             models.add(model);
         }
@@ -94,25 +94,25 @@ public class Main {
     private static void GetBaseClass(Class<?> clazz, BaseClassDefinitionModel model) {
         var baseClass = clazz.getGenericSuperclass();
 
-        model.typeName = baseClass.getTypeName();
+        model.TypeName = baseClass.getTypeName();
 
-        GetTypeParameters(baseClass, model.typeParameterModels);
+        GetTypeParameters(baseClass, model.TypeParameterModels);
     }
 
     private static void GetMethods(Class<?> clazz, Collection<MethodDefinitionModel> models) {
         for (var method : clazz.getDeclaredMethods()) {
             var model = new MethodDefinitionModel();
 
-            model.modifiers = GetModifiers(method.getModifiers());
-            model.methodName = method.getName();
+            model.Modifiers = GetModifiers(method.getModifiers());
+            model.MethodName = method.getName();
 
-            GetParameters(method.getParameters(), model.parameterModels);
+            GetParameters(method.getParameters(), model.ParameterModels);
 
             var type = method.getGenericReturnType();
 
-            model.returnType = type.getTypeName();
+            model.ReturnType = type.getTypeName();
 
-            GetTypeParameters(type, model.typeParameterModels);
+            GetTypeParameters(type, model.TypeParameterModels);
 
             models.add(model);
         }
@@ -122,9 +122,9 @@ public class Main {
         for (var interfaceType : clazz.getGenericInterfaces()) {
             var model = new InterfaceDefinitionModel();
 
-            model.typeName = interfaceType.getTypeName();
+            model.TypeName = interfaceType.getTypeName();
 
-            GetTypeParameters(interfaceType, model.typeParameterModels);
+            GetTypeParameters(interfaceType, model.TypeParameterModels);
 
             models.add(model);
         }
@@ -134,14 +134,14 @@ public class Main {
         for (var field : clazz.getDeclaredFields()) {
             var model = new FieldDefinitionModel();
 
-            model.modifiers = GetModifiers(field.getModifiers());
-            model.fieldName = field.getName();
+            model.Modifiers = GetModifiers(field.getModifiers());
+            model.FieldName = field.getName();
 
             var type = field.getGenericType();
 
-            model.returnType = type.getTypeName();
+            model.ReturnType = type.getTypeName();
 
-            GetTypeParameter(type, model.typeParameterModel);
+            GetTypeParameter(type, model.TypeParameterModel);
 
             fieldModels.add(model);
         }
@@ -155,9 +155,9 @@ public class Main {
         for (var constructor : clazz.getDeclaredConstructors()) {
             var model = new ConstructorDefinitionModel();
 
-            model.modifiers = GetModifiers(constructor.getModifiers());
+            model.Modifiers = GetModifiers(constructor.getModifiers());
 
-            GetParameters(constructor.getParameters(), model.parameterModels);
+            GetParameters(constructor.getParameters(), model.ParameterModels);
 
             models.add(model);
         }
@@ -167,13 +167,13 @@ public class Main {
         for (var parameter : parameters) {
             var model = new ParameterDefinitionModel();
 
-            model.name = parameter.getName();
+            model.Name = parameter.getName();
 
             var type = parameter.getParameterizedType();
 
-            model.type = type.getTypeName();
+            model.Type = type.getTypeName();
 
-            GetTypeParameters(type, model.typeParameterModels);
+            GetTypeParameters(type, model.TypeParameterModels);
 
             models.add(model);
         }

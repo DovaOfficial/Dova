@@ -4,6 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class ConstructorDefinitionModel {
-    public String modifiers;
-    public Collection<ParameterDefinitionModel> parameterModels = new ArrayList<>();
+    public String Modifiers;
+    public Collection<ParameterDefinitionModel> ParameterModels = new ArrayList<>();
 }

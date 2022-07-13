@@ -1,8 +1,8 @@
 package com.github.sejoslaw.dova;
 
 public class FieldDefinitionModel {
-    public String modifiers;
-    public String returnType;
-    public String fieldName;
-    public TypeParameterModel typeParameterModel = new TypeParameterModel();
+    public String Modifiers;
+    public String ReturnType;
+    public String FieldName;
+    public TypeParameterModel TypeParameterModel = new TypeParameterModel();
 }
