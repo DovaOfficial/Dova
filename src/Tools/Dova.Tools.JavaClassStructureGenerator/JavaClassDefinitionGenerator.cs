@@ -22,6 +22,8 @@ internal class JavaClassDefinitionGenerator
             }
         };
 
+        process.ErrorDataReceived += (sender, e) => throw new Exception(sender.ToString());
+
         process.Start();
         process.WaitForExit();
     }

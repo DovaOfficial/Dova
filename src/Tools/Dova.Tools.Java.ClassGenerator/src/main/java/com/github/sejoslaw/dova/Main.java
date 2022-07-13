@@ -8,7 +8,12 @@ public class Main {
         var tempOutputPathFull = args[0]; // i.e.: /tmp/<JAVA_MODULE>/share/classes/com/sun/crypto/provider/AESCipher.java.gen
         var javaClassFullName = args[1]; // i.e.: com.sun.crypto.provider.AESCipher
 
-        ProcessClass(tempOutputPathFull, javaClassFullName);
+        try {
+            ProcessClass(tempOutputPathFull, javaClassFullName);
+        } catch(Exception e) {
+            System.err.println(e);
+            throw e;
+        }
     }
 
     private static void ProcessClass(String tempOutputPathFull, String javaClassFullName) throws ClassNotFoundException {
