@@ -13,6 +13,11 @@ public class ModelWriter {
 
         try {
             Files.deleteIfExists(filePath);
+
+            var file = filePath.toFile();
+
+            file.getParentFile().mkdirs();
+            file.createNewFile();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
