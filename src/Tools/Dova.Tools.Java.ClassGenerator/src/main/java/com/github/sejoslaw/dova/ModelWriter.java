@@ -1,8 +1,7 @@
 package com.github.sejoslaw.dova;
 
-import com.google.gson.Gson;
+import org.codehaus.jackson.map.ObjectMapper;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -10,11 +9,10 @@ import java.nio.file.Files;
 public class ModelWriter {
     public static void Write(String tempOutputPathFull, ClassDefinitionModel model) {
         var filePath = FileSystems.getDefault().getPath(tempOutputPathFull);
+        var file = filePath.toFile();
 
         try {
             Files.deleteIfExists(filePath);
-
-            var file = filePath.toFile();
 
             file.getParentFile().mkdirs();
             file.createNewFile();
@@ -22,10 +20,10 @@ public class ModelWriter {
             throw new RuntimeException(e);
         }
 
-        var gson = new Gson();
+        var mapper = new ObjectMapper();
 
         try {
-            gson.toJson(model, new FileWriter(tempOutputPathFull));
+            mapper.writeValue(file, model);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
