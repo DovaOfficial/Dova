@@ -42,6 +42,8 @@ public class Main {
         model.Modifiers = GetModifiers(clazz.getModifiers());
 
         GetTypeParameters(clazz.getTypeParameters(), model.TypeParameterModels);
+
+        model.Signature = SignatureBuilder.Build(clazz);
     }
 
     private static void GetTypeParameters(TypeVariable<? extends Class<?>>[] typeParameters, Collection<TypeParameterModel> models) {
@@ -86,25 +88,32 @@ public class Main {
             var model = new BoundDefinitionModel();
 
             model.Name = bound.getTypeName();
+            model.Signature = SignatureBuilder.Build(bound);
 
             models.add(model);
         }
     }
 
-    private static void GetBaseClass(Class<?> clazz, BaseClassDefinitionModel model) {
+    private static void GetBaseClass(Class<?> clazz, ClassElementDefinitionModel model) {
         var baseClass = clazz.getGenericSuperclass();
 
-        model.TypeName = baseClass.getTypeName();
+        if (baseClass == null) {
+            return;
+        }
+
+        model.Name = baseClass.getTypeName();
 
         GetTypeParameters(baseClass, model.TypeParameterModels);
+
+        model.Signature = SignatureBuilder.Build(baseClass);
     }
 
-    private static void GetMethods(Class<?> clazz, Collection<MethodDefinitionModel> models) {
+    private static void GetMethods(Class<?> clazz, Collection<ClassElementDefinitionModel> models) {
         for (var method : clazz.getDeclaredMethods()) {
-            var model = new MethodDefinitionModel();
+            var model = new ClassElementDefinitionModel();
 
             model.Modifiers = GetModifiers(method.getModifiers());
-            model.MethodName = method.getName();
+            model.Name = method.getName();
 
             GetParameters(method.getParameters(), model.ParameterModels);
 
@@ -114,34 +123,40 @@ public class Main {
 
             GetTypeParameters(type, model.TypeParameterModels);
 
+            model.Signature = SignatureBuilder.Build(method);
+
             models.add(model);
         }
     }
 
-    private static void GetInterfaces(Class<?> clazz, Collection<InterfaceDefinitionModel> models) {
+    private static void GetInterfaces(Class<?> clazz, Collection<ClassElementDefinitionModel> models) {
         for (var interfaceType : clazz.getGenericInterfaces()) {
-            var model = new InterfaceDefinitionModel();
+            var model = new ClassElementDefinitionModel();
 
-            model.TypeName = interfaceType.getTypeName();
+            model.Name = interfaceType.getTypeName();
 
             GetTypeParameters(interfaceType, model.TypeParameterModels);
 
+            model.Signature = SignatureBuilder.Build(interfaceType);
+
             models.add(model);
         }
     }
 
-    private static void GetFields(Class<?> clazz, Collection<FieldDefinitionModel> fieldModels) {
+    private static void GetFields(Class<?> clazz, Collection<ClassElementDefinitionModel> fieldModels) {
         for (var field : clazz.getDeclaredFields()) {
-            var model = new FieldDefinitionModel();
+            var model = new ClassElementDefinitionModel();
 
             model.Modifiers = GetModifiers(field.getModifiers());
-            model.FieldName = field.getName();
+            model.Name = field.getName();
 
             var type = field.getGenericType();
 
             model.ReturnType = type.getTypeName();
 
-            GetTypeParameter(type, model.TypeParameterModel);
+            GetTypeParameters(type, model.TypeParameterModels);
+
+            model.Signature = SignatureBuilder.Build(field);
 
             fieldModels.add(model);
         }
@@ -151,13 +166,15 @@ public class Main {
         return Modifier.toString(mods);
     }
 
-    private static void GetConstructors(Class<?> clazz, Collection<ConstructorDefinitionModel> models) {
+    private static void GetConstructors(Class<?> clazz, Collection<ClassElementDefinitionModel> models) {
         for (var constructor : clazz.getDeclaredConstructors()) {
-            var model = new ConstructorDefinitionModel();
+            var model = new ClassElementDefinitionModel();
 
             model.Modifiers = GetModifiers(constructor.getModifiers());
 
             GetParameters(constructor.getParameters(), model.ParameterModels);
+
+            model.Signature = SignatureBuilder.Build(constructor);
 
             models.add(model);
         }
@@ -174,6 +191,8 @@ public class Main {
             model.Type = type.getTypeName();
 
             GetTypeParameters(type, model.TypeParameterModels);
+
+            model.Signature = SignatureBuilder.Build(type);
 
             models.add(model);
         }

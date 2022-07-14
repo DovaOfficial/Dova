@@ -9,4 +9,5 @@ public class ClassDetailsDefinitionModel {
     public boolean IsEnum;
     public String Modifiers;
     public Collection<TypeParameterModel> TypeParameterModels = new ArrayList<>();
+    public String Signature;
 }

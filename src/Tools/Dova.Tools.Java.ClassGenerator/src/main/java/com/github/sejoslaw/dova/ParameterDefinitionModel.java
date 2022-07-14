@@ -7,4 +7,5 @@ public class ParameterDefinitionModel {
     public String Type;
     public String Name;
     public Collection<TypeParameterModel> TypeParameterModels = new ArrayList<>();
+    public String Signature;
 }
