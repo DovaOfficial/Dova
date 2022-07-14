@@ -13,6 +13,30 @@ internal class CSharpClassGenerator
 
     public void Generate(string javaOutputPathFull, ClassDefinitionModel model)
     {
-        throw new NotImplementedException();
+        var outputDirPath = $"{OutputDirectoryPath}/{javaOutputPathFull}";
+        
+        if (!Directory.Exists(outputDirPath))
+        {
+            Directory.CreateDirectory(outputDirPath);
+        }
+        
+        var outputFilePath = $"{outputDirPath}/{model.ClassDetailsModel.ClassName}.cs";
+        var outputFile = new FileInfo(outputFilePath);
+
+        if (outputFile.Exists)
+        {
+            outputFile.Delete();
+        }
+        
+        outputFile.Create().Close();
+        
+        using (var writer = new StreamWriter(outputFile.FullName))
+        {
+            var lines = new List<string>();
+            
+            CSharpClassBuilder.Build(lines, model);
+            
+            lines.ForEach(writer.WriteLine);
+        }
     }
 }
