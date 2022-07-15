@@ -8,14 +8,16 @@ internal class CSharpClassBuilder
     private const string JavaObjectClassFullName = "java.lang.Object";
     
     private ClassDefinitionModel Model { get; }
+    private int Tabs { get; }
     private StringBuilder Builder { get; }
     private ICollection<string> Lines { get; }
     
     private string BaseClass { get; set; } = JavaObjectClassFullName;
 
-    public CSharpClassBuilder(ClassDefinitionModel model)
+    public CSharpClassBuilder(ClassDefinitionModel model, int tabs = 0)
     {
         Model = model;
+        Tabs = tabs;
 
         Builder = new();
         Lines = new List<string>();
@@ -23,28 +25,28 @@ internal class CSharpClassBuilder
 
     public IEnumerable<string> Build()
     {
-        BuildUsings(0);
-        BuildNamespace(0);
-        BuildClass(0);
+        BuildUsings();
+        BuildNamespace();
+        BuildClass();
 
         return Lines;
     }
 
-    private void WithBrackets(int tabs, Action action)
+    private void WithBrackets(Action action, int tabs = 0)
     {
-        AppendLine(tabs, "{");
+        AppendLine("{", tabs);
         
         action?.Invoke();
         
-        AppendLine(tabs, "}");
+        AppendLine("}", tabs);
     }
 
-    private void AppendLine(int tabs, string line)
+    private void AppendLine(string line, int tabs = 0)
     {
-        Lines.Add(WithTabs(tabs, line));
+        Lines.Add(WithTabs(line, Tabs + tabs));
     }
 
-    private string WithTabs(int tabs, string line)
+    private string WithTabs(string line, int tabs)
     {
         Builder.Clear();
         
@@ -67,39 +69,39 @@ internal class CSharpClassBuilder
         Builder.Clear();
     }
     
-    private void BuildClass(int tabs)
+    private void BuildClass()
     {
         PrepareNewSection();
         
-        BuildClassSignature(tabs);
-        BuildBaseClass(tabs);
-        // TODO: BuildInterfaces(tabs);
+        BuildClassSignature();
+        BuildBaseClass();
+        // TODO: BuildInterfaces();
 
-        WithBrackets(tabs, () =>
+        WithBrackets(() =>
         {
-            // TODO: BuildJdkReferences(tabs + 1); // TODO: Use DovaJvm.Vm.Runtime
-            // TODO: BuildFields(tabs + 1);
-            // TODO: BuildConstructors(tabs + 1);
-            // TODO: BuildMethods(tabs + 1);
-            // TODO: BuildInnerClasses(tabs + 1); 
+            // TODO: BuildJdkReferences(); // TODO: Use DovaJvm.Vm.Runtime // tabs + 1
+            // TODO: BuildFields(); // tabs + 1
+            // TODO: BuildConstructors(); // tabs + 1
+            // TODO: BuildMethods(); // tabs + 1
+            // TODO: BuildInnerClasses(); // tabs + 1
         });
     }
 
-    private void BuildUsings(int tabs)
+    private void BuildUsings()
     {
-        AppendLine(tabs, "using Dova.JDK;"); // Mainly used for JavaObject
-        AppendLine(tabs, "");
-        AppendLine(tabs, "using System;");
+        AppendLine("using Dova.JDK;"); // Mainly used for JavaObject
+        AppendLine("");
+        AppendLine("using System;");
     }
     
-    private void BuildNamespace(int tabs)
+    private void BuildNamespace()
     {
         PrepareNewSection();
         
-        AppendLine(tabs, $"namespace {Model.ClassDetailsModel.PackageName};");
+        AppendLine($"namespace {Model.ClassDetailsModel.PackageName};");
     }
     
-    private void BuildClassSignature(int tabs)
+    private void BuildClassSignature()
     {
         PrepareNewSection();
 
@@ -109,10 +111,10 @@ internal class CSharpClassBuilder
             .Replace("synchronized", "")
             .Replace("volatile", "");
         
-        AppendLine(tabs, $"{modifiers} class {Model.ClassDetailsModel.ClassName}");
+        AppendLine($"{modifiers} class {Model.ClassDetailsModel.ClassName}");
     }
     
-    private void BuildBaseClass(int tabs)
+    private void BuildBaseClass()
     {
         Builder.Clear();
 
@@ -130,6 +132,6 @@ internal class CSharpClassBuilder
             }
         }
 
-        AppendLine(tabs + 1, $": {BaseClass}");
+        AppendLine($": {BaseClass}", 1);
     }
 }
