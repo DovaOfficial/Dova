@@ -104,7 +104,7 @@ internal class CSharpClassBuilder
         AppendLine($"namespace {Model.ClassDetailsModel.PackageName};");
     }
     
-    private void BuildClassSignature()
+    private void BuildClassSignature() // TODO: Add generic parameters
     {
         var modifiers = Model.ClassDetailsModel.Modifiers
             .Replace("final", "sealed")
@@ -115,7 +115,7 @@ internal class CSharpClassBuilder
         AppendLine($"{modifiers} class {Model.ClassDetailsModel.ClassName}");
     }
     
-    private void BuildBaseClass()
+    private void BuildBaseClass() // TODO: Add generic parameters
     {
         if (!string.IsNullOrWhiteSpace(Model.BaseClassModel.Name))
         {
@@ -134,7 +134,16 @@ internal class CSharpClassBuilder
         AppendLine($": {BaseClass}", 1);
     }
     
-    private void BuildInterfaces()
+    private void BuildInterfaces() // TODO: Add generic parameters
     {
+        if (Model.InterfaceModels.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var interfaceModel in Model.InterfaceModels)
+        {
+            AppendLine($", {interfaceModel.Name}", 1);
+        }
     }
 }
