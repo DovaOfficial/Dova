@@ -6,6 +6,5 @@ internal static class CSharpClassBuilder
 {
     public static void Build(ICollection<string> lines, ClassDefinitionModel model)
     {
-        lines.Add("Code cleaning");
     }
 }

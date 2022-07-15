@@ -30,12 +30,12 @@ internal class CSharpClassGenerator
         
         outputFile.Create().Close();
         
+        var lines = new List<string>();
+            
+        CSharpClassBuilder.Build(lines, model);
+
         using (var writer = new StreamWriter(outputFile.FullName))
         {
-            var lines = new List<string>();
-            
-            CSharpClassBuilder.Build(lines, model);
-            
             lines.ForEach(writer.WriteLine);
         }
     }
