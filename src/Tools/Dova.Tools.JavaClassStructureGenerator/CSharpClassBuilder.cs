@@ -104,7 +104,7 @@ internal class CSharpClassBuilder
         AppendLine($"namespace {Model.ClassDetailsModel.PackageName};");
     }
     
-    private void BuildClassSignature() // TODO: Add generic parameters
+    private void BuildClassSignature() // TODO: Add generic parameters + Add support for generating interfaces + Add support for generating enums
     {
         var modifiers = Model.ClassDetailsModel.Modifiers
             .Replace("final", "sealed")
