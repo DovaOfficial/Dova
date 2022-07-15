@@ -3,32 +3,48 @@ using Dova.Tools.JavaClassStructureGenerator.Models;
 
 namespace Dova.Tools.JavaClassStructureGenerator;
 
-internal static class CSharpClassBuilder
+internal class CSharpClassBuilder
 {
-    private static StringBuilder Builder { get; } = new();
+    private const string JavaObjectClassFullName = "java.lang.Object";
     
-    public static void Build(ICollection<string> lines, ClassDefinitionModel model, int tabs = 0)
+    private ClassDefinitionModel Model { get; }
+    private StringBuilder Builder { get; }
+    private ICollection<string> Lines { get; }
+    
+    private string BaseClass { get; set; } = JavaObjectClassFullName;
+
+    public CSharpClassBuilder(ClassDefinitionModel model)
     {
-        BuildUsings(lines, model, tabs);
-        BuildNamespace(lines, model, tabs);
-        BuildClass(lines, model, tabs);
+        Model = model;
+
+        Builder = new();
+        Lines = new List<string>();
     }
 
-    private static void WithBrackets(ICollection<string> lines, int tabs, Action action)
+    public IEnumerable<string> Build()
     {
-        AppendLine(lines, tabs, "{");
+        BuildUsings(0);
+        BuildNamespace(0);
+        BuildClass(0);
+
+        return Lines;
+    }
+
+    private void WithBrackets(int tabs, Action action)
+    {
+        AppendLine(tabs, "{");
         
         action?.Invoke();
         
-        AppendLine(lines, tabs, "}");
+        AppendLine(tabs, "}");
     }
 
-    private static void AppendLine(ICollection<string> lines, int tabs, string line)
+    private void AppendLine(int tabs, string line)
     {
-        lines.Add(WithTabs(line, tabs));
+        Lines.Add(WithTabs(tabs, line));
     }
 
-    private static string WithTabs(string line, int tabs)
+    private string WithTabs(int tabs, string line)
     {
         Builder.Clear();
         
@@ -44,80 +60,76 @@ internal static class CSharpClassBuilder
         return newLine;
     }
 
-    private static void PrepareNewSection(ICollection<string> lines)
+    private void PrepareNewSection()
     {
-        lines.Add("");
+        Lines.Add("");
         
         Builder.Clear();
     }
     
-    private static void BuildClass(ICollection<string> lines, ClassDefinitionModel model, int tabs)
+    private void BuildClass(int tabs)
     {
-        PrepareNewSection(lines);
+        PrepareNewSection();
         
-        BuildClassSignature(lines, model, tabs);
-        BuildBaseClass(lines, model, tabs);
-        // TODO: BuildInterfaces(lines, model, tabs);
+        BuildClassSignature(tabs);
+        BuildBaseClass(tabs);
+        // TODO: BuildInterfaces(tabs);
 
-        WithBrackets(lines, tabs, () =>
+        WithBrackets(tabs, () =>
         {
-            // TODO: BuildJdkReferences(lines, model, tabs + 1); // TODO: Use DovaJvm.Vm.Runtime
-            // TODO: BuildFields(lines, model, tabs + 1);
-            // TODO: BuildConstructors(lines, model, tabs + 1);
-            // TODO: BuildMethods(lines, model, tabs + 1);
-            // TODO: BuildInnerClasses(lines, model, tabs + 1); 
+            // TODO: BuildJdkReferences(tabs + 1); // TODO: Use DovaJvm.Vm.Runtime
+            // TODO: BuildFields(tabs + 1);
+            // TODO: BuildConstructors(tabs + 1);
+            // TODO: BuildMethods(tabs + 1);
+            // TODO: BuildInnerClasses(tabs + 1); 
         });
     }
 
-    private static void BuildUsings(ICollection<string> lines, ClassDefinitionModel model, int tabs)
+    private void BuildUsings(int tabs)
     {
-        AppendLine(lines, tabs, "using Dova.JDK;"); // Mainly used for JavaObject
-        AppendLine(lines, tabs, "");
-        AppendLine(lines, tabs, "using System;");
+        AppendLine(tabs, "using Dova.JDK;"); // Mainly used for JavaObject
+        AppendLine(tabs, "");
+        AppendLine(tabs, "using System;");
     }
     
-    private static void BuildNamespace(ICollection<string> lines, ClassDefinitionModel model, int tabs)
+    private void BuildNamespace(int tabs)
     {
-        PrepareNewSection(lines);
+        PrepareNewSection();
         
-        AppendLine(lines, tabs, $"namespace {model.ClassDetailsModel.PackageName};");
+        AppendLine(tabs, $"namespace {Model.ClassDetailsModel.PackageName};");
     }
     
-    private static void BuildClassSignature(ICollection<string> lines, ClassDefinitionModel model, int tabs)
+    private void BuildClassSignature(int tabs)
     {
-        PrepareNewSection(lines);
+        PrepareNewSection();
 
-        var modifiers = model.ClassDetailsModel.Modifiers
+        var modifiers = Model.ClassDetailsModel.Modifiers
             .Replace("final", "sealed")
             .Replace("transient", "")
             .Replace("synchronized", "")
             .Replace("volatile", "");
         
-        AppendLine(lines, tabs, $"{modifiers} class {model.ClassDetailsModel.ClassName}");
+        AppendLine(tabs, $"{modifiers} class {Model.ClassDetailsModel.ClassName}");
     }
     
-    private static void BuildBaseClass(ICollection<string> lines, ClassDefinitionModel model, int tabs)
+    private void BuildBaseClass(int tabs)
     {
         Builder.Clear();
 
-        const string javaObject = "java.lang.Object";
-
-        var baseClass = javaObject; // Explicitly declare Java base class
-
-        if (!string.IsNullOrWhiteSpace(model.BaseClassModel.Name))
+        if (!string.IsNullOrWhiteSpace(Model.BaseClassModel.Name))
         {
-            baseClass = model.BaseClassModel.Name;
+            BaseClass = Model.BaseClassModel.Name;
         }
         else
         {
-            var fullName = $"{model.ClassDetailsModel.PackageName}.{model.ClassDetailsModel.ClassName}";
+            var fullName = $"{Model.ClassDetailsModel.PackageName}.{Model.ClassDetailsModel.ClassName}";
 
-            if (fullName.Equals(javaObject))
+            if (fullName.Equals(JavaObjectClassFullName))
             {
-                baseClass = "JavaObject"; // Do not use ref to Dova.JDK project (nameof)
+                BaseClass = "JavaObject"; // Do not use ref to Dova.JDK project (nameof)
             }
         }
 
-        AppendLine(lines, tabs + 1, $": {baseClass}");
+        AppendLine(tabs + 1, $": {BaseClass}");
     }
 }
