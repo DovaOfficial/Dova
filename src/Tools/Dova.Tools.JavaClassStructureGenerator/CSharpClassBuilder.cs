@@ -26,8 +26,8 @@ internal class CSharpClassBuilder
     public IEnumerable<string> Build()
     {
         BuildUsings();
-        BuildNamespace();
-        BuildClass();
+        AsNewSection(BuildNamespace);
+        AsNewSection(BuildClass);
 
         return Lines;
     }
@@ -61,21 +61,26 @@ internal class CSharpClassBuilder
 
         return newLine;
     }
-
-    private void PrepareNewSection()
+    
+    private void AsNewSection(Action action)
     {
         Lines.Add("");
         
-        Builder.Clear();
+        AsNewLine(action);
     }
     
+    private void AsNewLine(Action action)
+    {
+        Builder.Clear();
+        
+        action?.Invoke();
+    }
+
     private void BuildClass()
     {
-        PrepareNewSection();
-        
-        BuildClassSignature();
-        BuildBaseClass();
-        // TODO: BuildInterfaces();
+        AsNewSection(BuildClassSignature);
+        AsNewLine(BuildBaseClass);
+        AsNewLine(BuildInterfaces);
 
         WithBrackets(() =>
         {
@@ -96,15 +101,11 @@ internal class CSharpClassBuilder
     
     private void BuildNamespace()
     {
-        PrepareNewSection();
-        
         AppendLine($"namespace {Model.ClassDetailsModel.PackageName};");
     }
     
     private void BuildClassSignature()
     {
-        PrepareNewSection();
-
         var modifiers = Model.ClassDetailsModel.Modifiers
             .Replace("final", "sealed")
             .Replace("transient", "")
@@ -116,8 +117,6 @@ internal class CSharpClassBuilder
     
     private void BuildBaseClass()
     {
-        Builder.Clear();
-
         if (!string.IsNullOrWhiteSpace(Model.BaseClassModel.Name))
         {
             BaseClass = Model.BaseClassModel.Name;
@@ -133,5 +132,9 @@ internal class CSharpClassBuilder
         }
 
         AppendLine($": {BaseClass}", 1);
+    }
+    
+    private void BuildInterfaces()
+    {
     }
 }
