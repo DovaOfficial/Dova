@@ -13,14 +13,14 @@ internal class CSharpClassGenerator
 
     public void Generate(string javaOutputPathFull, ClassDefinitionModel model)
     {
-        var outputDirPath = $"{OutputDirectoryPath}/{javaOutputPathFull}";
+        var outputDirPath = Path.Combine(OutputDirectoryPath, javaOutputPathFull);
         
         if (!Directory.Exists(outputDirPath))
         {
             Directory.CreateDirectory(outputDirPath);
         }
         
-        var outputFilePath = $"{outputDirPath}/{model.ClassDetailsModel.ClassName}.cs";
+        var outputFilePath = Path.Combine(outputDirPath, $"{model.ClassDetailsModel.ClassName}.cs");
         var outputFile = new FileInfo(outputFilePath);
 
         if (outputFile.Exists)

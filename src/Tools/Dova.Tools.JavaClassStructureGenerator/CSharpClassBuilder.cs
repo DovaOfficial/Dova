@@ -6,6 +6,6 @@ internal static class CSharpClassBuilder
 {
     public static void Build(ICollection<string> lines, ClassDefinitionModel model)
     {
-        throw new NotImplementedException();
+        lines.Add("Code cleaning");
     }
 }
