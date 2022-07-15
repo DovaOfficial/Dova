@@ -27,7 +27,7 @@ internal class CSharpClassBuilder
     {
         BuildUsings();
         AsNewSection(BuildNamespace);
-        AsNewSection(BuildClass);
+        BuildClass();
 
         return Lines;
     }
