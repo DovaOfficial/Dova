@@ -104,7 +104,7 @@ internal class CSharpClassBuilder
         AppendLine($"namespace {Model.ClassDetailsModel.PackageName};");
     }
     
-    private void BuildClassSignature() // TODO: Add generic parameters
+    private void BuildClassSignature()
     {
         const string interfaceType = "interface";
         
@@ -120,11 +120,34 @@ internal class CSharpClassBuilder
         {
             type = string.Empty;
         }
-        
-        AppendLine($"{modifiers} {type}{Model.ClassDetailsModel.ClassName}");
+
+        var genericParams = Model.ClassDetailsModel.TypeParameterModels
+            .Select(x => x.VariableName)
+            .ToList();
+
+        var genericVariables = string.Join(',', genericParams);
+        var genericArgs = string.Empty;
+
+        if (!string.IsNullOrWhiteSpace(genericVariables))
+        {
+            genericArgs = $"<{genericVariables}>";
+        }
+
+        AppendLine($"{modifiers} {type}{Model.ClassDetailsModel.ClassName}{genericArgs}");
+
+        foreach (var typeParam in Model.ClassDetailsModel.TypeParameterModels)
+        {
+            var bounds = typeParam.BoundModels
+                .Select(x => x.Name)
+                .ToList();
+
+            var totalBounds = string.Join(',', bounds);
+
+            AppendLine($"where {typeParam.VariableName} : {totalBounds}", 1);
+        }
     }
     
-    private void BuildBaseClass() // TODO: Add generic parameters
+    private void BuildBaseClass()
     {
         if (!string.IsNullOrWhiteSpace(Model.BaseClassModel.Name))
         {
@@ -143,7 +166,7 @@ internal class CSharpClassBuilder
         AppendLine($": {BaseClass}", 1);
     }
     
-    private void BuildInterfaces() // TODO: Add generic parameters
+    private void BuildInterfaces()
     {
         if (Model.InterfaceModels.Count == 0)
         {
