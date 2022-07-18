@@ -1,4 +1,6 @@
-namespace Dova.JDK;
+using Dova.Core.Runtime;
+
+namespace Dova.Common;
 
 /// <summary>
 /// Parent class for all Java generated C# classes.
@@ -8,5 +10,9 @@ public partial class JavaObject
 {
     // TODO: Store ptr to this object
     // TODO: Add additional required methods - GetField(name, sig), GetMethod(name, sig) (????)
-    // TODO: Add static property indicating currently used DovaVM - JavaObject.CurrentVm { get; set; } = new DovaVM();
+    
+    /// <summary>
+    /// Currently used runtime.
+    /// </summary>
+    protected IJavaRuntime Runtime { get; } = DovaJvm.Vm.Runtime;
 }

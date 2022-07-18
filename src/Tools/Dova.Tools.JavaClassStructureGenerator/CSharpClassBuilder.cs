@@ -94,7 +94,7 @@ internal class CSharpClassBuilder
 
     private void BuildUsings()
     {
-        AppendLine("using Dova.JDK;"); // Mainly used for JavaObject
+        AppendLine("using Dova.Common;"); // Mainly used for JavaObject
         AppendLine("");
         AppendLine("using System;");
     }

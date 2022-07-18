@@ -1,4 +1,4 @@
-namespace Dova.JDK;
+namespace Dova.Common;
 
 public class JniSignatureAttribute : Attribute
 {
