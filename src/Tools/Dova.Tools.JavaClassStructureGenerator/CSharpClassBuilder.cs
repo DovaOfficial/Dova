@@ -84,11 +84,11 @@ internal class CSharpClassBuilder
 
         WithBrackets(() =>
         {
-            // TODO: BuildJdkReferences(); // TODO: Use DovaJvm.Vm.Runtime // tabs + 1
-            // TODO: BuildFields(); // tabs + 1
-            // TODO: BuildConstructors(); // tabs + 1
-            // TODO: BuildMethods(); // tabs + 1
-            // TODO: BuildInnerClasses(); // tabs + 1
+            // TODO: AsNewLine(BuildJdkReferences); // TODO: Use DovaJvm.Vm.Runtime // tabs + 1
+            // TODO: AsNewSection(BuildFields); // tabs + 1
+            // TODO: AsNewSection(BuildConstructors); // tabs + 1
+            // TODO: AsNewSection(BuildMethods); // tabs + 1
+            AsNewSection(BuildInnerClasses); // tabs + 1
         });
     }
 
@@ -109,14 +109,8 @@ internal class CSharpClassBuilder
         const string interfaceType = "interface";
         
         var type = "class ";
-        
-        var modifiers = Model.ClassDetailsModel.Modifiers
-            .Replace("final", "sealed")
-            .Replace("transient", "")
-            .Replace("synchronized", "")
-            .Replace("volatile", "");
 
-        if (modifiers.Contains(interfaceType))
+        if (Model.ClassDetailsModel.Modifiers.Contains(interfaceType))
         {
             type = string.Empty;
         }
@@ -134,7 +128,7 @@ internal class CSharpClassBuilder
         }
 
         AppendLine($"[JniSignature(\"{Model.ClassDetailsModel.Signature}\")]");
-        AppendLine($"{modifiers} {type}{Model.ClassDetailsModel.ClassName}{genericArgs}");
+        AppendLine($"public {type}{Model.ClassDetailsModel.ClassName}{genericArgs}");
 
         foreach (var typeParam in Model.ClassDetailsModel.TypeParameterModels)
         {
@@ -152,7 +146,8 @@ internal class CSharpClassBuilder
     {
         if (!string.IsNullOrWhiteSpace(Model.BaseClassModel.Name))
         {
-            BaseClass = Model.BaseClassModel.Name;
+            BaseClass = Model.BaseClassModel.Name
+                .Replace("$", ".");
         }
         else
         {
@@ -177,6 +172,21 @@ internal class CSharpClassBuilder
         foreach (var interfaceModel in Model.InterfaceModels)
         {
             AppendLine($", {interfaceModel.Name}", 1);
+        }
+    }
+    
+    private void BuildInnerClasses()
+    {
+        foreach (var innerClassModel in Model.InnerClassModels)
+        {
+            var builder = new CSharpClassBuilder(innerClassModel, Tabs + 1);
+            
+            builder.BuildClass();
+
+            foreach (var line in builder.Lines)
+            {
+                Lines.Add(line);
+            }
         }
     }
 }
