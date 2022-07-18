@@ -104,15 +104,24 @@ internal class CSharpClassBuilder
         AppendLine($"namespace {Model.ClassDetailsModel.PackageName};");
     }
     
-    private void BuildClassSignature() // TODO: Add generic parameters + Add support for generating interfaces + Add support for generating enums
+    private void BuildClassSignature() // TODO: Add generic parameters
     {
+        const string interfaceType = "interface";
+        
+        var type = "class ";
+        
         var modifiers = Model.ClassDetailsModel.Modifiers
             .Replace("final", "sealed")
             .Replace("transient", "")
             .Replace("synchronized", "")
             .Replace("volatile", "");
+
+        if (modifiers.Contains(interfaceType))
+        {
+            type = string.Empty;
+        }
         
-        AppendLine($"{modifiers} class {Model.ClassDetailsModel.ClassName}");
+        AppendLine($"{modifiers} {type}{Model.ClassDetailsModel.ClassName}");
     }
     
     private void BuildBaseClass() // TODO: Add generic parameters
