@@ -84,11 +84,11 @@ internal class CSharpClassBuilder
 
         WithBrackets(() =>
         {
-            // TODO: AsNewLine(BuildJdkReferences); // TODO: Use DovaJvm.Vm.Runtime // tabs + 1
+            AsNewLine(BuildJdkReferences);
             // TODO: AsNewSection(BuildFields); // tabs + 1
             // TODO: AsNewSection(BuildConstructors); // tabs + 1
             // TODO: AsNewSection(BuildMethods); // tabs + 1
-            AsNewSection(BuildInnerClasses); // tabs + 1
+            AsNewSection(BuildInnerClasses);
         });
     }
 
@@ -173,6 +173,22 @@ internal class CSharpClassBuilder
         {
             AppendLine($", {interfaceModel.Name}", 1);
         }
+    }
+    
+    private void BuildJdkReferences()
+    {
+        AppendLine("public static IntPtr ClassPtr { get; } = DovaJvm.Vm.Runtime.FindClass(\"" + Model.ClassDetailsModel.Signature + "\");", 1);
+        // TODO: Other fields and methods pointers
+        
+        AsNewSection(() =>
+        {
+            AppendLine($"static {Model.ClassDetailsModel.ClassName}()", 1);
+        
+            WithBrackets(() =>
+            {
+                // TODO: Set JNI fields
+            }, 1);
+        });
     }
     
     private void BuildInnerClasses()
