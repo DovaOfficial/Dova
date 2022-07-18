@@ -127,7 +127,7 @@ internal class CSharpClassBuilder
             genericArgs = $"<{genericVariables}>";
         }
 
-        AppendLine($"[JniSignature(\"{Model.ClassDetailsModel.Signature}\")]");
+        AppendLine($"[JniSignature(\"{Model.ClassDetailsModel.Signature}\", \"{Model.ClassDetailsModel.Modifiers}\")]");
         AppendLine($"public {type}{Model.ClassDetailsModel.ClassName}{genericArgs}");
 
         foreach (var typeParam in Model.ClassDetailsModel.TypeParameterModels)
