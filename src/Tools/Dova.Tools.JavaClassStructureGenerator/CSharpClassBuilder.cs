@@ -84,7 +84,7 @@ internal class CSharpClassBuilder
 
         WithBrackets(() =>
         {
-            AsNewLine(BuildJdkReferences);
+            AsNewLine(() => BuildJniReferences());
             // TODO: AsNewSection(BuildFields); // tabs + 1
             // TODO: AsNewSection(BuildConstructors); // tabs + 1
             // TODO: AsNewSection(BuildMethods); // tabs + 1
@@ -173,7 +173,7 @@ internal class CSharpClassBuilder
         }
     }
     
-    private void BuildJdkReferences()
+    private void BuildJniReferences()
     {
         AppendLine("private static IntPtr ClassPtr { get; } = DovaJvm.Vm.Runtime.FindClass(\"" + Model.ClassDetailsModel.Signature + "\");", 1);
 
