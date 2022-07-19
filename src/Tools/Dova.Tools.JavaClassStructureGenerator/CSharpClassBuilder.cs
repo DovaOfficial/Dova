@@ -106,11 +106,9 @@ internal class CSharpClassBuilder
     
     private void BuildClassSignature()
     {
-        const string interfaceType = "interface";
-        
         var type = "class ";
 
-        if (Model.ClassDetailsModel.Modifiers.Contains(interfaceType))
+        if (Model.ClassDetailsModel.IsInterface)
         {
             type = string.Empty;
         }
@@ -177,8 +175,22 @@ internal class CSharpClassBuilder
     
     private void BuildJdkReferences()
     {
-        AppendLine("public static IntPtr ClassPtr { get; } = DovaJvm.Vm.Runtime.FindClass(\"" + Model.ClassDetailsModel.Signature + "\");", 1);
-        // TODO: Other fields and methods pointers
+        AppendLine("private static IntPtr ClassPtr { get; } = DovaJvm.Vm.Runtime.FindClass(\"" + Model.ClassDetailsModel.Signature + "\");", 1);
+
+        if (Model.FieldModels.Count > 0)
+        {
+            AppendLine("private static IList<IntPtr> FieldPtrs { get; } = new List<IntPtr>();", 1);
+        }
+
+        if (Model.ConstructorModels.Count > 0)
+        {
+            AppendLine("private static IList<IntPtr> ConstructorPtrs { get; } = new List<IntPtr>();", 1);
+        }
+
+        if (Model.MethodModels.Count > 0)
+        {
+            AppendLine("private static IList<IntPtr> MethodPtrs { get; } = new List<IntPtr>();", 1);
+        }
         
         AsNewSection(() =>
         {
@@ -186,7 +198,32 @@ internal class CSharpClassBuilder
         
             WithBrackets(() =>
             {
-                // TODO: Set JNI fields
+                foreach (var fieldModel in Model.FieldModels)
+                {
+                    var runtimeMethod = fieldModel.IsStatic
+                        ? "GetStaticFieldId"
+                        : "GetFieldId";
+
+                    AppendLine($"FieldPtrs.Add(DovaJvm.Vm.Runtime.{runtimeMethod}(ClassPtr, \"{fieldModel.Name}\", \"{fieldModel.Signature}\"));", 2);
+                }
+                
+                foreach (var fieldModel in Model.ConstructorModels)
+                {
+                    var runtimeMethod = fieldModel.IsStatic
+                        ? "GetStaticMethodId"
+                        : "GetMethodId";
+
+                    AppendLine($"ConstructorPtrs.Add(DovaJvm.Vm.Runtime.{runtimeMethod}(ClassPtr, \"{Model.ClassDetailsModel.ClassName}\", \"{fieldModel.Signature}\"));", 2);
+                }
+                
+                foreach (var fieldModel in Model.MethodModels)
+                {
+                    var runtimeMethod = fieldModel.IsStatic
+                        ? "GetStaticMethodId"
+                        : "GetMethodId";
+
+                    AppendLine($"MethodPtrs.Add(DovaJvm.Vm.Runtime.{runtimeMethod}(ClassPtr, \"{fieldModel.Name}\", \"{fieldModel.Signature}\"));", 2);
+                }
             }, 1);
         });
     }
