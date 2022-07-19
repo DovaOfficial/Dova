@@ -1,5 +1,3 @@
-using Dova.Core.Runtime;
-
 namespace Dova.Common;
 
 /// <summary>
@@ -9,10 +7,4 @@ namespace Dova.Common;
 public partial class JavaObject
 {
     // TODO: Store ptr to this object
-    // TODO: Add additional required methods - GetField(name, sig), GetMethod(name, sig) (????)
-    
-    /// <summary>
-    /// Currently used runtime.
-    /// </summary>
-    protected IJavaRuntime Runtime { get; } = DovaJvm.Vm.Runtime;
 }
