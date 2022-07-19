@@ -10,4 +10,5 @@ public class ClassElementDefinitionModel {
     public Collection<ParameterDefinitionModel> ParameterModels = new ArrayList<>();
     public Collection<TypeParameterModel> TypeParameterModels = new ArrayList<>();
     public String Signature;
+    public boolean IsStatic;
 }

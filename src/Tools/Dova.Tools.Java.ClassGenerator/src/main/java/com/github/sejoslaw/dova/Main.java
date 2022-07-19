@@ -40,6 +40,8 @@ public class Main {
         model.ClassName = clazz.getSimpleName();
         model.IsEnum = clazz.isEnum();
         model.Modifiers = GetModifiers(clazz.getModifiers());
+        model.IsInterface = Modifier.isInterface(clazz.getModifiers());
+        model.IsAbstract = Modifier.isAbstract(clazz.getModifiers());
 
         GetTypeParameters(clazz.getTypeParameters(), model.TypeParameterModels);
 
@@ -114,6 +116,7 @@ public class Main {
 
             model.Modifiers = GetModifiers(method.getModifiers());
             model.Name = method.getName();
+            model.IsStatic = Modifier.isStatic(method.getModifiers());
 
             GetParameters(method.getParameters(), model.ParameterModels);
 
@@ -149,6 +152,7 @@ public class Main {
 
             model.Modifiers = GetModifiers(field.getModifiers());
             model.Name = field.getName();
+            model.IsStatic = Modifier.isStatic(field.getModifiers());
 
             var type = field.getGenericType();
 

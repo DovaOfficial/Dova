@@ -8,4 +8,5 @@ internal class ClassElementDefinitionModel
     public IReadOnlyList<ParameterDefinitionModel> ParameterModels { get; set; } = new List<ParameterDefinitionModel>();
     public IReadOnlyList<TypeParameterModel> TypeParameterModels { get; set; } = new List<TypeParameterModel>();
     public string Signature { get; set; }
+    public bool IsStatic { get; set; }
 }

@@ -10,4 +10,6 @@ public class ClassDetailsDefinitionModel {
     public String Modifiers;
     public Collection<TypeParameterModel> TypeParameterModels = new ArrayList<>();
     public String Signature;
+    public boolean IsInterface;
+    public boolean IsAbstract;
 }
