@@ -106,12 +106,9 @@ internal class CSharpClassBuilder
     
     private void BuildClassSignature()
     {
-        var type = "class ";
-
-        if (Model.ClassDetailsModel.IsInterface)
-        {
-            type = string.Empty;
-        }
+        var type = Model.ClassDetailsModel.IsInterface
+            ? string.Empty
+            : "class ";
 
         var genericParams = Model.ClassDetailsModel.TypeParameterModels
             .Select(x => x.VariableName)
