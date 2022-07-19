@@ -84,10 +84,10 @@ internal class CSharpClassBuilder
 
         WithBrackets(() =>
         {
-            AsNewLine(() => BuildJniReferences());
-            // TODO: AsNewSection(BuildFields); // tabs + 1
-            // TODO: AsNewSection(BuildConstructors); // tabs + 1
-            // TODO: AsNewSection(BuildMethods); // tabs + 1
+            AsNewLine(BuildJniReferences);
+            AsNewSection(BuildFields);
+            AsNewSection(BuildConstructors);
+            AsNewSection(BuildMethods);
             AsNewSection(BuildInnerClasses);
         });
     }
@@ -226,6 +226,21 @@ internal class CSharpClassBuilder
                 }
             }, 1);
         });
+    }
+    
+    private void BuildFields()
+    {
+        // TODO: Add fields
+    }
+    
+    private void BuildConstructors()
+    {
+        // TODO: Add constructors
+    }
+    
+    private void BuildMethods()
+    {
+        // TODO: Add methods
     }
     
     private void BuildInnerClasses()
