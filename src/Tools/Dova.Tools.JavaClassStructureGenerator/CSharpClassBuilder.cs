@@ -85,7 +85,7 @@ internal class CSharpClassBuilder
         WithBrackets(() =>
         {
             AsNewLine(BuildJniReferences);
-            AsNewSection(BuildFields);
+            AsNewSection(BuildProperties);
             AsNewSection(BuildConstructors);
             AsNewSection(BuildMethods);
             AsNewSection(BuildInnerClasses);
@@ -172,7 +172,8 @@ internal class CSharpClassBuilder
     
     private void BuildJniReferences()
     {
-        AppendLine("private static IntPtr ClassPtr { get; } = DovaJvm.Vm.Runtime.FindClass(\"" + Model.ClassDetailsModel.Signature + "\");", 1);
+        AppendLine("private static IntPtr ClassPtr { get; }", 1);
+        AppendLine("private static IntPtr ClassRefPtr { get; }", 1);
 
         if (Model.FieldModels.Count > 0)
         {
@@ -188,13 +189,16 @@ internal class CSharpClassBuilder
         {
             AppendLine("private static IList<IntPtr> MethodPtrs { get; } = new List<IntPtr>();", 1);
         }
-        
+
         AsNewSection(() =>
         {
             AppendLine($"static {Model.ClassDetailsModel.ClassName}()", 1);
         
             WithBrackets(() =>
             {
+                AppendLine($"ClassPtr = DovaJvm.Vm.Runtime.FindClass(\"" + Model.ClassDetailsModel.Signature + "\");", 2);
+                AppendLine($"ClassRefPtr = DovaJvm.Vm.Runtime.NewGlobalRef(ClassPtr);", 2);
+
                 foreach (var fieldModel in Model.FieldModels)
                 {
                     var runtimeMethod = fieldModel.IsStatic
@@ -225,11 +229,53 @@ internal class CSharpClassBuilder
         });
     }
     
-    private void BuildFields()
+    private void BuildProperties()
     {
-        // TODO: Add fields
+        for (var index = 0; index < Model.FieldModels.Count; ++index)
+        {
+            var field = Model.FieldModels[index];
+            
+            var staticPrefix = field.IsStatic
+                ? "static "
+                : "";
+
+            var staticMethodPrefix = field.IsStatic
+                ? "Static"
+                : "";
+
+            var targetObjPtr = field.IsStatic
+                ? "ClassRefPtr"
+                : "CurrentRefPtr";
+
+            var targetObjValue = field.ReturnType.Contains(".")
+                ? "value.CurrentRefPtr"
+                : "value";
+
+            AppendLine($"[JniSignature(\"{field.Signature}\", \"{field.Modifiers}\")]", 1);
+            AppendLine($"public {staticPrefix}{field.ReturnType} {field.Name}", 1);
+            WithBrackets(() =>
+            {
+                AppendLine($"get", 2);
+                WithBrackets(() =>
+                {
+                    if (field.ReturnType.Contains("."))
+                    {
+                        AppendLine($"var objPtr = DovaJvm.Vm.Runtime.Get{staticMethodPrefix}ObjectField({targetObjPtr}, FieldPtrs[{index}]);", 3);
+                        AppendLine($"return new {field.ReturnType}(objPtr);", 3);
+                    }
+                    else
+                    {
+                        AppendLine($"return DovaJvm.Vm.Runtime.Get{staticMethodPrefix}{field.ReturnType.ToFirstUppercase()}Field({targetObjPtr}, FieldPtrs[{index}]);", 3);
+                    }
+                }, 2);
+                
+                AppendLine("");
+
+                AppendLine($"set => DovaJvm.Vm.Runtime.Set{staticMethodPrefix}{GetReturnType(field.ReturnType)}Field({targetObjPtr}, FieldPtrs[{index}], {targetObjValue});", 2);
+            }, 1);
+        }
     }
-    
+
     private void BuildConstructors()
     {
         // TODO: Add constructors
@@ -254,4 +300,9 @@ internal class CSharpClassBuilder
             }
         }
     }
+    
+    private static string GetReturnType(string returnType) => 
+        returnType.Contains(".") 
+            ? "Object" 
+            : returnType.ToFirstUppercase();
 }

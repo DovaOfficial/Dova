@@ -6,5 +6,17 @@ namespace Dova.Common;
 /// </summary>
 public partial class JavaObject
 {
-    // TODO: Store ptr to this object
+    /// <summary>
+    /// Reference to the current object.
+    /// </summary>
+    public IntPtr CurrentRefPtr { get; }
+
+    /// <summary>
+    /// This constructor should not be used beside the generated classes.
+    /// </summary>
+    /// <param name="currentRefPtr">Ptr to the object which is a field of a class.</param>
+    public JavaObject(IntPtr currentRefPtr)
+    {
+        this.CurrentRefPtr = currentRefPtr;
+    }
 }
