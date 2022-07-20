@@ -273,6 +273,8 @@ internal class CSharpClassBuilder
 
                 AppendLine($"set => DovaJvm.Vm.Runtime.Set{staticMethodPrefix}{GetReturnType(field.ReturnType)}Field({targetObjPtr}, FieldPtrs[{index}], {targetObjValue});", 2);
             }, 1);
+            
+            AppendLine("");
         }
     }
 
