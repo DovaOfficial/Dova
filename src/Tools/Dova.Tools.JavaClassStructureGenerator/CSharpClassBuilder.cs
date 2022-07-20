@@ -258,14 +258,15 @@ internal class CSharpClassBuilder
                 AppendLine($"get", 2);
                 WithBrackets(() =>
                 {
+                    AppendLine($"var ret = DovaJvm.Vm.Runtime.Get{staticMethodPrefix}{GetReturnType(field.ReturnType)}Field({targetObjPtr}, FieldPtrs[{index}]);", 3);
+                    
                     if (field.ReturnType.Contains("."))
                     {
-                        AppendLine($"var objPtr = DovaJvm.Vm.Runtime.Get{staticMethodPrefix}ObjectField({targetObjPtr}, FieldPtrs[{index}]);", 3);
-                        AppendLine($"return new {field.ReturnType}(objPtr);", 3);
+                        AppendLine($"return new {field.ReturnType}(ret);", 3);
                     }
                     else
                     {
-                        AppendLine($"return DovaJvm.Vm.Runtime.Get{staticMethodPrefix}{field.ReturnType.ToFirstUppercase()}Field({targetObjPtr}, FieldPtrs[{index}]);", 3);
+                        AppendLine($"return ret;", 3);
                     }
                 }, 2);
                 
