@@ -129,7 +129,7 @@ internal class CSharpClassBuilder
                 .Select(x => x.Name)
                 .ToList();
 
-            var totalBounds = string.Join(',', bounds);
+            var totalBounds = string.Join(", ", bounds);
 
             AppendLine($"where {typeParam.VariableName} : {totalBounds}", 1);
         }
@@ -172,6 +172,8 @@ internal class CSharpClassBuilder
     {
         AppendLine($"public static IntPtr {ClassPtrStr} {{ get; }}", 1);
         AppendLine($"public static IntPtr {ClassRefPtrStr} {{ get; }}", 1);
+        
+        AppendLine("");
 
         if (Model.FieldModels.Count > 0)
         {
@@ -279,18 +281,23 @@ internal class CSharpClassBuilder
 
     private void BuildConstructors()
     {
-        // TODO: Add constructors
+        AppendLine($"[{nameof(JniSignatureAttribute)}(\"\", \"\")]", 1);
+        AppendLine($"public {Model.ClassDetailsModel.ClassName}(IntPtr currentRefPtr) : base(currentRefPtr)", 1);
+        
+        WithBrackets(() => { }, 1);
 
-        foreach (var constructorModel in Model.ConstructorModels)
+        for (var index = 0; index < Model.ConstructorModels.Count; ++index)
         {
+            AppendLine("");
+            
+            var constructorModel = Model.ConstructorModels[index];
             var combinedParameters = GetCombinedParameters(constructorModel.ParameterModels);
-            
+            var combinedParameterNames = GetCombinedParameterNames(constructorModel.ParameterModels);
+
             AppendLine($"[{nameof(JniSignatureAttribute)}(\"{constructorModel.Signature}\", \"{constructorModel.Modifiers}\")]", 1);
-            AppendLine($"public {Model.ClassDetailsModel.ClassName}({combinedParameters})", 1);
-            
-            WithBrackets(() =>
-            {
-            }, 1);
+            AppendLine($"public {Model.ClassDetailsModel.ClassName}({combinedParameters}) : base(DovaJvm.Vm.Runtime.NewObjectA({ClassRefPtrStr}, {ConstructorPtrsStr}[{index}], {combinedParameterNames}))", 1);
+
+            WithBrackets(() => { }, 1);
         }
     }
 
@@ -327,7 +334,7 @@ internal class CSharpClassBuilder
             .Select(x => x.VariableName)
             .ToList();
 
-        var genericVariables = string.Join(',', genericParams);
+        var genericVariables = string.Join(", ", genericParams);
         var genericArgs = string.Empty;
 
         if (!string.IsNullOrWhiteSpace(genericVariables))
@@ -343,7 +350,7 @@ internal class CSharpClassBuilder
             ? "Object" 
             : returnType.ToFirstUppercase();
 
-    private static string GetCombinedParameters(IReadOnlyList<ParameterDefinitionModel> models)
+    private static string GetCombinedParameters(IEnumerable<ParameterDefinitionModel> models)
     {
         var paramsWithTypes = models
             .Select(x =>
@@ -354,8 +361,19 @@ internal class CSharpClassBuilder
             })
             .ToList();
         
-        var combinedParamsWithTypes = string.Join(",", paramsWithTypes);
+        var combinedParamsWithTypes = string.Join(", ", paramsWithTypes);
         
         return combinedParamsWithTypes;
+    }
+    
+    private static string GetCombinedParameterNames(IEnumerable<ParameterDefinitionModel> models)
+    {
+        var paramNames = models
+            .Select(x => x.Name)
+            .ToList();
+
+        var combinedParameterNames = string.Join(", ", paramNames);
+
+        return combinedParameterNames;
     }
 }

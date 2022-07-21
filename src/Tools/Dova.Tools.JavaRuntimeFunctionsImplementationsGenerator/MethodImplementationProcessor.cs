@@ -25,9 +25,9 @@ public class MethodImplementationProcessor
         
         var methodParametersWithTypes = MethodWithImplementation.Split("(")[1].Split(")")[0];
         var parameters = ParseParameters(methodParametersWithTypes).ToList();
-        var joinParameters = string.Join(",", parameters);
+        var joinParameters = string.Join(", ", parameters);
 
-        joinParameters = joinParameters.Replace(",", ", ").Replace(", jvalue);", ", Converters.ToArray(jvalue));");
+        joinParameters = joinParameters.Replace(", jvalue);", ", Converters.ToArray(jvalue));");
 
         if (parameters.Count > 0)
         {

@@ -17,7 +17,7 @@ public abstract class JavaObject
     /// <param name="currentRefPtr">Ptr to the object which is a field of a class.</param>
     public JavaObject(IntPtr currentRefPtr)
     {
-        this.CurrentRefPtr = currentRefPtr;
+        CurrentRefPtr = currentRefPtr;
     }
     
     #region Methods
