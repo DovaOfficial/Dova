@@ -118,19 +118,9 @@ internal class CSharpClassBuilder
             ? string.Empty
             : "class ";
 
-        var genericParams = Model.ClassDetailsModel.TypeParameterModels
-            .Select(x => x.VariableName)
-            .ToList();
+        var genericArgs = GetGenericArgs(Model.ClassDetailsModel.TypeParameterModels);
 
-        var genericVariables = string.Join(',', genericParams);
-        var genericArgs = string.Empty;
-
-        if (!string.IsNullOrWhiteSpace(genericVariables))
-        {
-            genericArgs = $"<{genericVariables}>";
-        }
-
-        AppendLine($"[JniSignature(\"{Model.ClassDetailsModel.Signature}\", \"{Model.ClassDetailsModel.Modifiers}\")]");
+        AppendLine($"[{nameof(JniSignatureAttribute)}(\"{Model.ClassDetailsModel.Signature}\", \"{Model.ClassDetailsModel.Modifiers}\")]");
         AppendLine($"public {type}{Model.ClassDetailsModel.ClassName}{genericArgs}");
 
         foreach (var typeParam in Model.ClassDetailsModel.TypeParameterModels)
@@ -144,7 +134,7 @@ internal class CSharpClassBuilder
             AppendLine($"where {typeParam.VariableName} : {totalBounds}", 1);
         }
     }
-    
+
     private void BuildBaseClass()
     {
         if (!string.IsNullOrWhiteSpace(Model.BaseClassModel.Name))
@@ -259,7 +249,7 @@ internal class CSharpClassBuilder
                 ? $"value.{nameof(JavaObject.CurrentRefPtr)}"
                 : "value";
 
-            AppendLine($"[JniSignature(\"{field.Signature}\", \"{field.Modifiers}\")]", 1);
+            AppendLine($"[{nameof(JniSignatureAttribute)}(\"{field.Signature}\", \"{field.Modifiers}\")]", 1);
             AppendLine($"public {staticPrefix}{field.ReturnType} {field.Name}", 1);
             WithBrackets(() =>
             {
@@ -290,8 +280,20 @@ internal class CSharpClassBuilder
     private void BuildConstructors()
     {
         // TODO: Add constructors
+
+        foreach (var constructorModel in Model.ConstructorModels)
+        {
+            var combinedParameters = GetCombinedParameters(constructorModel.ParameterModels);
+            
+            AppendLine($"[{nameof(JniSignatureAttribute)}(\"{constructorModel.Signature}\", \"{constructorModel.Modifiers}\")]", 1);
+            AppendLine($"public {Model.ClassDetailsModel.ClassName}({combinedParameters})", 1);
+            
+            WithBrackets(() =>
+            {
+            }, 1);
+        }
     }
-    
+
     private void BuildExtraMethods()
     {
         AppendLine($"public override string {nameof(JavaObject.GetJavaClassSignature)}() => \"{Model.ClassDetailsModel.Signature}\";", 1);
@@ -319,8 +321,41 @@ internal class CSharpClassBuilder
         }
     }
     
+    private static string GetGenericArgs(IEnumerable<TypeParameterModel> models)
+    {
+        var genericParams = models
+            .Select(x => x.VariableName)
+            .ToList();
+
+        var genericVariables = string.Join(',', genericParams);
+        var genericArgs = string.Empty;
+
+        if (!string.IsNullOrWhiteSpace(genericVariables))
+        {
+            genericArgs = $"<{genericVariables}>";
+        }
+
+        return genericArgs;
+    }
+    
     private static string GetReturnType(string returnType) => 
         returnType.Contains(".") 
             ? "Object" 
             : returnType.ToFirstUppercase();
+
+    private static string GetCombinedParameters(IReadOnlyList<ParameterDefinitionModel> models)
+    {
+        var paramsWithTypes = models
+            .Select(x =>
+            {
+                var genericArgs = GetGenericArgs(x.TypeParameterModels);
+
+                return $"{x.Type}{genericArgs} {x.Name}";
+            })
+            .ToList();
+        
+        var combinedParamsWithTypes = string.Join(",", paramsWithTypes);
+        
+        return combinedParamsWithTypes;
+    }
 }
