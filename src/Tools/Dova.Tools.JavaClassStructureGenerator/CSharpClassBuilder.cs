@@ -1,4 +1,5 @@
 using System.Text;
+using Dova.Common;
 using Dova.Tools.JavaClassStructureGenerator.Models;
 
 namespace Dova.Tools.JavaClassStructureGenerator;
@@ -7,6 +8,11 @@ namespace Dova.Tools.JavaClassStructureGenerator;
 internal class CSharpClassBuilder
 {
     private const string JavaObjectClassFullName = "java.lang.Object";
+    private const string ClassPtrStr = "ClassPtr";
+    private const string ClassRefPtrStr = "ClassRefPtr";
+    private const string FieldPtrsStr = "FieldPtrs";
+    private const string ConstructorPtrsStr = "ConstructorPtrs";
+    private const string MethodPtrsStr = "MethodPtrs";
     
     private ClassDefinitionModel Model { get; }
     private int Tabs { get; }
@@ -96,7 +102,7 @@ internal class CSharpClassBuilder
 
     private void BuildUsings()
     {
-        AppendLine("using Dova.Common;"); // Mainly used for JavaObject
+        AppendLine($"using { typeof(JavaObject).Namespace };");
         AppendLine("");
         AppendLine("using System;");
     }
@@ -152,7 +158,7 @@ internal class CSharpClassBuilder
 
             if (fullName.Equals(JavaObjectClassFullName))
             {
-                BaseClass = "JavaObject"; // Do not use ref to Dova.JDK project (nameof)
+                BaseClass = nameof(JavaObject);
             }
         }
 
@@ -174,22 +180,22 @@ internal class CSharpClassBuilder
     
     private void BuildJniReferences()
     {
-        AppendLine("public static IntPtr ClassPtr { get; }", 1);
-        AppendLine("public static IntPtr ClassRefPtr { get; }", 1);
+        AppendLine($"public static IntPtr {ClassPtrStr} {{ get; }}", 1);
+        AppendLine($"public static IntPtr {ClassRefPtrStr} {{ get; }}", 1);
 
         if (Model.FieldModels.Count > 0)
         {
-            AppendLine("private static IList<IntPtr> FieldPtrs { get; } = new List<IntPtr>();", 1);
+            AppendLine($"private static IList<IntPtr> {FieldPtrsStr} {{ get; }} = new List<IntPtr>();", 1);
         }
 
         if (Model.ConstructorModels.Count > 0)
         {
-            AppendLine("private static IList<IntPtr> ConstructorPtrs { get; } = new List<IntPtr>();", 1);
+            AppendLine($"private static IList<IntPtr> {ConstructorPtrsStr} {{ get; }} = new List<IntPtr>();", 1);
         }
 
         if (Model.MethodModels.Count > 0)
         {
-            AppendLine("private static IList<IntPtr> MethodPtrs { get; } = new List<IntPtr>();", 1);
+            AppendLine($"private static IList<IntPtr> {MethodPtrsStr} {{ get; }} = new List<IntPtr>();", 1);
         }
 
         AsNewSection(() =>
@@ -198,8 +204,8 @@ internal class CSharpClassBuilder
         
             WithBrackets(() =>
             {
-                AppendLine($"ClassPtr = DovaJvm.Vm.Runtime.FindClass(\"" + Model.ClassDetailsModel.Signature + "\");", 2);
-                AppendLine($"ClassRefPtr = DovaJvm.Vm.Runtime.NewGlobalRef(ClassPtr);", 2);
+                AppendLine($"{ClassPtrStr} = DovaJvm.Vm.Runtime.FindClass(\"" + Model.ClassDetailsModel.Signature + "\");", 2);
+                AppendLine($"{ClassRefPtrStr} = DovaJvm.Vm.Runtime.NewGlobalRef({ClassPtrStr});", 2);
 
                 foreach (var fieldModel in Model.FieldModels)
                 {
@@ -207,7 +213,7 @@ internal class CSharpClassBuilder
                         ? "GetStaticFieldId"
                         : "GetFieldId";
 
-                    AppendLine($"FieldPtrs.Add(DovaJvm.Vm.Runtime.{runtimeMethod}(ClassPtr, \"{fieldModel.Name}\", \"{fieldModel.Signature}\"));", 2);
+                    AppendLine($"{FieldPtrsStr}.Add(DovaJvm.Vm.Runtime.{runtimeMethod}({ClassPtrStr}, \"{fieldModel.Name}\", \"{fieldModel.Signature}\"));", 2);
                 }
                 
                 foreach (var fieldModel in Model.ConstructorModels)
@@ -216,7 +222,7 @@ internal class CSharpClassBuilder
                         ? "GetStaticMethodId"
                         : "GetMethodId";
 
-                    AppendLine($"ConstructorPtrs.Add(DovaJvm.Vm.Runtime.{runtimeMethod}(ClassPtr, \"{Model.ClassDetailsModel.ClassName}\", \"{fieldModel.Signature}\"));", 2);
+                    AppendLine($"{ConstructorPtrsStr}.Add(DovaJvm.Vm.Runtime.{runtimeMethod}({ClassPtrStr}, \"{Model.ClassDetailsModel.ClassName}\", \"{fieldModel.Signature}\"));", 2);
                 }
                 
                 foreach (var fieldModel in Model.MethodModels)
@@ -225,7 +231,7 @@ internal class CSharpClassBuilder
                         ? "GetStaticMethodId"
                         : "GetMethodId";
 
-                    AppendLine($"MethodPtrs.Add(DovaJvm.Vm.Runtime.{runtimeMethod}(ClassPtr, \"{fieldModel.Name}\", \"{fieldModel.Signature}\"));", 2);
+                    AppendLine($"{MethodPtrsStr}.Add(DovaJvm.Vm.Runtime.{runtimeMethod}({ClassPtrStr}, \"{fieldModel.Name}\", \"{fieldModel.Signature}\"));", 2);
                 }
             }, 1);
         });
@@ -246,11 +252,11 @@ internal class CSharpClassBuilder
                 : "";
 
             var targetObjPtr = field.IsStatic
-                ? "ClassRefPtr"
-                : "CurrentRefPtr";
+                ? ClassRefPtrStr
+                : nameof(JavaObject.CurrentRefPtr);
 
             var targetObjValue = field.ReturnType.Contains(".")
-                ? "value.CurrentRefPtr"
+                ? $"value.{nameof(JavaObject.CurrentRefPtr)}"
                 : "value";
 
             AppendLine($"[JniSignature(\"{field.Signature}\", \"{field.Modifiers}\")]", 1);
@@ -260,7 +266,7 @@ internal class CSharpClassBuilder
                 AppendLine($"get", 2);
                 WithBrackets(() =>
                 {
-                    AppendLine($"var ret = DovaJvm.Vm.Runtime.Get{staticMethodPrefix}{GetReturnType(field.ReturnType)}Field({targetObjPtr}, FieldPtrs[{index}]);", 3);
+                    AppendLine($"var ret = DovaJvm.Vm.Runtime.Get{staticMethodPrefix}{GetReturnType(field.ReturnType)}Field({targetObjPtr}, {FieldPtrsStr}[{index}]);", 3);
                     
                     if (field.ReturnType.Contains("."))
                     {
@@ -274,7 +280,7 @@ internal class CSharpClassBuilder
                 
                 AppendLine("");
 
-                AppendLine($"set => DovaJvm.Vm.Runtime.Set{staticMethodPrefix}{GetReturnType(field.ReturnType)}Field({targetObjPtr}, FieldPtrs[{index}], {targetObjValue});", 2);
+                AppendLine($"set => DovaJvm.Vm.Runtime.Set{staticMethodPrefix}{GetReturnType(field.ReturnType)}Field({targetObjPtr}, {FieldPtrsStr}[{index}], {targetObjValue});", 2);
             }, 1);
             
             AppendLine("");
@@ -288,8 +294,9 @@ internal class CSharpClassBuilder
     
     private void BuildExtraMethods()
     {
-        // TODO: Add extra methods
-        // TODO: Include overriding methods from JavaObject
+        AppendLine($"public override string {nameof(JavaObject.GetJavaClassSignature)}() => \"{Model.ClassDetailsModel.Signature}\";", 1);
+        AppendLine($"public override IntPtr {nameof(JavaObject.GetJavaClassRaw)}() => {ClassPtrStr};", 1);
+        AppendLine($"public override IntPtr {nameof(JavaObject.GetJavaClassRefRaw)}() => {ClassRefPtrStr};", 1);
     }
     
     private void BuildMethods()
