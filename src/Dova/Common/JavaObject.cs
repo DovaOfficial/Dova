@@ -4,7 +4,7 @@ namespace Dova.Common;
 /// Parent class for all Java generated C# classes.
 /// This is also a parent class of java.lang.Object.
 /// </summary>
-public partial class JavaObject
+public abstract class JavaObject
 {
     /// <summary>
     /// Reference to the current object.
@@ -19,4 +19,25 @@ public partial class JavaObject
     {
         this.CurrentRefPtr = currentRefPtr;
     }
+    
+    #region Methods
+
+    public bool IsAssignableFrom(IntPtr classPtr) => DovaJvm.Vm.Runtime.IsAssignableFrom(GetJavaClassRaw(), classPtr);
+    public bool IsSameObject(JavaObject javaObj) => DovaJvm.Vm.Runtime.IsSameObject(CurrentRefPtr, javaObj.CurrentRefPtr);
+    public bool IsInstanceOf(IntPtr classPtr) => DovaJvm.Vm.Runtime.IsInstanceOf(CurrentRefPtr, classPtr);
+
+    #endregion
+
+    #region Abstract Methods
+
+    /// <returns>Raw JNI signature. JniSignatureAttribute would return the same.</returns>
+    public abstract string GetJavaClassSignature();
+    
+    /// <returns>Returns a pointer to the current class.</returns>
+    public abstract IntPtr GetJavaClassRaw();
+    
+    /// <returns>Returns a pointer to the reference of the current class.</returns>
+    public abstract IntPtr GetJavaClassRefRaw();
+
+    #endregion
 }

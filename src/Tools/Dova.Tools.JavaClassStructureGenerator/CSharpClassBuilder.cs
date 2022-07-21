@@ -3,6 +3,7 @@ using Dova.Tools.JavaClassStructureGenerator.Models;
 
 namespace Dova.Tools.JavaClassStructureGenerator;
 
+// TODO: Add checking if any error occurred -> IJavaRuntime.ExceptionOccurred
 internal class CSharpClassBuilder
 {
     private const string JavaObjectClassFullName = "java.lang.Object";
@@ -87,6 +88,7 @@ internal class CSharpClassBuilder
             AsNewLine(BuildJniReferences);
             AsNewSection(BuildProperties);
             AsNewSection(BuildConstructors);
+            AsNewSection(BuildExtraMethods);
             AsNewSection(BuildMethods);
             AsNewSection(BuildInnerClasses);
         });
@@ -172,8 +174,8 @@ internal class CSharpClassBuilder
     
     private void BuildJniReferences()
     {
-        AppendLine("private static IntPtr ClassPtr { get; }", 1);
-        AppendLine("private static IntPtr ClassRefPtr { get; }", 1);
+        AppendLine("public static IntPtr ClassPtr { get; }", 1);
+        AppendLine("public static IntPtr ClassRefPtr { get; }", 1);
 
         if (Model.FieldModels.Count > 0)
         {
@@ -282,6 +284,12 @@ internal class CSharpClassBuilder
     private void BuildConstructors()
     {
         // TODO: Add constructors
+    }
+    
+    private void BuildExtraMethods()
+    {
+        // TODO: Add extra methods
+        // TODO: Include overriding methods from JavaObject
     }
     
     private void BuildMethods()
