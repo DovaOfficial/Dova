@@ -294,8 +294,13 @@ internal class CSharpClassBuilder
             var combinedParameters = GetCombinedParameters(constructorModel.ParameterModels);
             var combinedParameterNames = GetCombinedParameterNames(constructorModel.ParameterModels);
 
+            if (!string.IsNullOrWhiteSpace(combinedParameterNames))
+            {
+                combinedParameterNames = ", " + combinedParameterNames;
+            }
+
             AppendLine($"[{nameof(JniSignatureAttribute)}(\"{constructorModel.Signature}\", \"{constructorModel.Modifiers}\")]", 1);
-            AppendLine($"public {Model.ClassDetailsModel.ClassName}({combinedParameters}) : base(DovaJvm.Vm.Runtime.NewObjectA({ClassRefPtrStr}, {ConstructorPtrsStr}[{index}], {combinedParameterNames}))", 1);
+            AppendLine($"public {Model.ClassDetailsModel.ClassName}({combinedParameters}) : base(DovaJvm.Vm.Runtime.NewObjectA({ClassRefPtrStr}, {ConstructorPtrsStr}[{index}]{combinedParameterNames}))", 1);
 
             WithBrackets(() => { }, 1);
         }
