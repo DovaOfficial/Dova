@@ -128,7 +128,18 @@ public class Main {
 
             model.Signature = SignatureBuilder.Build(method);
 
+            model.HasParent = HasParentMethod(clazz, method);
+
             models.add(model);
+        }
+    }
+
+    private static boolean HasParentMethod(Class<?> clazz, Method method) {
+        try {
+            var parentMethod = clazz.getSuperclass().getDeclaredMethod(method.getName(), method.getParameterTypes());
+            return true;
+        } catch (NoSuchMethodException | NullPointerException ex) {
+            return false;
         }
     }
 
