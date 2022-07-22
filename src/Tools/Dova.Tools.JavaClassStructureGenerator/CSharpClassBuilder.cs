@@ -315,7 +315,28 @@ internal class CSharpClassBuilder
     
     private void BuildMethods()
     {
-        // TODO: Add methods
+        for (var index = 0; index < Model.MethodModels.Count; ++index)
+        {
+            var methodModel = Model.MethodModels[index];
+
+            var modifierPrefix = methodModel.IsStatic
+                ? "static "
+                : methodModel.HasParent
+                    ? "override "
+                    : "virtual ";
+
+            var combinedParameters = GetCombinedParameters(methodModel.ParameterModels);
+            
+            AppendLine($"[{nameof(JniSignatureAttribute)}(\"{methodModel.Signature}\", \"{methodModel.Modifiers}\")]", 1);
+            AppendLine($"public {modifierPrefix}{methodModel.ReturnType} {methodModel.Name}({combinedParameters})", 1); // TODO: Call valid JNI function
+            
+            WithBrackets(() =>
+            {
+                // TODO: Do we need anything here ???
+            }, 1);
+            
+            AppendLine("");
+        }
     }
     
     private void BuildInnerClasses()
