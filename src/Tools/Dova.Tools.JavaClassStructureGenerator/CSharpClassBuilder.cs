@@ -229,7 +229,7 @@ internal class CSharpClassBuilder
         });
     }
     
-    private void BuildProperties() // TODO: Add support for arrays
+    private void BuildProperties() // TODO: Add support for arrays (GetObjectField -> pass to JavaArray)
     {
         for (var index = 0; index < Model.FieldModels.Count; ++index)
         {
@@ -313,7 +313,7 @@ internal class CSharpClassBuilder
         AppendLine($"public override IntPtr {nameof(JavaObject.GetJavaClassRefRaw)}() => {ClassRefPtrStr};", 1);
     }
     
-    private void BuildMethods() // TODO: Add support for arrays
+    private void BuildMethods() // TODO: Add support for arrays (CallObjectMethod -> pass to JavaArray)
     {
         for (var index = 0; index < Model.MethodModels.Count; ++index)
         {
