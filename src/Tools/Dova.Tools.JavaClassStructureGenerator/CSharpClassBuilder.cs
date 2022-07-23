@@ -229,7 +229,7 @@ internal class CSharpClassBuilder
         });
     }
     
-    private void BuildProperties()
+    private void BuildProperties() // TODO: Add support for arrays
     {
         for (var index = 0; index < Model.FieldModels.Count; ++index)
         {
@@ -279,7 +279,7 @@ internal class CSharpClassBuilder
         }
     }
 
-    private void BuildConstructors()
+    private void BuildConstructors() // TODO: Add support for arrays
     {
         AppendLine($"[{nameof(JniSignatureAttribute)}(\"\", \"\")]", 1);
         AppendLine($"public {Model.ClassDetailsModel.ClassName}(IntPtr currentRefPtr) : base(currentRefPtr)", 1);
@@ -313,29 +313,46 @@ internal class CSharpClassBuilder
         AppendLine($"public override IntPtr {nameof(JavaObject.GetJavaClassRefRaw)}() => {ClassRefPtrStr};", 1);
     }
     
-    private void BuildMethods()
+    private void BuildMethods() // TODO: Add support for arrays
     {
         for (var index = 0; index < Model.MethodModels.Count; ++index)
         {
-            var methodModel = Model.MethodModels[index];
+            var method = Model.MethodModels[index];
 
-            var modifierPrefix = methodModel.IsStatic
+            var modifierPrefix = method.IsStatic
                 ? "static "
-                : methodModel.HasParent
+                : method.HasParent
                     ? "override "
                     : "virtual ";
 
-            var combinedParameters = GetCombinedParameters(methodModel.ParameterModels);
+            var combinedParameters = GetCombinedParameters(method.ParameterModels);
+
+            var methodSignature = $"public {modifierPrefix}{method.ReturnType} {method.Name}({combinedParameters})";
             
-            AppendLine($"[{nameof(JniSignatureAttribute)}(\"{methodModel.Signature}\", \"{methodModel.Modifiers}\")]", 1);
-            AppendLine($"public {modifierPrefix}{methodModel.ReturnType} {methodModel.Name}({combinedParameters})", 1); // TODO: Call valid JNI function
+            var staticMethodPrefix = method.IsStatic
+                ? "Static"
+                : "";
             
-            WithBrackets(() =>
+            var targetObjPtr = method.IsStatic
+                ? ClassRefPtrStr
+                : nameof(JavaObject.CurrentRefPtr);
+
+            var combinedParameterNames = GetCombinedParameterNames(method.ParameterModels);
+
+            if (!string.IsNullOrWhiteSpace(combinedParameterNames))
             {
-                // TODO: Do we need anything here ???
-            }, 1);
+                combinedParameterNames = ", " + combinedParameterNames;
+            }
             
-            AppendLine("");
+            var methodCallback = $"DovaJvm.Vm.Runtime.Call{staticMethodPrefix}{GetReturnType(method.ReturnType)}MethodA({targetObjPtr}, {MethodPtrsStr}[{index}]{combinedParameterNames});";
+            
+            AppendLine($"[{nameof(JniSignatureAttribute)}(\"{method.Signature}\", \"{method.Modifiers}\")]", 1);
+            AppendLine($"{methodSignature} => {methodCallback}", 1);
+
+            if (index != Model.MethodModels.Count - 1)
+            {
+                AppendLine("");
+            }
         }
     }
     
