@@ -39,7 +39,9 @@ internal class JavaFileFinder
     private void ProcessJavaPackage(DirectoryInfo javaModuleDir, DirectoryInfo javaPackageDir)
     {
         var javaFiles = javaPackageDir.GetFiles()
-            .Where(x => x.Extension.Equals(".java") && !x.Name.Equals("module-info.java"))
+            .Where(x => x.Extension.Equals(".java")
+                        && !x.Name.Equals("module-info.java")
+                        && !x.Name.Equals("package-info.java"))
             .OrderBy(x => x.Name)
             .ToList();
 
