@@ -229,7 +229,7 @@ internal class CSharpClassBuilder
         });
     }
     
-    private void BuildProperties() // TODO: Add support for arrays (GetObjectField -> pass to JavaArray) || Add support for strings (JavaRuntimeExtension)
+    private void BuildProperties()
     {
         for (var index = 0; index < Model.FieldModels.Count; ++index)
         {
@@ -252,13 +252,13 @@ internal class CSharpClassBuilder
                 : "value";
 
             AppendLine($"[{nameof(JniSignatureAttribute)}(\"{field.Signature}\", \"{field.Modifiers}\")]", 1);
-            AppendLine($"public {staticPrefix}{field.ReturnType} {field.Name}", 1);
+            AppendLine($"public {staticPrefix}{GetReturnType(field.ReturnType)} {field.Name}", 1);
             WithBrackets(() =>
             {
                 AppendLine($"get", 2);
                 WithBrackets(() =>
                 {
-                    AppendLine($"var ret = DovaJvm.Vm.Runtime.Get{staticMethodPrefix}{GetReturnType(field.ReturnType)}Field({targetObjPtr}, {FieldPtrsStr}[{index}]);", 3);
+                    AppendLine($"var ret = DovaJvm.Vm.Runtime.Get{staticMethodPrefix}{GetReturnTypePrefix(field.ReturnType)}Field{GetGenericReturnType(field.ReturnType)}({targetObjPtr}, {FieldPtrsStr}[{index}]);", 3);
                     
                     if (field.ReturnType.Contains("."))
                     {
@@ -272,14 +272,14 @@ internal class CSharpClassBuilder
                 
                 AppendLine("");
 
-                AppendLine($"set => DovaJvm.Vm.Runtime.Set{staticMethodPrefix}{GetReturnType(field.ReturnType)}Field({targetObjPtr}, {FieldPtrsStr}[{index}], {targetObjValue});", 2);
+                AppendLine($"set => DovaJvm.Vm.Runtime.Set{staticMethodPrefix}{GetReturnTypePrefix(field.ReturnType)}Field({targetObjPtr}, {FieldPtrsStr}[{index}], {targetObjValue});", 2);
             }, 1);
             
             AppendLine("");
         }
     }
 
-    private void BuildConstructors() // TODO: Add support for arrays
+    private void BuildConstructors()
     {
         AppendLine($"[{nameof(JniSignatureAttribute)}(\"\", \"\")]", 1);
         AppendLine($"public {Model.ClassDetailsModel.ClassName}(IntPtr currentRefPtr) : base(currentRefPtr)", 1);
@@ -313,7 +313,7 @@ internal class CSharpClassBuilder
         AppendLine($"public override IntPtr {nameof(JavaObject.GetJavaClassRefRaw)}() => {ClassRefPtrStr};", 1);
     }
     
-    private void BuildMethods() // TODO: Add support for arrays (CallObjectMethod -> pass to JavaArray) || Add support for strings (JavaRuntimeExtension)
+    private void BuildMethods()
     {
         for (var index = 0; index < Model.MethodModels.Count; ++index)
         {
@@ -327,7 +327,7 @@ internal class CSharpClassBuilder
 
             var combinedParameters = GetCombinedParameters(method.ParameterModels);
 
-            var methodSignature = $"public {modifierPrefix}{method.ReturnType} {method.Name}({combinedParameters})";
+            var methodSignature = $"public {modifierPrefix}{GetReturnType(method.ReturnType)} {method.Name}({combinedParameters})";
             
             var staticMethodPrefix = method.IsStatic
                 ? "Static"
@@ -344,7 +344,7 @@ internal class CSharpClassBuilder
                 combinedParameterNames = ", " + combinedParameterNames;
             }
             
-            var methodCallback = $"DovaJvm.Vm.Runtime.Call{staticMethodPrefix}{GetReturnType(method.ReturnType)}MethodA({targetObjPtr}, {MethodPtrsStr}[{index}]{combinedParameterNames});";
+            var methodCallback = $"DovaJvm.Vm.Runtime.Call{staticMethodPrefix}{GetReturnTypePrefix(method.ReturnType)}MethodA{GetGenericReturnType(method.ReturnType)}({targetObjPtr}, {MethodPtrsStr}[{index}]{combinedParameterNames});";
             
             AppendLine($"[{nameof(JniSignatureAttribute)}(\"{method.Signature}\", \"{method.Modifiers}\")]", 1);
             AppendLine($"{methodSignature} => {methodCallback}", 1);
@@ -355,7 +355,7 @@ internal class CSharpClassBuilder
             }
         }
     }
-    
+
     private void BuildInnerClasses()
     {
         foreach (var innerClassModel in Model.InnerClassModels)
@@ -387,11 +387,28 @@ internal class CSharpClassBuilder
 
         return genericArgs;
     }
-    
-    private static string GetReturnType(string returnType) => 
-        returnType.Contains(".") 
-            ? "Object" 
-            : returnType.ToFirstUppercase();
+
+    private static string GetReturnTypePrefix(string returnType) => 
+        returnType switch
+        {
+            var rt when rt.Contains(".") => "Object",
+            var rt when rt.Contains("[]") => "Array", // This should call extension method, see: JavaRuntimeExtensions
+            _ => returnType.ToFirstUppercase()
+        };
+
+    private static string GetGenericReturnType(string returnType) =>
+        returnType switch
+        {
+            var rt when rt.Contains("[]") => $"<{returnType.Replace("[]", "")}>",
+            _ => string.Empty
+        };
+
+    private static string GetReturnType(string returnType) =>
+        returnType switch
+        {
+            var rt when rt.Contains("[]") => $"JavaArray<{returnType.Replace("[]", "")}>",
+            _ => returnType
+        };
 
     private static string GetCombinedParameters(IEnumerable<ParameterDefinitionModel> models)
     {
