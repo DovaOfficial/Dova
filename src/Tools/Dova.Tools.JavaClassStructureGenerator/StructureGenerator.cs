@@ -16,9 +16,8 @@ internal class StructureGenerator
         ClassGenerator = new(Config.OutputDirectoryPath);
     }
 
-    public void Run()
+    public async Task RunAsync()
     {
-        // TODO: Rewrite it to be async
         Finder.OnJavaFileFound((javaModuleDir, javaPackageDir, javaFile) =>
         {
             var tempOutputPath = javaFile.FullName.Replace(javaModuleDir.FullName, "");
@@ -48,6 +47,6 @@ internal class StructureGenerator
             ClassGenerator.Generate(javaOutputPathFull, javaClassDefinitionModel);
         });
 
-        Finder.Run();
+        await Finder.RunAsync();
     }
 }

@@ -9,11 +9,11 @@
 var generatorConfig = new GeneratorConfiguration
 {
     JdkDirectoryPath = args[0], // i.e.: /home/<user>/Dev/Java/jdk
-    OutputDirectoryPath = args[1], // i.e.: /tmp
+    OutputDirectoryPath = args[1], // i.e.: /home/<user>/Dev/Dotnet/Dova/src/Dova.JDK
     TempDirPath = args[2], // i.e.: /tmp
-    JavaClassDefinitionGeneratorPath = args[3], // i.e.: /home/<user>/<path>/Dova/src/Tools/Dova.Tools.Java.ClassGenerator/build/libs/Dova.Tools.Java.ClassGenerator-0.1.jar
+    JavaClassDefinitionGeneratorPath = args[3], // i.e.: /home/<user>/Dev/Dotnet/Dova/src/Tools/Dova.Tools.Java.ClassGenerator/build/libs/Dova.Tools.Java.ClassGenerator-0.1.jar
 };
 
 var generator = new StructureGenerator(generatorConfig);
 
-generator.Run();
+await generator.RunAsync();

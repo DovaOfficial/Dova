@@ -13,27 +13,30 @@ internal class JavaFileFinder
     public void OnJavaFileFound(Action<DirectoryInfo, DirectoryInfo, FileInfo> callback) => 
         this.Callback = callback;
 
-    public void Run()
+    public async Task RunAsync()
     {
         var jdkSrcPath = Path.Combine(JdkDirectoryPath, "src");
         
         var javaModulePaths = Directory.GetDirectories(jdkSrcPath)
             .OrderBy(x => x)
             .ToList();
-        
-        foreach (var javaModulePath in javaModulePaths)
-        {
-            var javaModuleDir = new DirectoryInfo(javaModulePath);
-        
-            if (!javaModuleDir.Name.StartsWith("j")) // java, jdk
-            {
-                continue;
-            }
-        
-            var javaPackageStartPath = Path.Combine(javaModuleDir.FullName, "share", "classes");
-            
-            ProcessJavaPackage(javaModuleDir, new DirectoryInfo(javaPackageStartPath));
-        }
+
+        var tasks = javaModulePaths
+            .Select(javaModulePath => 
+                Task.Run(() => 
+                {
+                    var javaModuleDir = new DirectoryInfo(javaModulePath);
+
+                    if (javaModuleDir.Name.StartsWith("j")) // java, jdk
+                    {
+                        var javaPackageStartPath = Path.Combine(javaModuleDir.FullName, "share", "classes");
+                        
+                        ProcessJavaPackage(javaModuleDir, new DirectoryInfo(javaPackageStartPath));
+                    }
+                }))
+            .ToArray();
+
+        Task.WaitAll(tasks);
     }
     
     private void ProcessJavaPackage(DirectoryInfo javaModuleDir, DirectoryInfo javaPackageDir)
@@ -45,13 +48,22 @@ internal class JavaFileFinder
             .OrderBy(x => x.Name)
             .ToList();
 
-        javaFiles.ForEach(javaFile => Callback?.Invoke(javaModuleDir, javaPackageDir, javaFile));
+        var tasks = javaFiles
+            .Select(javaFile => 
+                Task.Run(() => Callback?.Invoke(javaModuleDir, javaPackageDir, javaFile)))
+            .ToArray();
+
+        Task.WaitAll(tasks);
 
         var javaSubPackagesPaths = Directory.GetDirectories(javaPackageDir.FullName)
             .OrderBy(x => x)
             .ToList();
-        
-        // TODO: Remake to async + print out not generated classes
-        javaSubPackagesPaths.ForEach(javaSubPackagesPath => ProcessJavaPackage(javaModuleDir, new DirectoryInfo(javaSubPackagesPath)));
+
+        tasks = javaSubPackagesPaths
+            .Select(javaSubPackagesPath =>
+                Task.Run(() => ProcessJavaPackage(javaModuleDir, new DirectoryInfo(javaSubPackagesPath))))
+            .ToArray();
+
+        Task.WaitAll(tasks);
     }
 }
