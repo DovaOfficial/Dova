@@ -18,6 +18,7 @@ internal class StructureGenerator
 
     public async Task RunAsync()
     {
+        // TODO: Change package reading method - not all will have '/classes/' in path
         Finder.OnJavaFileFound((javaModuleDir, javaPackageDir, javaFile) =>
         {
             var tempOutputPath = javaFile.FullName.Replace(javaModuleDir.FullName, "");
