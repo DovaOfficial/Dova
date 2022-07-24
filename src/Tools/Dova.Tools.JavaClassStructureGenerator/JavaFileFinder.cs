@@ -51,6 +51,7 @@ internal class JavaFileFinder
             .OrderBy(x => x)
             .ToList();
         
+        // TODO: Remake to async + print out not generated classes
         javaSubPackagesPaths.ForEach(javaSubPackagesPath => ProcessJavaPackage(javaModuleDir, new DirectoryInfo(javaSubPackagesPath)));
     }
 }

@@ -5,6 +5,11 @@ using Dova.Tools.JavaClassStructureGenerator.Models;
 namespace Dova.Tools.JavaClassStructureGenerator;
 
 // TODO: Add checking if any error occurred -> IJavaRuntime.ExceptionOccurred
+// TODO: Add support for unknown generic types like: Class<?>
+// TODO: java.lang.String => string
+// TODO: java.lang.CharSequence => string
+// TODO: Do not generate anything if not accessed (private, protected) (technically we won't be able to call it anyway - ???)
+// TODO: Replace C# keywords with "@" prefix i.e. namespace to be => java.lang.@ref; or base class to be => java.lang.@ref.FinalReference<java.lang.Object>
 internal class CSharpClassBuilder
 {
     private const string JavaObjectClassFullName = "java.lang.Object";
@@ -115,7 +120,7 @@ internal class CSharpClassBuilder
     private void BuildClassSignature()
     {
         var type = Model.ClassDetailsModel.IsInterface
-            ? string.Empty
+            ? "interface "
             : "class ";
 
         var genericArgs = GetGenericArgs(Model.ClassDetailsModel.TypeParameterModels);
@@ -135,6 +140,7 @@ internal class CSharpClassBuilder
         }
     }
 
+    // TODO: For all interfaces as base class use IJavaObject
     private void BuildBaseClass()
     {
         if (!string.IsNullOrWhiteSpace(Model.BaseClassModel.Name))
@@ -155,6 +161,7 @@ internal class CSharpClassBuilder
         AppendLine($": {BaseClass}", 1);
     }
     
+    // TODO: Add support for interfaces like 'java.lang.invoke.TypeDescriptor$OfField<java.lang.Class<?>>'
     private void BuildInterfaces()
     {
         if (Model.InterfaceModels.Count == 0)
@@ -168,6 +175,8 @@ internal class CSharpClassBuilder
         }
     }
     
+    // TODO: Don't generate for interfaces
+    // TODO: Replace boolean with bool
     private void BuildJniReferences()
     {
         AppendLine($"public static IntPtr {ClassPtrStr} {{ get; }}", 1);
@@ -229,6 +238,8 @@ internal class CSharpClassBuilder
         });
     }
     
+    // TODO: Don't generate for interfaces
+    // TODO: Replace boolean with bool
     private void BuildProperties()
     {
         for (var index = 0; index < Model.FieldModels.Count; ++index)
@@ -279,6 +290,8 @@ internal class CSharpClassBuilder
         }
     }
 
+    // TODO: Don't generate for interfaces
+    // TODO: Replace boolean with bool
     private void BuildConstructors()
     {
         AppendLine($"[{nameof(JniSignatureAttribute)}(\"\", \"\")]", 1);
@@ -306,6 +319,7 @@ internal class CSharpClassBuilder
         }
     }
 
+    // TODO: Don't generate for interfaces
     private void BuildExtraMethods()
     {
         AppendLine($"public override string {nameof(JavaObject.GetJavaClassSignature)}() => \"{Model.ClassDetailsModel.Signature}\";", 1);
@@ -313,6 +327,10 @@ internal class CSharpClassBuilder
         AppendLine($"public override IntPtr {nameof(JavaObject.GetJavaClassRefRaw)}() => {ClassRefPtrStr};", 1);
     }
     
+    // TODO: Don't generate for interfaces (or generate signatures)
+    // TODO: Replace boolean with bool
+    // TODO: Add support for methods with names like 'lambda$indent$1'
+    // TODO: Rewrite it to first call method from IJavaRuntime and then return wrapped with type - see getter
     private void BuildMethods()
     {
         for (var index = 0; index < Model.MethodModels.Count; ++index)
@@ -356,6 +374,7 @@ internal class CSharpClassBuilder
         }
     }
 
+    // TODO: Don't generate for interfaces
     private void BuildInnerClasses()
     {
         foreach (var innerClassModel in Model.InnerClassModels)
@@ -388,6 +407,8 @@ internal class CSharpClassBuilder
         return genericArgs;
     }
 
+    // TODO: Add support for array of objects
+    // TODO: java.lang.String => string (lowercase)
     private static string GetReturnTypePrefix(string returnType) => 
         returnType switch
         {
@@ -395,7 +416,9 @@ internal class CSharpClassBuilder
             var rt when rt.Contains("[]") => "Array", // This should call extension method, see: JavaRuntimeExtensions
             _ => returnType.ToFirstUppercase()
         };
-
+    
+    // TODO: Add support for array of objects
+    // TODO: java.lang.String => string
     private static string GetGenericReturnType(string returnType) =>
         returnType switch
         {

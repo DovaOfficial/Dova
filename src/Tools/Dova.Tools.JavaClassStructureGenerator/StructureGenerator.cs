@@ -18,6 +18,7 @@ internal class StructureGenerator
 
     public void Run()
     {
+        // TODO: Rewrite it to be async
         Finder.OnJavaFileFound((javaModuleDir, javaPackageDir, javaFile) =>
         {
             var tempOutputPath = javaFile.FullName.Replace(javaModuleDir.FullName, "");
@@ -29,6 +30,12 @@ internal class StructureGenerator
                 .Replace(".java", "");
 
             DefinitionGenerator.Generate(tempOutputPathFull, javaClassFullName);
+
+            if (!File.Exists(tempOutputPathFull))
+            {
+                Console.WriteLine($"File not found: {tempOutputPathFull}");
+                return;
+            }
 
             var javaClassDefinitionModel = JavaClassDefinitionReader.Read(tempOutputPathFull);
             
