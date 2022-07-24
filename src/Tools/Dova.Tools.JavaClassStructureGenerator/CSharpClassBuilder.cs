@@ -10,6 +10,8 @@ namespace Dova.Tools.JavaClassStructureGenerator;
 // TODO: java.lang.CharSequence => string
 // TODO: Do not generate anything if not accessed (private, protected) (technically we won't be able to call it anyway - ???)
 // TODO: Replace C# keywords with "@" prefix i.e. namespace to be => java.lang.@ref; or base class to be => java.lang.@ref.FinalReference<java.lang.Object>
+// TODO: For interfaces parent class java.lang.Object => IJavaObject
+// TODO: Handle parameters like: 'java.util.Collection<? extends E> arg0'
 internal class CSharpClassBuilder
 {
     private const string JavaObjectClassFullName = "java.lang.Object";
@@ -90,7 +92,7 @@ internal class CSharpClassBuilder
 
     private void BuildClass()
     {
-        AsNewSection(BuildClassSignature);
+        AsNewSection(BuildClassSignature); // TODO: Move 'where' clause after 'interfaces'
         AsNewLine(BuildBaseClass);
         AsNewLine(BuildInterfaces);
 

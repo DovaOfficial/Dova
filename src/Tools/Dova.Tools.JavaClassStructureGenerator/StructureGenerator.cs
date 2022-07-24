@@ -11,7 +11,7 @@ internal class StructureGenerator
     {
         Config = config;
 
-        Finder = new(Config.JdkDirectoryPath);
+        Finder = new(Config.SourcesDirectoryPath);
         DefinitionGenerator = new(Config.JavaClassDefinitionGeneratorPath);
         ClassGenerator = new(Config.OutputDirectoryPath);
     }
@@ -24,7 +24,7 @@ internal class StructureGenerator
             var tempOutputPathFull = Path.Combine(Config.TempDirPath, $"{javaModuleDir.Name}{tempOutputPath}.json");
 
             var javaClassFullName = tempOutputPath
-                .Replace("/share/classes/", "")
+                .Split("/classes/")[^1]
                 .Replace("/", ".")
                 .Replace(".java", "");
 
@@ -37,10 +37,10 @@ internal class StructureGenerator
             }
 
             var javaClassDefinitionModel = JavaClassDefinitionReader.Read(tempOutputPathFull);
-            
+
             var javaPackageOutputPath = javaPackageDir.FullName
                 .Replace(javaModuleDir.FullName, "")
-                .Replace("/share/classes/", "");
+                .Split("/classes/")[^1];
             
             var javaOutputPathFull = Path.Combine(javaModuleDir.Name, javaPackageOutputPath);
 

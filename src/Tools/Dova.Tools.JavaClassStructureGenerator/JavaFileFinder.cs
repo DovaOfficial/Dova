@@ -2,12 +2,12 @@ namespace Dova.Tools.JavaClassStructureGenerator;
 
 internal class JavaFileFinder
 {
-    private string JdkDirectoryPath { get; }
+    private string SourcesDirectoryPath { get; }
     private Action<DirectoryInfo, DirectoryInfo, FileInfo> Callback { get; set; }
 
-    public JavaFileFinder(string jdkDirectoryPath)
+    public JavaFileFinder(string sourcesDirectoryPath)
     {
-        JdkDirectoryPath = jdkDirectoryPath;
+        SourcesDirectoryPath = sourcesDirectoryPath;
     }
 
     public void OnJavaFileFound(Action<DirectoryInfo, DirectoryInfo, FileInfo> callback) => 
@@ -15,9 +15,7 @@ internal class JavaFileFinder
 
     public async Task RunAsync()
     {
-        var jdkSrcPath = Path.Combine(JdkDirectoryPath, "src");
-        
-        var javaModulePaths = Directory.GetDirectories(jdkSrcPath)
+        var javaModulePaths = Directory.GetDirectories(SourcesDirectoryPath)
             .OrderBy(x => x)
             .ToList();
 
@@ -27,11 +25,10 @@ internal class JavaFileFinder
                 {
                     var javaModuleDir = new DirectoryInfo(javaModulePath);
 
+                    // TODO: Maybe remove this if (???) - allow for generating sources from any directory
                     if (javaModuleDir.Name.StartsWith("j")) // java, jdk
                     {
-                        var javaPackageStartPath = Path.Combine(javaModuleDir.FullName, "share", "classes");
-                        
-                        ProcessJavaPackage(javaModuleDir, new DirectoryInfo(javaPackageStartPath));
+                        ProcessJavaPackage(javaModuleDir, new DirectoryInfo(javaModuleDir.FullName));
                     }
                 }))
             .ToArray();
