@@ -17,7 +17,7 @@ internal class JavaFileProcessor
         
         if (!File.Exists(tempOutputPathFull))
         {
-            Console.WriteLine($"File not found: {tempOutputPathFull}");
+            Console.WriteLine($"File not found: '{tempOutputPathFull}' based on '{javaFile.FullName}'");
             return;
         }
 
