@@ -6,7 +6,7 @@ namespace Dova.Common;
 /// Extension methods which are specific for JavaObject's.
 /// Thy are similar to basic JNI methods to simplify class generation.
 /// </summary>
-public static unsafe class JavaRuntimeExtensions
+public static class JavaRuntimeExtensions
 {
     public static JavaArray<TElement> GetArrayField<TElement>(this IJavaRuntime runtime, IntPtr javaObj, IntPtr fieldId)
     {
