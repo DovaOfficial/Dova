@@ -41,7 +41,7 @@ internal class JavaFileReader
             {
                 JavaPackage = line
                     .Replace("package ", "")
-                    .Replace(";", "");
+                    .Split(";")[0];
                 
                 continue;
             }

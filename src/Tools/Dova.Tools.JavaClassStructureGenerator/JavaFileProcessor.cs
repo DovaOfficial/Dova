@@ -20,6 +20,9 @@ internal class JavaFileProcessor
             Console.WriteLine($"File not found: '{tempOutputPathFull}' based on '{javaFile.FullName}'");
             return;
         }
+        
+        // Let it wait for file to be saved
+        Thread.Sleep(30);
 
         var javaClassDefinitionModel = Read(tempOutputPathFull);
         

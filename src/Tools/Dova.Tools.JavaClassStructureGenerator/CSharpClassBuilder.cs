@@ -92,9 +92,10 @@ internal class CSharpClassBuilder
 
     private void BuildClass()
     {
-        AsNewSection(BuildClassSignature); // TODO: Move 'where' clause after 'interfaces'
+        AsNewSection(BuildClassSignature);
         AsNewLine(BuildBaseClass);
         AsNewLine(BuildInterfaces);
+        AsNewLine(BuildGenericBounds);
 
         WithBrackets(() =>
         {
@@ -116,7 +117,7 @@ internal class CSharpClassBuilder
     
     private void BuildNamespace()
     {
-        AppendLine($"namespace {Model.ClassDetailsModel.PackageName};");
+        AppendLine($"namespace Dova.JDK.{Model.ClassDetailsModel.PackageName};");
     }
     
     private void BuildClassSignature()
@@ -129,17 +130,6 @@ internal class CSharpClassBuilder
 
         AppendLine($"[{nameof(JniSignatureAttribute)}(\"{Model.ClassDetailsModel.Signature}\", \"{Model.ClassDetailsModel.Modifiers}\")]");
         AppendLine($"public {type}{Model.ClassDetailsModel.ClassName}{genericArgs}");
-
-        foreach (var typeParam in Model.ClassDetailsModel.TypeParameterModels)
-        {
-            var bounds = typeParam.BoundModels
-                .Select(x => x.Name)
-                .ToList();
-
-            var totalBounds = string.Join(", ", bounds);
-
-            AppendLine($"where {typeParam.VariableName} : {totalBounds}", 1);
-        }
     }
 
     // TODO: For all interfaces as base class use IJavaObject
@@ -174,6 +164,20 @@ internal class CSharpClassBuilder
         foreach (var interfaceModel in Model.InterfaceModels)
         {
             AppendLine($", {interfaceModel.Name}", 1);
+        }
+    }
+    
+    private void BuildGenericBounds()
+    {
+        foreach (var typeParam in Model.ClassDetailsModel.TypeParameterModels)
+        {
+            var bounds = typeParam.BoundModels
+                .Select(x => x.Name)
+                .ToList();
+
+            var totalBounds = string.Join(", ", bounds);
+
+            AppendLine($"where {typeParam.VariableName} : {totalBounds}", 1);
         }
     }
     
