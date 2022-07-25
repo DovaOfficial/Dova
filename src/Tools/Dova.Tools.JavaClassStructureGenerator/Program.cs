@@ -14,6 +14,4 @@ var generatorConfig = new GeneratorConfiguration
     JavaClassDefinitionGeneratorPath = args[3], // i.e.: /home/<user>/Dev/Dotnet/Dova/src/Tools/Dova.Tools.Java.ClassGenerator/build/libs/Dova.Tools.Java.ClassGenerator-0.1.jar
 };
 
-var generator = new StructureGenerator(generatorConfig);
-
-await generator.RunAsync();
+StructureGenerator.Run(generatorConfig);

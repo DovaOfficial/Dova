@@ -1,53 +1,31 @@
 namespace Dova.Tools.JavaClassStructureGenerator;
 
-internal class StructureGenerator
+internal static class StructureGenerator
 {
-    private GeneratorConfiguration Config { get; }
-    private JavaFileFinder Finder { get; }
-    private JavaClassDefinitionGenerator DefinitionGenerator { get; }
-    private CSharpClassGenerator ClassGenerator { get; }
-
-    public StructureGenerator(GeneratorConfiguration config)
+    public static void Run(GeneratorConfiguration config)
     {
-        Config = config;
-
-        Finder = new(Config.SourcesDirectoryPath);
-        DefinitionGenerator = new(Config.JavaClassDefinitionGeneratorPath);
-        ClassGenerator = new(Config.OutputDirectoryPath);
+        var javaFiles = GetJavaSourceFiles(config.SourcesDirectoryPath);
+        
+        Parallel.ForEach(javaFiles, javaFile => new JavaFileProcessor().Run(config, javaFile));
     }
 
-    public async Task RunAsync()
+    private static IEnumerable<FileInfo> GetJavaSourceFiles(string path)
     {
-        // TODO: Change package reading method - not all will have '/classes/' in path
-        Finder.OnJavaFileFound((javaModuleDir, javaPackageDir, javaFile) =>
+        var dir = new DirectoryInfo(path);
+        
+        var javaFiles = dir.GetFiles()
+            .Where(x => x.Extension.Equals(".java"))
+            .Where(x => !x.Name.Contains("-")) // module-info.java && package-info.java
+            .ToList();
+
+        var subDirs = dir.GetDirectories();
+
+        foreach (var subDir in subDirs)
         {
-            var tempOutputPath = javaFile.FullName.Replace(javaModuleDir.FullName, "");
-            var tempOutputPathFull = Path.Combine(Config.TempDirPath, $"{javaModuleDir.Name}{tempOutputPath}.json");
+            var subDirJavaFiles = GetJavaSourceFiles(subDir.FullName);
+            javaFiles.AddRange(subDirJavaFiles);
+        }
 
-            var javaClassFullName = tempOutputPath
-                .Split("/classes/")[^1]
-                .Replace("/", ".")
-                .Replace(".java", "");
-
-            DefinitionGenerator.Generate(tempOutputPathFull, javaClassFullName);
-
-            if (!File.Exists(tempOutputPathFull))
-            {
-                Console.WriteLine($"File not found: {tempOutputPathFull}");
-                return;
-            }
-
-            var javaClassDefinitionModel = JavaClassDefinitionReader.Read(tempOutputPathFull);
-
-            var javaPackageOutputPath = javaPackageDir.FullName
-                .Replace(javaModuleDir.FullName, "")
-                .Split("/classes/")[^1];
-            
-            var javaOutputPathFull = Path.Combine(javaModuleDir.Name, javaPackageOutputPath);
-
-            ClassGenerator.Generate(javaOutputPathFull, javaClassDefinitionModel);
-        });
-
-        await Finder.RunAsync();
+        return javaFiles;
     }
 }
