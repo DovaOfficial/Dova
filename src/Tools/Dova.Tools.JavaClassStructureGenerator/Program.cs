@@ -12,6 +12,7 @@ var generatorConfig = new GeneratorConfiguration
     OutputDirectoryPath = args[1], // i.e.: /home/<user>/Dev/Dotnet/Dova/src/Dova.JDK
     TempDirPath = args[2], // i.e.: /tmp
     JavaClassDefinitionGeneratorPath = args[3], // i.e.: /home/<user>/Dev/Dotnet/Dova/src/Tools/Dova.Tools.Java.ClassGenerator/build/libs/Dova.Tools.Java.ClassGenerator-0.1.jar
+    SkipDirectories = args[4], // i.e.: demo,test,something_else,blabla
 };
 
 StructureGenerator.Run(generatorConfig);
