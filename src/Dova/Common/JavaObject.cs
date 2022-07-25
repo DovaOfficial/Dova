@@ -4,7 +4,7 @@ namespace Dova.Common;
 /// Parent class for all Java generated C# classes.
 /// This is also a parent class of java.lang.Object.
 /// </summary>
-public abstract class JavaObject
+public abstract class JavaObject // TODO: : IJavaObject
 {
     /// <summary>
     /// Reference to the current object.

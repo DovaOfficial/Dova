@@ -24,14 +24,20 @@ internal class JavaFileProcessor
         // Let it wait for file to be saved
         Thread.Sleep(30);
 
-        var javaClassDefinitionModel = Read(tempOutputPathFull);
+        var javaClassDefinitionModel = Read(tempOutputPathFull, javaFile);
         
         CSharpClassGenerator.Generate(config.OutputDirectoryPath, javaPackagePath, javaClassDefinitionModel);
     }
     
-    private static ClassDefinitionModel Read(string jsonPath)
+    private static ClassDefinitionModel Read(string jsonPath, FileInfo javaFile)
     {
         var fileContent = File.ReadAllText(jsonPath);
+
+        if (string.IsNullOrWhiteSpace(fileContent))
+        {
+            throw new ArgumentException($"Empty JSON was generated for file: {javaFile.FullName}");
+        }
+        
         var model = JsonSerializer.Deserialize<ClassDefinitionModel>(fileContent);
         return model ?? throw new ArgumentException("Cannot read JSON at: " + jsonPath);
     }
