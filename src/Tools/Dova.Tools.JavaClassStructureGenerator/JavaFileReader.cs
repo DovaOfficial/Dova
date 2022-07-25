@@ -2,11 +2,13 @@ namespace Dova.Tools.JavaClassStructureGenerator;
 
 internal class JavaFileReader
 {
-    public string JavaPackage { get; private set; }
-    public string JavaClassName { get; private set; }
+    public string JavaPackage { get; }
+    public string JavaClassName { get; }
     
     public JavaFileReader(FileSystemInfo javaFile)
     {
+        JavaClassName = Path.GetFileNameWithoutExtension(javaFile.FullName);
+        
         var lines = File.ReadAllLines(javaFile.FullName);
 
         var trimmedLines = lines
@@ -37,13 +39,10 @@ internal class JavaFileReader
             if (line.StartsWith("package ") 
                 && line.EndsWith(";"))
             {
-                ReadJavaPackage(line);
-                continue;
-            }
-
-            if (JavaConstants.Types.Any(x => line.Contains($"{x} ")))
-            {
-                ReadJavaClassName(line);
+                JavaPackage = line
+                    .Replace("package ", "")
+                    .Replace(";", "");
+                
                 continue;
             }
 
@@ -55,23 +54,5 @@ internal class JavaFileReader
         }
 
         throw new ArgumentException("Error when reading Java class: " + javaFile.FullName);
-    }
-
-    private void ReadJavaPackage(string line)
-    {
-        JavaPackage = line
-            .Replace("package ", "")
-            .Replace(";", "");
-    }
-
-    private void ReadJavaClassName(string line)
-    {
-        var parsedLine = JavaConstants.Modifiers.Aggregate(line, (current, modifier) => current.Replace(modifier, ""));
-        parsedLine = JavaConstants.Types.Aggregate(parsedLine, (current, type) => current.Replace(type, ""));
-        parsedLine = parsedLine.Trim();
-
-        JavaClassName = parsedLine.Contains("<") 
-            ? parsedLine.Split("<")[0] 
-            : parsedLine.Split(" ")[0];
     }
 }
