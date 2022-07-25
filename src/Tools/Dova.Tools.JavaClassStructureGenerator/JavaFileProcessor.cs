@@ -10,9 +10,10 @@ internal static class JavaFileProcessor
         var reader = new JavaFileReader(javaFile);
         
         var javaClassFullName = $"{reader.JavaPackage}.{reader.JavaClassName}";
-        var javaPackagePath = Path.Combine(reader.JavaPackage.Split("."));
-        var javaFileRelativePath = Path.GetRelativePath(Path.GetPathRoot(javaFile.FullName), javaFile.FullName);
+        var javaFilePostfixPath = javaFile.FullName.Replace(config.SourcesDirectoryPath, "");
+        var javaFileRelativePath = Path.GetRelativePath(Path.GetPathRoot(javaFilePostfixPath), javaFilePostfixPath);
         var tempOutputPathFull = Path.Combine(config.TempDirPath, javaFileRelativePath + ".json");
+        var javaFileRelativePathWithoutFileName = javaFileRelativePath.Replace(javaFile.Name, "");
         
         JavaClassDefinitionGenerator.Generate(config.JavaClassDefinitionGeneratorPath, tempOutputPathFull, javaClassFullName);
         
@@ -27,7 +28,7 @@ internal static class JavaFileProcessor
 
         var javaClassDefinitionModel = Read(tempOutputPathFull, javaFile);
         
-        CSharpClassGenerator.Generate(config.OutputDirectoryPath, javaPackagePath, javaClassDefinitionModel);
+        CSharpClassGenerator.Generate(config.OutputDirectoryPath, javaFileRelativePathWithoutFileName, javaClassDefinitionModel);
     }
     
     private static ClassDefinitionModel Read(string jsonPath, FileInfo javaFile)
