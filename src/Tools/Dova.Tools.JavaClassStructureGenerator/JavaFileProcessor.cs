@@ -3,15 +3,16 @@ using Dova.Tools.JavaClassStructureGenerator.Models;
 
 namespace Dova.Tools.JavaClassStructureGenerator;
 
-internal class JavaFileProcessor
+internal static class JavaFileProcessor
 {
-    public void Run(GeneratorConfiguration config, FileInfo javaFile)
+    public static void Run(GeneratorConfiguration config, FileInfo javaFile)
     {
         var reader = new JavaFileReader(javaFile);
         
         var javaClassFullName = $"{reader.JavaPackage}.{reader.JavaClassName}";
         var javaPackagePath = Path.Combine(reader.JavaPackage.Split("."));
-        var tempOutputPathFull = Path.Combine(config.TempDirPath, javaPackagePath, $"{reader.JavaClassName}.json");
+        var javaFileRelativePath = Path.GetRelativePath(Path.GetPathRoot(javaFile.FullName), javaFile.FullName);
+        var tempOutputPathFull = Path.Combine(config.TempDirPath, javaFileRelativePath + ".json");
         
         JavaClassDefinitionGenerator.Generate(config.JavaClassDefinitionGeneratorPath, tempOutputPathFull, javaClassFullName);
         

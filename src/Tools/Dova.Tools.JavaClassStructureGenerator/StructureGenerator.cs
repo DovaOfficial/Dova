@@ -7,7 +7,7 @@ internal static class StructureGenerator
         var directoriesToSkip = config.SkipDirectories.Split(",");
         var javaFiles = GetJavaSourceFiles(directoriesToSkip, config.SourcesDirectoryPath);
 
-        Parallel.ForEach(javaFiles, javaFile => new JavaFileProcessor().Run(config, javaFile));
+        Parallel.ForEach(javaFiles, javaFile => JavaFileProcessor.Run(config, javaFile));
     }
 
     private static IEnumerable<FileInfo> GetJavaSourceFiles(string[] directoriesToSkip, string path)
