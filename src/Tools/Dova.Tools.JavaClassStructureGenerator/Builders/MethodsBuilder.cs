@@ -3,31 +3,44 @@ using Dova.Tools.JavaClassStructureGenerator.Models;
 
 namespace Dova.Tools.JavaClassStructureGenerator.Builders;
 
-// TODO: Generate only signatures for interfaces
 // TODO: Add support for methods with names like 'lambda$indent$1'
-// TODO: Needs to firstly call IJavaRuntime method and then return wrapped type.
 internal class MethodsBuilder : AbstractBuilder
 {
     public override IEnumerable<string> Build(ClassDefinitionModel model, int tabs = 0)
     {
-        if (model.MethodModels.Count > 0)
-        {
-            yield return AppendLine("");
-        }
-        
         for (var index = 0; index < model.MethodModels.Count; ++index)
         {
+            yield return AppendLine("");
+            
             var method = model.MethodModels[index];
             
-            var modifierPrefix = method.IsStatic
-                ? "static "
-                : method.HasParent
-                    ? "override "
+            var modifierPrefix = method.IsStatic 
+                ? "static " 
+                : method.HasParent 
+                    ? "override " 
                     : "virtual ";
             
             var combinedParameters = GetCombinedParameters(method.ParameterModels);
+
+            var methodModifier = model.ClassDetailsModel.IsInterface
+                ? string.Empty
+                : "public ";
+
+            var methodPostfix = model.ClassDetailsModel.IsInterface
+                ? ";"
+                : string.Empty;
+
+            yield return AppendLine($"[{nameof(JniSignatureAttribute)}(\"{method.Signature}\", \"{method.Modifiers}\")]", tabs);
+            yield return AppendLine($"{methodModifier}{modifierPrefix}{GetReturnType(method.ReturnType)} {method.Name}({combinedParameters}){methodPostfix}", tabs);
+
+            if (model.ClassDetailsModel.IsInterface)
+            {
+                continue;
+            }
             
-            var methodSignature = $"public {modifierPrefix}{GetReturnType(method.ReturnType)} {method.Name}({combinedParameters})";
+            yield return AppendLine("{", tabs);
+
+            var returnTypePrefix = GetReturnTypePrefix(method.ReturnType);
             
             var staticMethodPrefix = method.IsStatic
                 ? "Static"
@@ -45,14 +58,18 @@ internal class MethodsBuilder : AbstractBuilder
             }
             
             var methodCallback = $"DovaJvm.Vm.Runtime.Call{staticMethodPrefix}{GetReturnTypePrefix(method.ReturnType)}MethodA{GetGenericType(method.ReturnType)}({targetObjPtr}, {MethodPtrsStr}[{index}]{combinedParameterNames});";
-            
-            yield return AppendLine($"[{nameof(JniSignatureAttribute)}(\"{method.Signature}\", \"{method.Modifiers}\")]", tabs);
-            yield return AppendLine($"{methodSignature} => {methodCallback}", tabs);
-            
-            if (index != model.MethodModels.Count - 1)
+
+            if (returnTypePrefix.ToLower().Equals("void"))
             {
-                AppendLine("");
+                yield return AppendLine(methodCallback, tabs + 1);
             }
+            else
+            {
+                yield return AppendLine($"var ret = {methodCallback}", tabs + 1);
+                yield return AppendLine(method.ReturnType.Contains(".") ? $"return new {CleanJavaClassName(method.ReturnType)}(ret);" : $"return ret;", tabs + 1);
+            }
+            
+            yield return AppendLine("}", tabs);
         }
     }
 }

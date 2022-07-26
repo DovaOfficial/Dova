@@ -7,13 +7,10 @@ internal class PropertiesBuilder : AbstractBuilder
 {
     public override IEnumerable<string> Build(ClassDefinitionModel model, int tabs = 0)
     {
-        if (model.FieldModels.Count > 0)
-        {
-            yield return AppendLine("");
-        }
-        
         for (var index = 0; index < model.FieldModels.Count; ++index)
         {
+            yield return AppendLine("");
+            
             var field = model.FieldModels[index];
             
             var staticPrefix = field.IsStatic
