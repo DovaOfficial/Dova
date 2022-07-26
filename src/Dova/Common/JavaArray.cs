@@ -3,7 +3,7 @@ namespace Dova.Common;
 /// <summary>
 /// Represents an array in Java language.
 /// </summary>
-public class JavaArray<TElement> : JavaObject // TODO: Implement IList<TElement>, IEnumerator<TElement> or extend Array class (???), IDisposable (this should call Release method)
+public class JavaArray<TElement> : JavaObject // TODO: Implement IList<TElement>, IEnumerator<TElement>, IDisposable (this should call Release method)
 {
     // TODO: Add array-operations
     
