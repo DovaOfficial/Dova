@@ -3,9 +3,7 @@ using Dova.Tools.JavaClassStructureGenerator.Models;
 
 namespace Dova.Tools.JavaClassStructureGenerator.Builders;
 
-// TODO: Add checking if any error occurred -> IJavaRuntime.ExceptionOccurred
-// TODO: Convert Java base types like java.lang.Long to C# 'long"
-// TODO: Before generating type-specific method, clean Java class name
+// TODO: Add checking if any error occurred -> IJavaRuntime.ExceptionOccurred (Field, Constructor, Method)
 internal abstract class AbstractBuilder : IBuilder
 {
     protected const string ClassPtrStr = "ClassPtr";
@@ -51,9 +49,10 @@ internal abstract class AbstractBuilder : IBuilder
 
     // TODO: Add support for types like 'java.lang.invoke.TypeDescriptor$OfField<java.lang.Class<? extends PrintStream>[]>'
     // TODO: Add support for types like 'java.lang.@ref.FinalReference<java.lang.Object>' (see C# @ref keyword wrapped)
+    // TODO: Convert Java base types like java.lang.Long to C# 'long"
+    // TODO: Before generating type-specific method, clean Java class name
     protected static string CleanJavaClassName(string className) => className;
     
-    // TODO: Add better type analyzing (same above)
     protected static string GetReturnTypePrefix(string returnType) => 
         returnType switch
         {
@@ -76,23 +75,14 @@ internal abstract class AbstractBuilder : IBuilder
     protected static string GetGenericType(string type) =>
         type switch
         {
-            var t when t.Contains("[]") => $"<{CleanJavaArrayAndType(type)}>",
+            var t when t.Contains("[]") => $"<{CleanJavaClassName(type)}>",
             _ => string.Empty
         };
-    
-    protected static string CleanJavaArrayAndType(string type) =>
-        type.Replace("[]", "")
-            .Replace("boolean", "bool");
-    
+
     protected static string GetCombinedParameters(IEnumerable<ParameterDefinitionModel> models)
     {
         var paramsWithTypes = models
-            .Select(x =>
-            {
-                var genericArgs = CombineGenericTypes(x.TypeParameterModels);
-    
-                return $"{x.Type}{genericArgs} {x.Name}";
-            })
+            .Select(x => $"{CleanJavaClassName(x.Type)}{CombineGenericTypes(x.TypeParameterModels)} {x.Name}")
             .ToList();
         
         var combinedParamsWithTypes = string.Join(", ", paramsWithTypes);

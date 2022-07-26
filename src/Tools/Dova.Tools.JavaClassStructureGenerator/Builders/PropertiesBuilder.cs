@@ -38,7 +38,7 @@ internal class PropertiesBuilder : AbstractBuilder
             yield return AppendLine("get", tabs + 1);
             yield return AppendLine("{", tabs + 1);
             yield return AppendLine($"var ret = DovaJvm.Vm.Runtime.Get{staticMethodPrefix}{GetReturnTypePrefix(field.ReturnType)}Field{GetGenericType(field.ReturnType)}({targetObjPtr}, {FieldPtrsStr}[{index}]);", tabs + 2);
-            yield return AppendLine(field.ReturnType.Contains(".") ? $"return new {field.ReturnType}(ret);" : $"return ret;", tabs + 2);
+            yield return AppendLine(field.ReturnType.Contains(".") ? $"return new {CleanJavaClassName(field.ReturnType)}(ret);" : $"return ret;", tabs + 2);
             yield return AppendLine("}", tabs + 1);
             yield return AppendLine($"set => DovaJvm.Vm.Runtime.Set{staticMethodPrefix}{GetReturnTypePrefix(field.ReturnType)}Field({targetObjPtr}, {FieldPtrsStr}[{index}], {targetObjValue});", tabs + 1);
             yield return AppendLine("}", tabs);

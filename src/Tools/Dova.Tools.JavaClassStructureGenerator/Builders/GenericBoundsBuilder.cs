@@ -9,7 +9,7 @@ internal class GenericBoundsBuilder : AbstractBuilder
         foreach (var typeParam in model.ClassDetailsModel.TypeParameterModels)
         {
             var bounds = typeParam.BoundModels
-                .Select(x => x.Name)
+                .Select(x => CleanJavaClassName(x.Name))
                 .ToList();
         
             var totalBounds = string.Join(", ", bounds);
