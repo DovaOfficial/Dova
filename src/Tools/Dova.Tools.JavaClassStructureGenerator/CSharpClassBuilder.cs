@@ -6,10 +6,9 @@ namespace Dova.Tools.JavaClassStructureGenerator;
 
 // TODO: Add checking if any error occurred -> IJavaRuntime.ExceptionOccurred
 // TODO: Add support for unknown generic types like: Class<?>
-// TODO: java.lang.String => string
-// TODO: java.lang.CharSequence => string
 // TODO: Replace C# keywords with "@" prefix i.e. namespace to be => java.lang.@ref; or base class to be => java.lang.@ref.FinalReference<java.lang.Object>
 // TODO: Handle parameters like: 'java.util.Collection<? extends E> arg0'
+// TODO: java.lang.String class => Add method which will convert it to valid C# 'string'
 internal class CSharpClassBuilder
 {
     private const string JavaObjectClassFullName = "java.lang.Object";
@@ -127,7 +126,7 @@ internal class CSharpClassBuilder
         var genericArgs = GetGenericArgs(Model.ClassDetailsModel.TypeParameterModels);
 
         AppendLine($"[{nameof(JniSignatureAttribute)}(\"{Model.ClassDetailsModel.Signature}\", \"{Model.ClassDetailsModel.Modifiers}\")]");
-        AppendLine($"public {type}{Model.ClassDetailsModel.ClassName}{genericArgs}");
+        AppendLine($"public partial {type}{Model.ClassDetailsModel.ClassName}{genericArgs}");
     }
 
     private void BuildBaseClass()
@@ -153,7 +152,7 @@ internal class CSharpClassBuilder
         AppendLine($": {BaseClass}", 1);
     }
     
-    // TODO: Add support for interfaces like 'java.lang.invoke.TypeDescriptor$OfField<java.lang.Class<?>>'
+    // TODO: Add support for interfaces like 'java.lang.invoke.TypeDescriptor$OfField<java.lang.Class<? extends PrintStream>>'
     private void BuildInterfaces()
     {
         if (Model.InterfaceModels.Count == 0)
@@ -242,8 +241,6 @@ internal class CSharpClassBuilder
         });
     }
     
-    // TODO: Don't generate for interfaces
-    // TODO: Replace boolean with bool
     private void BuildProperties()
     {
         for (var index = 0; index < Model.FieldModels.Count; ++index)
@@ -294,10 +291,13 @@ internal class CSharpClassBuilder
         }
     }
 
-    // TODO: Don't generate for interfaces
-    // TODO: Replace boolean with bool
     private void BuildConstructors()
     {
+        if (Model.ClassDetailsModel.IsInterface)
+        {
+            return;
+        }
+        
         AppendLine($"[{nameof(JniSignatureAttribute)}(\"\", \"\")]", 1);
         AppendLine($"public {Model.ClassDetailsModel.ClassName}(IntPtr currentRefPtr) : base(currentRefPtr)", 1);
         
@@ -323,9 +323,13 @@ internal class CSharpClassBuilder
         }
     }
 
-    // TODO: Don't generate for interfaces
     private void BuildExtraMethods()
     {
+        if (Model.ClassDetailsModel.IsInterface)
+        {
+            return;
+        }
+        
         AppendLine($"public override string {nameof(JavaObject.GetJavaClassSignature)}() => \"{Model.ClassDetailsModel.Signature}\";", 1);
         AppendLine($"public override IntPtr {nameof(JavaObject.GetJavaClassRaw)}() => {ClassPtrStr};", 1);
         AppendLine($"public override IntPtr {nameof(JavaObject.GetJavaClassRefRaw)}() => {ClassRefPtrStr};", 1);
@@ -378,9 +382,13 @@ internal class CSharpClassBuilder
         }
     }
 
-    // TODO: Don't generate for interfaces
     private void BuildInnerClasses()
     {
+        if (Model.ClassDetailsModel.IsInterface)
+        {
+            return;
+        }
+        
         foreach (var innerClassModel in Model.InnerClassModels)
         {
             var builder = new CSharpClassBuilder(innerClassModel, Tabs + 1);
@@ -410,14 +418,12 @@ internal class CSharpClassBuilder
 
         return genericArgs;
     }
-
-    // TODO: Add support for array of objects
-    // TODO: java.lang.String => string (lowercase)
+    
     private static string GetReturnTypePrefix(string returnType) => 
         returnType switch
         {
+            var rt when rt.Contains("[]") => "Array",
             var rt when rt.Contains(".") => "Object",
-            var rt when rt.Contains("[]") => "Array", // This should call extension method, see: JavaRuntimeExtensions
             _ => returnType.ToFirstUppercase()
         };
     
@@ -426,16 +432,20 @@ internal class CSharpClassBuilder
     private static string GetGenericReturnType(string returnType) =>
         returnType switch
         {
-            var rt when rt.Contains("[]") => $"<{returnType.Replace("[]", "")}>",
+            var rt when rt.Contains("[]") => $"<{PurifyGenericType(returnType)}>",
             _ => string.Empty
         };
 
     private static string GetReturnType(string returnType) =>
         returnType switch
         {
-            var rt when rt.Contains("[]") => $"JavaArray<{returnType.Replace("[]", "")}>",
+            "boolean" => "bool",
+            var rt when rt.Contains("[]") => $"JavaArray<{PurifyGenericType(returnType)}>",
             _ => returnType
         };
+
+    private static string PurifyGenericType(string returnType) =>
+        returnType.Replace("[]", "").Replace("boolean", "bool");
 
     private static string GetCombinedParameters(IEnumerable<ParameterDefinitionModel> models)
     {
