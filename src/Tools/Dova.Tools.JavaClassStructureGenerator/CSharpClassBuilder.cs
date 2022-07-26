@@ -181,8 +181,6 @@ internal class CSharpClassBuilder
         }
     }
     
-    // TODO: Don't generate for interfaces
-    // TODO: Replace boolean with bool
     private void BuildJniReferences()
     {
         AppendLine($"public static IntPtr {ClassPtrStr} {{ get; }}", 1);
