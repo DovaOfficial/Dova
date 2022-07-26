@@ -3,7 +3,6 @@ using Dova.Tools.JavaClassStructureGenerator.Models;
 
 namespace Dova.Tools.JavaClassStructureGenerator.Builders;
 
-// TODO: Add support for methods with names like 'lambda$indent$1'
 internal class MethodsBuilder : AbstractBuilder
 {
     public override IEnumerable<string> Build(ClassDefinitionModel model, int tabs = 0)
@@ -31,7 +30,7 @@ internal class MethodsBuilder : AbstractBuilder
                 : string.Empty;
 
             yield return AppendLine($"[{nameof(JniSignatureAttribute)}(\"{method.Signature}\", \"{method.Modifiers}\")]", tabs);
-            yield return AppendLine($"{methodModifier}{modifierPrefix}{GetReturnType(method.ReturnType)} {method.Name}({combinedParameters}){methodPostfix}", tabs);
+            yield return AppendLine($"{methodModifier}{modifierPrefix}{GetReturnType(method.ReturnType)} {JavaCleaner.CleanMethodName(method.Name)}({combinedParameters}){methodPostfix}", tabs);
 
             if (model.ClassDetailsModel.IsInterface)
             {
