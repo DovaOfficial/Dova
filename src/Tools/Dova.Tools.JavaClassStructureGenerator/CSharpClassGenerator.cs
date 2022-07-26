@@ -1,9 +1,12 @@
+using Dova.Tools.JavaClassStructureGenerator.Builders;
 using Dova.Tools.JavaClassStructureGenerator.Models;
 
 namespace Dova.Tools.JavaClassStructureGenerator;
 
 internal static class CSharpClassGenerator
 {
+    private static CoreBuilder Builder { get; } = new();
+    
     public static void Generate(string outputDirectoryPath, string javaOutputPathFull, ClassDefinitionModel model)
     {
         var outputDirPath = Path.Combine(outputDirectoryPath, javaOutputPathFull);
@@ -22,9 +25,8 @@ internal static class CSharpClassGenerator
         }
 
         outputFile.Create().Close();
-        
-        var builder = new CSharpClassBuilder(model);
-        var lines = builder.Build();
+
+        var lines = Builder.Build(model);
         
         using (var writer = new StreamWriter(outputFile.FullName))
         {

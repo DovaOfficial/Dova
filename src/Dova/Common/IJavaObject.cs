@@ -5,6 +5,11 @@ namespace Dova.Common;
 /// </summary>
 public interface IJavaObject
 {
+    /// <summary>
+    /// Reference to the current object.
+    /// </summary>
+    IntPtr CurrentRefPtr { get; }
+    
     /// <returns>True if the object can be assigned from the given class; otherwise false.</returns>
     bool IsAssignableFrom(IntPtr classPtr);
     
@@ -13,6 +18,9 @@ public interface IJavaObject
     
     /// <returns>True if the object is an instance of a given class; otherwise false.</returns>
     bool IsInstanceOf(IntPtr classPtr);
+
+    /// <returns>String read from CurrentRefPtr.</returns>
+    string ToCSharpString();
     
     /// <returns>Raw JNI signature. JniSignatureAttribute would return the same.</returns>
     string GetJavaClassSignature();
