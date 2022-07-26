@@ -132,24 +132,26 @@ internal class CSharpClassBuilder
         AppendLine($"public {type}{Model.ClassDetailsModel.ClassName}{genericArgs}");
     }
 
-    // TODO: For all interfaces as base class use IJavaObject
     private void BuildBaseClass()
     {
-        if (!string.IsNullOrWhiteSpace(Model.BaseClassModel.Name))
+        if (Model.ClassDetailsModel.IsInterface 
+            && (string.IsNullOrWhiteSpace(Model.BaseClassModel.Name)  
+                || Model.BaseClassModel.Name.Equals(JavaObjectClassFullName)))
         {
-            BaseClass = Model.BaseClassModel.Name
-                .Replace("$", ".");
+            BaseClass = nameof(IJavaObject);
+        }
+        else if (string.IsNullOrWhiteSpace(Model.BaseClassModel.Name))
+        {
+            BaseClass = nameof(JavaObject);
         }
         else
         {
-            var fullName = $"{Model.ClassDetailsModel.PackageName}.{Model.ClassDetailsModel.ClassName}";
-
-            if (fullName.Equals(JavaObjectClassFullName))
-            {
-                BaseClass = nameof(JavaObject);
-            }
+            BaseClass = Model.BaseClassModel.Name;
         }
 
+        BaseClass = BaseClass
+            .Replace("$", ".");
+        
         AppendLine($": {BaseClass}", 1);
     }
     
