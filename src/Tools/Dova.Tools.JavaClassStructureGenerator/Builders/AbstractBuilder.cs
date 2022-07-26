@@ -4,6 +4,7 @@ using Dova.Tools.JavaClassStructureGenerator.Models;
 namespace Dova.Tools.JavaClassStructureGenerator.Builders;
 
 // TODO: Add checking if any error occurred -> IJavaRuntime.ExceptionOccurred
+// TODO: Convert Java base types like java.lang.Long to C# 'long"
 internal abstract class AbstractBuilder : IBuilder
 {
     protected const string ClassPtrStr = "ClassPtr";
