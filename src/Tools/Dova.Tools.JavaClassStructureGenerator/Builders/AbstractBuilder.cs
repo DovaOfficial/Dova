@@ -5,6 +5,7 @@ namespace Dova.Tools.JavaClassStructureGenerator.Builders;
 
 // TODO: Add checking if any error occurred -> IJavaRuntime.ExceptionOccurred
 // TODO: Convert Java base types like java.lang.Long to C# 'long"
+// TODO: Before generating type-specific method, clean Java class name
 internal abstract class AbstractBuilder : IBuilder
 {
     protected const string ClassPtrStr = "ClassPtr";
