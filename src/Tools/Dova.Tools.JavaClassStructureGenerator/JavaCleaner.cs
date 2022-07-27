@@ -35,6 +35,7 @@ internal static class JavaCleaner
     // TODO: Add support for types like 'java.lang.invoke.TypeDescriptor$OfField<java.lang.Class<? extends PrintStream>[]>'
     // TODO: Add support for types like 'java.lang.@ref.FinalReference<java.lang.Object>' (see C# @ref keyword wrapped)
     // TODO: Add support for Type[][] => JavaArray<JavaArray<Type>>
+    // TODO: Add support for byte[] => JavaArray<byte>
     public static string CleanJavaClassName(string className)
     {
         var ret = className;

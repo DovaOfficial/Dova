@@ -69,6 +69,8 @@ internal class MethodsBuilder : AbstractBuilder
             else
             {
                 yield return AppendLine($"var ret = {methodCallback}", tabs + 1);
+                
+                // TODO: What if we are returning an interface ??? - we cannot do 'new interface'
                 yield return AppendLine(method.ReturnType.Contains(".") ? $"return new {returnType}(ret);" : $"return ret;", tabs + 1);
             }
             
