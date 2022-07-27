@@ -36,8 +36,10 @@ internal class JavaFileReader
                 continue;
             }
 
-            if (line.StartsWith("package ") 
-                && line.EndsWith(";"))
+            // TODO: Better package reading
+            // TODO: Support formatting with comment at the end like: 'package com.github.test;  // Comment text'
+            if (line.StartsWith("package ")
+                && line.Contains(";"))
             {
                 JavaPackage = line
                     .Replace("package ", "")

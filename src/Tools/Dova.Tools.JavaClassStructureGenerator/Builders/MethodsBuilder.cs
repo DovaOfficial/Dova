@@ -13,11 +13,13 @@ internal class MethodsBuilder : AbstractBuilder
             
             var method = model.MethodModels[index];
             
-            var modifierPrefix = method.IsStatic 
-                ? "static " 
-                : method.HasParent 
-                    ? "override " 
-                    : "virtual ";
+            var modifierPrefix = model.ClassDetailsModel.IsInterface 
+                ? string.Empty 
+                : method.IsStatic 
+                    ? "static " 
+                    : method.HasParent 
+                        ? "override " 
+                        : "virtual ";
             
             var combinedParameters = GetCombinedParameters(method.ParameterModels);
 
