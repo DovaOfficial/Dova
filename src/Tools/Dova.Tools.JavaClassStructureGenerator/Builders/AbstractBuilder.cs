@@ -47,7 +47,8 @@ internal abstract class AbstractBuilder : IBuilder
         return genericArgs;
     }
     
-    protected static string CleanJavaClassName(string className) => JavaCleaner.CleanJavaClassName(className);
+    protected static string CleanJavaClassName(string className) => 
+        JavaCleaner.CleanJavaClassName(className);
     
     protected static string GetReturnTypePrefix(string returnType) => 
         returnType switch
