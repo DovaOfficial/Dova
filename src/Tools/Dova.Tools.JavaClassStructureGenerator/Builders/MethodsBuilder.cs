@@ -31,8 +31,10 @@ internal class MethodsBuilder : AbstractBuilder
                 ? ";"
                 : string.Empty;
 
+            var returnType = CleanJavaClassName(method.ReturnType);
+
             yield return AppendLine($"[{nameof(JniSignatureAttribute)}(\"{method.Signature}\", \"{method.Modifiers}\")]", tabs);
-            yield return AppendLine($"{methodModifier}{modifierPrefix}{GetReturnType(method.ReturnType)} {JavaCleaner.CleanMethodName(method.Name)}({combinedParameters}){methodPostfix}", tabs);
+            yield return AppendLine($"{methodModifier}{modifierPrefix}{returnType} {JavaCleaner.CleanMethodName(method.Name)}({combinedParameters}){methodPostfix}", tabs);
 
             if (model.ClassDetailsModel.IsInterface)
             {
@@ -41,7 +43,7 @@ internal class MethodsBuilder : AbstractBuilder
             
             yield return AppendLine("{", tabs);
 
-            var returnTypePrefix = GetReturnTypePrefix(method.ReturnType);
+            var returnTypePrefix = GetReturnTypePrefix(returnType);
             
             var staticMethodPrefix = method.IsStatic
                 ? "Static"
@@ -58,7 +60,7 @@ internal class MethodsBuilder : AbstractBuilder
                 combinedParameterNames = ", " + combinedParameterNames;
             }
             
-            var methodCallback = $"DovaJvm.Vm.Runtime.Call{staticMethodPrefix}{returnTypePrefix}MethodA{GetGenericType(method.ReturnType)}({targetObjPtr}, {MethodPtrsStr}[{index}]{combinedParameterNames});";
+            var methodCallback = $"DovaJvm.Vm.Runtime.Call{staticMethodPrefix}{returnTypePrefix}MethodA({targetObjPtr}, {MethodPtrsStr}[{index}]{combinedParameterNames});";
 
             if (returnTypePrefix.ToLower().Equals("void"))
             {
@@ -67,7 +69,7 @@ internal class MethodsBuilder : AbstractBuilder
             else
             {
                 yield return AppendLine($"var ret = {methodCallback}", tabs + 1);
-                yield return AppendLine(method.ReturnType.Contains(".") ? $"return new {CleanJavaClassName(method.ReturnType)}(ret);" : $"return ret;", tabs + 1);
+                yield return AppendLine(method.ReturnType.Contains(".") ? $"return new {returnType}(ret);" : $"return ret;", tabs + 1);
             }
             
             yield return AppendLine("}", tabs);

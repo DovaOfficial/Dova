@@ -53,27 +53,8 @@ internal abstract class AbstractBuilder : IBuilder
     protected static string GetReturnTypePrefix(string returnType) => 
         returnType switch
         {
-            var rt when rt.EndsWith("[]") => "Array",
             var rt when rt.Contains(".") => "Object",
             _ => returnType.ToFirstUppercase()
-        };
-
-    protected static string GetReturnType(string type)
-    {
-        var cleaned = CleanJavaClassName(type);
-    
-        return cleaned switch
-        {
-            var cln when cln.Contains("[]") => $"JavaArray{GetGenericType(cleaned)}",
-            _ => cleaned
-        };
-    }
-
-    protected static string GetGenericType(string type) =>
-        type switch
-        {
-            var t when t.Contains("[]") => $"<{CleanJavaClassName(type)}>",
-            _ => string.Empty
         };
 
     protected static string GetCombinedParameters(IEnumerable<ParameterDefinitionModel> models)
