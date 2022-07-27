@@ -31,13 +31,12 @@ internal class JavaFileReader
                 continue;
             }
 
-            if (isInComment) // Skip comment line
+            if (isInComment // Skip comment line
+                || string.IsNullOrWhiteSpace(line)) // Skip empty line
             {
                 continue;
             }
 
-            // TODO: Better package reading
-            // TODO: Support formatting with comment at the end like: 'package com.github.test;  // Comment text'
             if (line.StartsWith("package ")
                 && line.Contains(";"))
             {
@@ -54,7 +53,9 @@ internal class JavaFileReader
                 return;
             }
         }
-
-        throw new ArgumentException("Error when reading Java class: " + javaFile.FullName);
+        
+        Console.WriteLine($"No package signature found in file: {javaFile.FullName}");
+        
+        JavaPackage = "UnknownPackage";
     }
 }
