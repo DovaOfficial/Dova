@@ -27,10 +27,8 @@ internal static class JavaCleaner
         { "$", "." },
         { "<?>", "<java.lang.Object>" },
         { "? extends ", "" },
+        { "$", "_" },
     };
-
-    public static string CleanMethodName(string methodName) => 
-        methodName.Replace("$", "_");
 
     // TODO: Add support for types like 'java.lang.invoke.TypeDescriptor$OfField<java.lang.Class<? extends PrintStream>[]>'
     // TODO: Add support for types like 'java.lang.@ref.FinalReference<java.lang.Object>' (see C# @ref keyword wrapped)
