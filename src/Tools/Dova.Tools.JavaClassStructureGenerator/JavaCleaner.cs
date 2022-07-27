@@ -22,7 +22,7 @@ internal static class JavaCleaner
         // { "java.lang.Float", "float" },
         // { "java.lang.Double", "double" },
         // { "java.lang.Boolean", "bool" },
-        { "boolean", "java.lang.Boolean" },
+        { "boolean", "bool" },
         // { "java.lang.Char", "char" },
         { "$", "." },
         { "<?>", "<java.lang.Object>" },
