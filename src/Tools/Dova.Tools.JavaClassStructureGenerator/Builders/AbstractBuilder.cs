@@ -14,7 +14,7 @@ internal abstract class AbstractBuilder : IBuilder
     
     public abstract IEnumerable<string> Build(ClassDefinitionModel model, int tabs = 0);
 
-    protected string AppendLine(string line, int tabs = 0)
+    public string AppendLine(string line, int tabs = 0)
     {
         var sb = new StringBuilder();
         
@@ -30,7 +30,7 @@ internal abstract class AbstractBuilder : IBuilder
         return newLine;
     }
     
-    protected static string CombineGenericTypes(IEnumerable<TypeParameterModel> models)
+    public static string CombineGenericTypes(IEnumerable<TypeParameterModel> models)
     {
         var genericParams = models
             .Select(x => x.VariableName)
@@ -47,27 +47,27 @@ internal abstract class AbstractBuilder : IBuilder
         return genericArgs;
     }
     
-    protected static string CleanJavaClassName(string className) => 
+    public static string CleanJavaClassName(string className) => 
         JavaCleaner.CleanJavaClassName(className);
 
-    protected static string CleanJavaFieldName(string fieldName) =>
+    public static string CleanJavaFieldName(string fieldName) =>
         JavaCleaner.CleanJavaFieldName(fieldName);
     
-    protected static string GetReturnTypePrefix(string returnType) => 
+    public static string GetReturnTypePrefix(string returnType) => 
         returnType switch
         {
             var rt when IsObjectType(rt) => "Object",
             _ => returnType
-                .Replace("Bool", "Boolean")
                 .ToFirstUppercase()
+                .Replace("Bool", "Boolean")
         };
 
-    protected static bool IsObjectType(string type) =>
+    public static bool IsObjectType(string type) =>
         type.Contains(".") // Most cases will have full package name + class name, divided by '.'
         || type.Contains("JavaArray") // Dova's custom type for an array (array wrapper)
         || char.IsUpper(type[0]); // Most generics might have (1;N) chars but first is almost always an upper char
 
-    protected static string GetCombinedParameters(IEnumerable<ParameterDefinitionModel> models)
+    public static string GetCombinedParameters(IEnumerable<ParameterDefinitionModel> models)
     {
         var paramsWithTypes = models
             .Select(x => $"{CleanJavaClassName(x.Type)}{CombineGenericTypes(x.TypeParameterModels)} {x.Name}")
@@ -78,6 +78,6 @@ internal abstract class AbstractBuilder : IBuilder
         return combinedParamsWithTypes;
     }
 
-    protected static string GetCombinedParameterNames(IEnumerable<ParameterDefinitionModel> models) =>
+    public static string GetCombinedParameterNames(IEnumerable<ParameterDefinitionModel> models) =>
         string.Join(", ", models.Select(x => x.Name));
 }
