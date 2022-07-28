@@ -8,11 +8,6 @@ internal class InnerClassesBuilder : AbstractBuilder
     
     public override IEnumerable<string> Build(ClassDefinitionModel model, int tabs = 0)
     {
-        if (model.ClassDetailsModel.IsInterface)
-        {
-            yield break;
-        }
-
         foreach (var innerClassModel in model.InnerClassModels)
         {
             yield return AppendLine("");
