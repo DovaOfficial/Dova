@@ -15,25 +15,12 @@ internal static class JavaCleaner
     
     private static IDictionary<string, string> Replacements { get; } = new Dictionary<string, string>
     {
-        // { "java.lang.Byte", "byte" },
-        // { "java.lang.Short", "short" },
-        // { "java.lang.Integer", "int" },
-        // { "java.lang.Long", "long" },
-        // { "java.lang.Float", "float" },
-        // { "java.lang.Double", "double" },
-        // { "java.lang.Boolean", "bool" },
         { "boolean", "bool" },
-        // { "java.lang.Char", "char" },
-        { "$", "." },
         { "<?>", "<java.lang.Object>" },
         { "? extends ", "" },
-        { "$", "_" },
+        { "$", "." },
     };
-
-    // TODO: Add support for types like 'java.lang.invoke.TypeDescriptor$OfField<java.lang.Class<? extends PrintStream>[]>'
-    // TODO: Add support for types like 'java.lang.@ref.FinalReference<java.lang.Object>' (see C# @ref keyword wrapped)
-    // TODO: Add support for Type[][] => JavaArray<JavaArray<Type>>
-    // TODO: Add support for byte[] => JavaArray<byte>
+    
     public static string CleanJavaClassName(string className)
     {
         var ret = className;
@@ -48,6 +35,30 @@ internal static class JavaCleaner
             ret = ret.Replace(pair.Key, pair.Value);
         }
 
+        ret = PerformInnerClean(ret);
+
         return ret;
+    }
+
+    private static string PerformInnerClean(string str)
+    {
+        return str switch
+        {
+            var s when !s.Contains(".") && !s.Contains("[]") && !s.Contains("<") => s, // i.e.: byte or MyClass
+            var s when s.Contains(".") && !s.Contains("[]") && !s.Contains("<") => s, // i.e.: java.lang.Byte or com.package.MyClass
+            var s when s.EndsWith("[]") => $"JavaArray<{CleanJavaClassName(s[..^2])}>", // i.e.: byte[] or java.lang.Byte[]
+            var s when s.EndsWith(">") => PerformInnerCleanForGeneric(s),// i.e.: com.package.MyClass<...>
+            _ => str
+        };
+    }
+
+    private static string PerformInnerCleanForGeneric(string str)
+    {
+        var startIndex = str.IndexOf("<", StringComparison.Ordinal);
+        var genericPrefix = str[..startIndex];
+        var genericBody = str[(startIndex + 1)..^1];
+        var cleaned = CleanJavaClassName(genericBody);
+
+        return $"{genericPrefix}<{cleaned}>";
     }
 }
