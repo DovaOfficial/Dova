@@ -69,7 +69,10 @@ internal static class JavaCleaner
 
         foreach (var keyword in CSharpKeywords)
         {
-            ret = ret.Replace(keyword, $"@{keyword}");
+            if (ret.Equals(keyword))
+            {
+                ret = ret.Replace(keyword, $"@{keyword}");
+            }
         }
 
         return ret;
