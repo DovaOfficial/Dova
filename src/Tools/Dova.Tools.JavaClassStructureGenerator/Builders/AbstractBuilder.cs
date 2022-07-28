@@ -49,16 +49,23 @@ internal abstract class AbstractBuilder : IBuilder
     
     protected static string CleanJavaClassName(string className) => 
         JavaCleaner.CleanJavaClassName(className);
+
+    protected static string CleanJavaFieldName(string fieldName) =>
+        JavaCleaner.CleanJavaFieldName(fieldName);
     
     protected static string GetReturnTypePrefix(string returnType) => 
         returnType switch
         {
             var rt when IsObjectType(rt) => "Object",
-            _ => returnType.ToFirstUppercase()
+            _ => returnType
+                .Replace("Bool", "Boolean")
+                .ToFirstUppercase()
         };
 
     protected static bool IsObjectType(string type) =>
-        type.Contains(".") || type.Contains("JavaArray");
+        type.Contains(".") // Most cases will have full package name + class name, divided by '.'
+        || type.Contains("JavaArray") // Dova's custom type for an array (array wrapper)
+        || char.IsUpper(type[0]); // Most generics might have (1;N) chars but first is almost always an upper char
 
     protected static string GetCombinedParameters(IEnumerable<ParameterDefinitionModel> models)
     {

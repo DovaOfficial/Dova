@@ -34,7 +34,7 @@ internal class PropertiesBuilder : AbstractBuilder
             var returnTypePrefix = GetReturnTypePrefix(returnType);
 
             yield return AppendLine($"[{nameof(JniSignatureAttribute)}(\"{field.Signature}\", \"{field.Modifiers}\")]", tabs);
-            yield return AppendLine($"public {staticPrefix}{returnType} {field.Name}", tabs);
+            yield return AppendLine($"public {staticPrefix}{returnType} {CleanJavaFieldName(field.Name)}", tabs);
             yield return AppendLine("{", tabs);
             yield return AppendLine("get", tabs + 1);
             yield return AppendLine("{", tabs + 1);

@@ -18,6 +18,7 @@ internal static class JavaCleaner
         { "boolean", "bool" },
         { "<?>", "<java.lang.Object>" },
         { "? extends ", "" },
+        { "? super ", "" },
         { "$", "." },
     };
     
@@ -60,5 +61,17 @@ internal static class JavaCleaner
         var cleaned = CleanJavaClassName(genericBody);
 
         return $"{genericPrefix}<{cleaned}>";
+    }
+
+    public static string CleanJavaFieldName(string fieldName)
+    {
+        var ret = fieldName.Replace("$", ""); // Specific case for fields - we cannot create a '.' in front of a field name
+
+        foreach (var keyword in CSharpKeywords)
+        {
+            ret = ret.Replace(keyword, $"@{keyword}");
+        }
+
+        return ret;
     }
 }
