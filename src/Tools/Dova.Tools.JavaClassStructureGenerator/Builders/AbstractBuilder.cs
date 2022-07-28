@@ -53,7 +53,7 @@ internal abstract class AbstractBuilder : IBuilder
     protected static string GetReturnTypePrefix(string returnType) => 
         returnType switch
         {
-            var rt when rt.Contains(".") => "Object",
+            var rt when rt.Contains(".") || rt.Contains("JavaArray") => "Object",
             _ => returnType.ToFirstUppercase()
         };
 
