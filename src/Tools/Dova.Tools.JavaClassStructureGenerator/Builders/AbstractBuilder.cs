@@ -53,9 +53,12 @@ internal abstract class AbstractBuilder : IBuilder
     protected static string GetReturnTypePrefix(string returnType) => 
         returnType switch
         {
-            var rt when rt.Contains(".") || rt.Contains("JavaArray") => "Object",
+            var rt when IsObjectType(rt) => "Object",
             _ => returnType.ToFirstUppercase()
         };
+
+    protected static bool IsObjectType(string type) =>
+        type.Contains(".") || type.Contains("JavaArray");
 
     protected static string GetCombinedParameters(IEnumerable<ParameterDefinitionModel> models)
     {

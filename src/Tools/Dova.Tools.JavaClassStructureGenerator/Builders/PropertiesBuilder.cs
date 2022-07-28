@@ -27,7 +27,7 @@ internal class PropertiesBuilder : AbstractBuilder
         
             var returnType = CleanJavaClassName(field.ReturnType);
             
-            var targetObjValue = returnType.Contains(".")
+            var targetObjValue = IsObjectType(returnType)
                 ? $"value.{nameof(JavaObject.CurrentRefPtr)}"
                 : "value";
             
@@ -41,7 +41,7 @@ internal class PropertiesBuilder : AbstractBuilder
             yield return AppendLine($"var ret = DovaJvm.Vm.Runtime.Get{staticMethodPrefix}{returnTypePrefix}Field({targetObjPtr}, {FieldPtrsStr}[{index}]);", tabs + 2);
             
             // TODO: What if we are returning an interface ??? - we cannot do 'new interface'
-            yield return AppendLine(returnType.Contains(".") ? $"return new {returnType}(ret);" : $"return ret;", tabs + 2);
+            yield return AppendLine(IsObjectType(returnType) ? $"return new {returnType}(ret);" : $"return ret;", tabs + 2);
             yield return AppendLine("}", tabs + 1);
             yield return AppendLine($"set => DovaJvm.Vm.Runtime.Set{staticMethodPrefix}{returnTypePrefix}Field({targetObjPtr}, {FieldPtrsStr}[{index}], {targetObjValue});", tabs + 1);
             yield return AppendLine("}", tabs);
