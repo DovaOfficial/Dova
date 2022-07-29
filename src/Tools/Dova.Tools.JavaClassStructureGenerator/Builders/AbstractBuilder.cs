@@ -59,11 +59,28 @@ internal abstract class AbstractBuilder : IBuilder
         
         return combinedParamsWithTypes;
     }
+    
+    public static string CombineGenericTypes(IEnumerable<TypeParameterModel> models)
+    {
+        var genericParams = models
+            .Select(x => x.VariableName)
+            .ToList();
+    
+        var genericVariables = string.Join(", ", genericParams);
+        var genericArgs = string.Empty;
+    
+        if (!string.IsNullOrWhiteSpace(genericVariables))
+        {
+            genericArgs = $"<{genericVariables}>";
+        }
+    
+        return genericArgs;
+    }
 
     public static string GetCombinedParameterNames(IEnumerable<ParameterDefinitionModel> models) =>
         string.Join(", ", models.Select(x => x.Name));
 
-    public static string GetGenericParameters(IEnumerable<TypeParameterModel> models)
+    public static string GetGenericParameters(IEnumerable<ParameterDefinitionModel> models)
     {
         if (!models.Any())
         {
@@ -71,8 +88,16 @@ internal abstract class AbstractBuilder : IBuilder
         }
 
         var parts = models
+            .Select(x => x.TypeParameterModels)
+            .SelectMany(x => x)
+            .Where(x => !x.TypeName.Contains("."))
             .Select(x => CleanJavaClassName(x.TypeName))
             .ToList();
+
+        if (parts.Count == 0)
+        {
+            return string.Empty;
+        }
 
         var combined = string.Join(", ", parts);
 
