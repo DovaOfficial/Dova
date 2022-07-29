@@ -13,7 +13,7 @@ internal class ClassSignatureBuilder : AbstractBuilder
             ? "interface "
             : "class ";
         
-        var genericTypes = CombineGenericTypes(model.ClassDetailsModel.TypeParameterModels);
+        var genericTypes = GetGenericParameters(model.ClassDetailsModel.TypeParameterModels);
         
         yield return AppendLine($"[{nameof(JniSignatureAttribute)}(\"{model.ClassDetailsModel.Signature}\", \"{model.ClassDetailsModel.Modifiers}\")]", tabs);
         yield return AppendLine($"public partial {type}{model.ClassDetailsModel.ClassName}{genericTypes}", tabs);

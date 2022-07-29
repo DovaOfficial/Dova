@@ -31,24 +31,7 @@ internal abstract class AbstractBuilder : IBuilder
         
         return newLine;
     }
-    
-    public static string CombineGenericTypes(IEnumerable<TypeParameterModel> models)
-    {
-        var genericParams = models
-            .Select(x => x.VariableName)
-            .ToList();
-    
-        var genericVariables = string.Join(", ", genericParams);
-        var genericArgs = string.Empty;
-    
-        if (!string.IsNullOrWhiteSpace(genericVariables))
-        {
-            genericArgs = $"<{genericVariables}>";
-        }
-    
-        return genericArgs;
-    }
-    
+
     public static string CleanJavaClassName(string className) => 
         JavaCleaner.CleanJavaClassName(className);
 
