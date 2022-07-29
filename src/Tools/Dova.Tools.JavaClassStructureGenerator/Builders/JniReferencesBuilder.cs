@@ -13,17 +13,17 @@ internal class JniReferencesBuilder : AbstractBuilder
         
         if (model.FieldModels.Count > 0)
         {
-            yield return AppendLine($"private static {typeof(IList<IntPtr>).FullName} {FieldPtrsStr} {{ get; }} = new {typeof(List<IntPtr>).FullName}();", tabs);
+            yield return AppendLine($"private static {typeof(IList<>).Namespace}.{nameof(IList<IntPtr>)} {FieldPtrsStr} {{ get; }} = new {typeof(List<>).Namespace}.{nameof(List<IntPtr>)}();", tabs);
         }
         
         if (model.ConstructorModels.Count > 0)
         {
-            yield return AppendLine($"private static {typeof(IList<IntPtr>).FullName} {ConstructorPtrsStr} {{ get; }} = new {typeof(List<IntPtr>).FullName}();", tabs);
+            yield return AppendLine($"private static {typeof(IList<>).Namespace}.{nameof(IList<IntPtr>)} {ConstructorPtrsStr} {{ get; }} = new {typeof(List<>).Namespace}.{nameof(List<IntPtr>)}();", tabs);
         }
         
         if (model.MethodModels.Count > 0)
         {
-            yield return AppendLine($"private static {typeof(IList<IntPtr>).FullName} {MethodPtrsStr} {{ get; }} = new {typeof(List<IntPtr>).FullName};", tabs);
+            yield return AppendLine($"private static {typeof(IList<>).Namespace}.{nameof(IList<IntPtr>)} {MethodPtrsStr} {{ get; }} = new {typeof(List<>).Namespace}.{nameof(List<IntPtr>)}();", tabs);
         }
 
         yield return AppendLine("");
