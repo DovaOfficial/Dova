@@ -6,6 +6,7 @@ namespace Dova.Tools.JavaClassStructureGenerator.Builders;
 // TODO: Try and exclude inner classes to different files where namespace is build with inner class like: java.util.Separator.OfInt => java.util.separator.OfInt
 // TODO: OR add it after the parent class declaration
 // TODO: OR add a namespace with capital letter so it won't need to be modified later on
+// TODO: Add javaFile as an argument for Build method - we will be able to create new files with similar names and inner classes could be moved to those other files
 internal class InnerClassesBuilder : AbstractBuilder
 {
     private static ClassBuilder Builder { get; } = new();
