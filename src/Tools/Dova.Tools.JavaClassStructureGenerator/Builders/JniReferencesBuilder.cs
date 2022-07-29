@@ -6,24 +6,24 @@ internal class JniReferencesBuilder : AbstractBuilder
 {
     public override IEnumerable<string> Build(ClassDefinitionModel model, int tabs = 0)
     {
-        yield return AppendLine($"public static IntPtr {ClassPtrStr} {{ get; }}", tabs);
-        yield return AppendLine($"public static IntPtr {ClassRefPtrStr} {{ get; }}", tabs);
+        yield return AppendLine($"public static {typeof(IntPtr).FullName} {ClassPtrStr} {{ get; }}", tabs);
+        yield return AppendLine($"public static {typeof(IntPtr).FullName} {ClassRefPtrStr} {{ get; }}", tabs);
         
         yield return AppendLine("");
         
         if (model.FieldModels.Count > 0)
         {
-            yield return AppendLine($"private static IList<IntPtr> {FieldPtrsStr} {{ get; }} = new List<IntPtr>();", tabs);
+            yield return AppendLine($"private static {typeof(IList<IntPtr>).FullName} {FieldPtrsStr} {{ get; }} = new {typeof(List<IntPtr>).FullName}();", tabs);
         }
         
         if (model.ConstructorModels.Count > 0)
         {
-            yield return AppendLine($"private static IList<IntPtr> {ConstructorPtrsStr} {{ get; }} = new List<IntPtr>();", tabs);
+            yield return AppendLine($"private static {typeof(IList<IntPtr>).FullName} {ConstructorPtrsStr} {{ get; }} = new {typeof(List<IntPtr>).FullName}();", tabs);
         }
         
         if (model.MethodModels.Count > 0)
         {
-            yield return AppendLine($"private static IList<IntPtr> {MethodPtrsStr} {{ get; }} = new List<IntPtr>();", tabs);
+            yield return AppendLine($"private static {typeof(IList<IntPtr>).FullName} {MethodPtrsStr} {{ get; }} = new {typeof(List<IntPtr>).FullName};", tabs);
         }
 
         yield return AppendLine("");
