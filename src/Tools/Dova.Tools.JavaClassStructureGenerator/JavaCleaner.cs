@@ -42,6 +42,36 @@ internal static class JavaCleaner
 
         return ret;
     }
+    
+    public static string CleanJavaFieldName(string fieldName)
+    {
+        var ret = fieldName.Replace("$", ""); // Specific case for fields - we cannot create a '.' in front of a field name
+
+        foreach (var keyword in CSharpKeywords)
+        {
+            if (ret.Equals(keyword))
+            {
+                ret = ret.Replace(keyword, $"@{keyword}");
+            }
+        }
+
+        return ret;
+    }
+
+    public static string CleanJavaMethodName(string methodName)
+    {
+        var ret = methodName.Replace("$", "_"); // Specific case for methods - we cannot create a '.' in front of a method name
+
+        foreach (var keyword in CSharpKeywords)
+        {
+            if (ret.Equals(keyword))
+            {
+                ret = ret.Replace(keyword, $"@{keyword}");
+            }
+        }
+
+        return ret;
+    }
 
     private static string PerformInnerClean(string str)
     {
@@ -63,20 +93,5 @@ internal static class JavaCleaner
         var cleaned = CleanJavaClassName(genericBody);
 
         return $"{genericPrefix}<{cleaned}>";
-    }
-
-    public static string CleanJavaFieldName(string fieldName)
-    {
-        var ret = fieldName.Replace("$", ""); // Specific case for fields - we cannot create a '.' in front of a field name
-
-        foreach (var keyword in CSharpKeywords)
-        {
-            if (ret.Equals(keyword))
-            {
-                ret = ret.Replace(keyword, $"@{keyword}");
-            }
-        }
-
-        return ret;
     }
 }

@@ -34,7 +34,7 @@ internal class MethodsBuilder : AbstractBuilder
             var returnType = CleanJavaClassName(method.ReturnType);
 
             yield return AppendLine($"[{nameof(JniSignatureAttribute)}(\"{method.Signature}\", \"{method.Modifiers}\")]", tabs);
-            yield return AppendLine($"{methodModifier}{modifierPrefix}{returnType} {JavaCleaner.CleanJavaClassName(method.Name)}({combinedParameters}){methodPostfix}", tabs);
+            yield return AppendLine($"{methodModifier}{modifierPrefix}{returnType} {JavaCleaner.CleanJavaMethodName(method.Name)}({combinedParameters}){methodPostfix}", tabs);
 
             if (model.ClassDetailsModel.IsInterface)
             {
