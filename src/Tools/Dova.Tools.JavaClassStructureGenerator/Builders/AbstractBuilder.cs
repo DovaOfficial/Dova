@@ -69,7 +69,7 @@ internal abstract class AbstractBuilder : IBuilder
     public static string GetCombinedParameters(IEnumerable<ParameterDefinitionModel> models)
     {
         var paramsWithTypes = models
-            .Select(x => $"{CleanJavaClassName(x.Type)}{CombineGenericTypes(x.TypeParameterModels)} {x.Name}")
+            .Select(x => $"{CleanJavaClassName(x.Type)} {x.Name}")
             .ToList();
         
         var combinedParamsWithTypes = string.Join(", ", paramsWithTypes);
@@ -79,4 +79,20 @@ internal abstract class AbstractBuilder : IBuilder
 
     public static string GetCombinedParameterNames(IEnumerable<ParameterDefinitionModel> models) =>
         string.Join(", ", models.Select(x => x.Name));
+
+    public static string GetGenericParameters(IEnumerable<TypeParameterModel> models)
+    {
+        if (!models.Any())
+        {
+            return string.Empty;
+        }
+
+        var parts = models
+            .Select(x => CleanJavaClassName(x.TypeName))
+            .ToList();
+
+        var combined = string.Join(", ", parts);
+
+        return $"<{combined}>";
+    }
 }

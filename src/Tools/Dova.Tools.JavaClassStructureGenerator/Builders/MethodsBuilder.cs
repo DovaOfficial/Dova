@@ -33,8 +33,11 @@ internal class MethodsBuilder : AbstractBuilder
 
             var returnType = CleanJavaClassName(method.ReturnType);
 
+            var cleanedMethodName = JavaCleaner.CleanJavaMethodName(method.Name);
+            var genericParams = GetGenericParameters(method.TypeParameterModels);
+
             yield return AppendLine($"[{nameof(JniSignatureAttribute)}(\"{method.Signature}\", \"{method.Modifiers}\")]", tabs);
-            yield return AppendLine($"{methodModifier}{modifierPrefix}{returnType} {JavaCleaner.CleanJavaMethodName(method.Name)}({combinedParameters}){methodPostfix}", tabs);
+            yield return AppendLine($"{methodModifier}{modifierPrefix}{returnType} {cleanedMethodName}{genericParams}({combinedParameters}){methodPostfix}", tabs);
 
             if (model.ClassDetailsModel.IsInterface)
             {

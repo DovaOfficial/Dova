@@ -1,6 +1,3 @@
-using System.Text.Json;
-using Dova.Tools.JavaClassStructureGenerator.Models;
-
 namespace Dova.Tools.JavaClassStructureGenerator;
 
 internal static class JavaFileProcessor
@@ -26,21 +23,8 @@ internal static class JavaFileProcessor
         // Let it wait for file to be saved
         Thread.Sleep(30);
 
-        var javaClassDefinitionModel = Read(tempOutputPathFull, javaFile);
+        var javaClassDefinitionModel = JavaFileParser.Parse(tempOutputPathFull, javaFile);
         
         CSharpClassGenerator.Generate(config.OutputDirectoryPath, javaFileRelativePathWithoutFileName, javaClassDefinitionModel);
-    }
-    
-    private static ClassDefinitionModel Read(string jsonPath, FileInfo javaFile)
-    {
-        var fileContent = File.ReadAllText(jsonPath);
-
-        if (string.IsNullOrWhiteSpace(fileContent))
-        {
-            throw new ArgumentException($"Empty JSON was generated for file: {javaFile.FullName}");
-        }
-        
-        var model = JsonSerializer.Deserialize<ClassDefinitionModel>(fileContent);
-        return model ?? throw new ArgumentException("Cannot read JSON at: " + jsonPath);
     }
 }

@@ -1,7 +1,9 @@
 package com.github.sejoslaw.dova;
 
 import java.lang.reflect.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws ClassNotFoundException {
@@ -82,7 +84,22 @@ public class Main {
     private static void GetTypeParameter(Type type, TypeParameterModel model) {
         if (type instanceof TypeVariable<?>) {
             GetTypeParameter((TypeVariable<?>) type, model);
+            return;
+        } else if (type instanceof WildcardType) {
+            GetTypeParameter((WildcardType) type, model);
+            return;
         }
+
+        model.TypeName = type.toString();
+    }
+
+    private static void GetTypeParameter(WildcardType type, TypeParameterModel model) {
+        model.TypeName = type.toString();
+
+        var bounds = new ArrayList<>(List.of(type.getUpperBounds()));
+        bounds.addAll(List.of(type.getLowerBounds()));
+
+        GetBounds(bounds.toArray(new Type[0]), model.BoundModels);
     }
 
     private static void GetBounds(Type[] bounds, Collection<BoundDefinitionModel> models) {

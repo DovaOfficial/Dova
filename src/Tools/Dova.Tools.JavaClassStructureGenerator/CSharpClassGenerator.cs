@@ -26,7 +26,7 @@ internal static class CSharpClassGenerator
 
         outputFile.Create().Close();
 
-        var lines = Builder.Build(model);
+        var lines = Builder.Build(model).ToList();
         
         using (var writer = new StreamWriter(outputFile.FullName))
         {
