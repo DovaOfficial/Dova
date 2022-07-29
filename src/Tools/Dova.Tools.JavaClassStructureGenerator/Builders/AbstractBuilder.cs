@@ -52,9 +52,6 @@ internal abstract class AbstractBuilder : IBuilder
     public static string CleanJavaClassName(string className) => 
         JavaCleaner.CleanJavaClassName(className);
 
-    public static string CleanJavaFieldName(string fieldName) =>
-        JavaCleaner.CleanJavaFieldName(fieldName);
-    
     public static string GetReturnTypePrefix(string returnType) => 
         returnType switch
         {

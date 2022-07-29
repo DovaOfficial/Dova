@@ -28,14 +28,19 @@ internal static class JavaCleaner
     {
         var ret = className;
 
-        foreach (var keyword in CSharpKeywords)
+        var parts = className.Split(".");
+
+        if (parts.Length > 1)
         {
-            ret = string.Join(".", 
-                ret.Split(".")
-                    .Select(str => 
-                        str.Equals(keyword) 
-                            ? $"@{keyword}" 
-                            : str));
+            var containedKeyword = CSharpKeywords
+                .Where(keyword => ret.Contains(keyword));
+
+            ret = string.Join(".", parts
+                .Select(part => 
+                    containedKeyword.Any(part.StartsWith) 
+                        && !part.Contains(" ")
+                            ? $"@{part}" 
+                            : part));
         }
 
         foreach (var pair in Replacements)

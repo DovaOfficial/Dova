@@ -7,6 +7,13 @@ public class JavaCleanerTests
 {
     [Theory]
     [InlineData("", "")]
+    [InlineData(".event;", ".@event;")]
+    [InlineData(".test.event;", ".test.@event;")]
+    [InlineData(".test.eventTest;", ".test.@eventTest;")] // Technically this don't need to be changed but for the simplicity it is
+    [InlineData("namespace com.test.event;", "namespace com.test.@event;")]
+    [InlineData(".event.", ".@event.")]
+    [InlineData("TesteventTest", "TesteventTest")]
+    [InlineData("void", "void")]
     [InlineData("byte", "byte")]
     [InlineData("byte[]", "JavaArray<byte>")]
     [InlineData("byte[][]", "JavaArray<JavaArray<byte>>")]
@@ -22,10 +29,10 @@ public class JavaCleanerTests
     [InlineData("java.util.Vector<java.util.Vector<java.text.EntryPair>>[]", "JavaArray<java.util.Vector<java.util.Vector<java.text.EntryPair>>>")]
     [InlineData("java.util.Class<java.util.Class<java.lang.Object>[]>", "java.util.Class<JavaArray<java.util.Class<java.lang.Object>>>")]
     [InlineData("java.util.Class$InnerClass<java.util.Class<java.util.Class$InnerClass<?>>[]>[]", "JavaArray<java.util.Class.InnerClass<JavaArray<java.util.Class<java.util.Class.InnerClass<java.lang.Object>>>>>")]
-    public void Should_clean_Java_class_name(string className, string validClassName)
+    public void Should_clean_Java_class_name(string str, string validStr)
     {
-        var cleanedClassName = JavaCleaner.CleanJavaClassName(className);
+        var cleanedStr = JavaCleaner.CleanJavaClassName(str);
         
-        Assert.Equal(cleanedClassName, validClassName);
+        Assert.Equal(cleanedStr, validStr);
     }
 }
