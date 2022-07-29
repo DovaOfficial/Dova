@@ -1,3 +1,5 @@
+using Dova.Tools.JavaClassStructureGenerator.Builders;
+
 namespace Dova.Tools.JavaClassStructureGenerator;
 
 internal static class JavaCleaner
@@ -16,7 +18,7 @@ internal static class JavaCleaner
     private static IDictionary<string, string> Replacements { get; } = new Dictionary<string, string>
     {
         { "boolean", "bool" },
-        { "<?>", "<java.lang.Object>" },
+        { "<?>", $"<{AbstractBuilder.JavaObjectFullName}>" },
         { "? extends ", "" },
         { "? super ", "" },
         { "$", "." },

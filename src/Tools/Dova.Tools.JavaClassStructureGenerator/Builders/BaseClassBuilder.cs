@@ -7,7 +7,7 @@ internal class BaseClassBuilder : AbstractBuilder
 {
     public override IEnumerable<string> Build(ClassDefinitionModel model, int tabs = 0)
     {
-        var baseClass = "java.lang.Object";
+        var baseClass = JavaObjectFullName;
         
         if (model.ClassDetailsModel.IsInterface 
             && (string.IsNullOrWhiteSpace(model.BaseClassModel.Name)  

@@ -6,12 +6,14 @@ namespace Dova.Tools.JavaClassStructureGenerator.Builders;
 // TODO: Add checking if any error occurred -> IJavaRuntime.ExceptionOccurred (Field, Constructor, Method)
 internal abstract class AbstractBuilder : IBuilder
 {
+    public const string JavaObjectFullName = "java.lang.Object";
+    
     protected const string ClassPtrStr = "ClassPtr";
     protected const string ClassRefPtrStr = "ClassRefPtr";
     protected const string FieldPtrsStr = "FieldPtrs";
     protected const string ConstructorPtrsStr = "ConstructorPtrs";
     protected const string MethodPtrsStr = "MethodPtrs";
-    
+
     public abstract IEnumerable<string> Build(ClassDefinitionModel model, int tabs = 0);
 
     public string AppendLine(string line, int tabs = 0)
