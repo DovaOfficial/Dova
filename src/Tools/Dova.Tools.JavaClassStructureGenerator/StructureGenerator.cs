@@ -5,7 +5,9 @@ internal static class StructureGenerator
     public static void Run(GeneratorConfiguration config)
     {
         var directoriesToSkip = config.SkipDirectories.Split(",");
-        var javaFiles = GetJavaSourceFiles(directoriesToSkip, config.SourcesDirectoryPath);
+        var javaFiles = GetJavaSourceFiles(directoriesToSkip, config.SourcesDirectoryPath)
+            .OrderBy(x => x.FullName)
+            .ToList();
 
         var tasks = javaFiles
             .Select(javaFile => Task.Run(() => JavaFileProcessor.Run(config, javaFile)))
