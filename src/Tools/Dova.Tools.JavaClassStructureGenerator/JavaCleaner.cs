@@ -30,7 +30,12 @@ internal static class JavaCleaner
 
         foreach (var keyword in CSharpKeywords)
         {
-            ret = ret.Replace($".{keyword}.", $".@{keyword}.");
+            ret = string.Join(".", 
+                ret.Split(".")
+                    .Select(str => 
+                        str.Equals(keyword) 
+                            ? $"@{keyword}" 
+                            : str));
         }
 
         foreach (var pair in Replacements)
