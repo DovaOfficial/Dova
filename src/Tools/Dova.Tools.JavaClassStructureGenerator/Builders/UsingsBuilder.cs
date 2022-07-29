@@ -9,6 +9,6 @@ internal class UsingsBuilder : AbstractBuilder
     {
         yield return AppendLine($"using { typeof(JavaObject).Namespace };");
         yield return AppendLine("");
-        yield return AppendLine("using System;");
+        yield return AppendLine("using CSharpSystem = System;");
     }
 }

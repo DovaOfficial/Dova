@@ -6,24 +6,24 @@ internal class JniReferencesBuilder : AbstractBuilder
 {
     public override IEnumerable<string> Build(ClassDefinitionModel model, int tabs = 0)
     {
-        yield return AppendLine($"public static {typeof(IntPtr).FullName} {ClassPtrStr} {{ get; }}", tabs);
-        yield return AppendLine($"public static {typeof(IntPtr).FullName} {ClassRefPtrStr} {{ get; }}", tabs);
+        yield return AppendLine($"public static CSharpSystem.IntPtr {ClassPtrStr} {{ get; }}", tabs);
+        yield return AppendLine($"public static CSharpSystem.IntPtr {ClassRefPtrStr} {{ get; }}", tabs);
         
         yield return AppendLine("");
         
         if (model.FieldModels.Count > 0)
         {
-            yield return AppendLine($"private static {typeof(IList<>).Namespace}.{nameof(IList<IntPtr>)} {FieldPtrsStr} {{ get; }} = new {typeof(List<>).Namespace}.{nameof(List<IntPtr>)}();", tabs);
+            yield return AppendLine($"private static CSharpSystem.Collections.Generic.IList<IntPtr> {FieldPtrsStr} {{ get; }} = new CSharpSystem.Collections.Generic.List<IntPtr>();", tabs);
         }
         
         if (model.ConstructorModels.Count > 0)
         {
-            yield return AppendLine($"private static {typeof(IList<>).Namespace}.{nameof(IList<IntPtr>)} {ConstructorPtrsStr} {{ get; }} = new {typeof(List<>).Namespace}.{nameof(List<IntPtr>)}();", tabs);
+            yield return AppendLine($"private static CSharpSystem.Collections.Generic.IList<IntPtr> {ConstructorPtrsStr} {{ get; }} = new CSharpSystem.Collections.Generic.List<IntPtr>();", tabs);
         }
         
         if (model.MethodModels.Count > 0)
         {
-            yield return AppendLine($"private static {typeof(IList<>).Namespace}.{nameof(IList<IntPtr>)} {MethodPtrsStr} {{ get; }} = new {typeof(List<>).Namespace}.{nameof(List<IntPtr>)}();", tabs);
+            yield return AppendLine($"private static CSharpSystem.Collections.Generic.IList<IntPtr> {MethodPtrsStr} {{ get; }} = new CSharpSystem.Collections.Generic.List<IntPtr>();", tabs);
         }
 
         yield return AppendLine("");
