@@ -5,7 +5,7 @@ namespace Dova.Tools.JavaClassStructureGenerator.Builders;
 
 internal class ClassSignatureBuilder : AbstractBuilder
 {
-    public override IEnumerable<string> Build(ClassDefinitionModel model, int tabs = 0)
+    public override IEnumerable<string> Build(FileInfo outputFile, ClassDefinitionModel model, int tabs = 0)
     {
         yield return AppendLine("");
         

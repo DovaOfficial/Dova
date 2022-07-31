@@ -28,21 +28,6 @@ internal static class JavaCleaner
     {
         var ret = className;
 
-        var parts = className.Split(".");
-
-        if (parts.Length > 1)
-        {
-            var containedKeyword = CSharpKeywords
-                .Where(keyword => ret.Contains(keyword));
-
-            ret = string.Join(".", parts
-                .Select(part => 
-                    containedKeyword.Any(part.StartsWith) 
-                        && !part.Contains(" ")
-                            ? $"@{part}" 
-                            : part));
-        }
-
         foreach (var pair in Replacements)
         {
             ret = ret.Replace(pair.Key, pair.Value);
@@ -83,25 +68,69 @@ internal static class JavaCleaner
         return ret;
     }
 
-    private static string PerformInnerClean(string str)
+    private static string CleanInnerNamespace(string str)
     {
-        return str switch
+        var ret = str;
+        
+        var parts = ret.Split(".");
+
+        if (parts.Length > 1)
+        {
+            const string ToBeRemoved = "TO_BE_REMOVED";
+            
+            for (var i = 0; i < parts.Length - 1; ++i) // -1 because we don't want to include class name which is at last position
+            {
+                if (parts[i].Length > 0 
+                    && char.IsUpper(parts[i][0])
+                    && !parts[i].Contains("<")
+                    && !parts[i].Contains(">"))
+                {
+                    parts[i] = ToBeRemoved;
+                }
+            }
+            
+            parts = parts
+                .Where(x => !x.Equals(ToBeRemoved))
+                .ToArray();
+            
+            var containedKeyword = CSharpKeywords
+                .Where(keyword => ret.Contains(keyword));
+
+            ret = string.Join(".", parts
+                .Select(part => 
+                    containedKeyword.Any(part.StartsWith) 
+                    && !part.Contains(" ")
+                        ? $"@{part}" 
+                        : part));
+        }
+
+        return ret;
+    }
+
+    private static string PerformInnerClean(string str) =>
+        str switch
         {
             var s when !s.Contains(".") && !s.Contains("[]") && !s.Contains("<") => s, // i.e.: byte or MyClass
-            var s when s.Contains(".") && !s.Contains("[]") && !s.Contains("<") => s, // i.e.: java.lang.Byte or com.package.MyClass
+            var s when s.Contains(".") && !s.Contains("[]") && !s.Contains("<") => CleanInnerNamespace(s), // i.e.: java.lang.Byte or com.package.MyClass
             var s when s.EndsWith("[]") => $"JavaArray<{CleanJavaClassName(s[..^2])}>", // i.e.: byte[] or java.lang.Byte[]
             var s when s.EndsWith(">") => PerformInnerCleanForGeneric(s),// i.e.: com.package.MyClass<...>
             _ => str
         };
-    }
 
     private static string PerformInnerCleanForGeneric(string str)
     {
         var startIndex = str.IndexOf("<", StringComparison.Ordinal);
         var genericPrefix = str[..startIndex];
+        var genericPrefixCleaned = CleanInnerNamespace(genericPrefix);
         var genericBody = str[(startIndex + 1)..^1];
-        var cleaned = CleanJavaClassName(genericBody);
+        
+        var genericArgs = genericBody.Split(",")
+            .Select(x => x.Trim())
+            .Select(CleanJavaClassName)
+            .ToArray();
 
-        return $"{genericPrefix}<{cleaned}>";
+        var cleaned = string.Join(", ", genericArgs);
+        
+        return $"{genericPrefixCleaned}<{cleaned}>";
     }
 }

@@ -11,14 +11,13 @@ internal class ClassBodyBuilder : AbstractBuilder
         new ConstructorsBuilder(),
         new ExtraMethodsBuilder(),
         new MethodsBuilder(),
-        new InnerClassesBuilder(),
     };
     
-    public override IEnumerable<string> Build(ClassDefinitionModel model, int tabs = 0)
+    public override IEnumerable<string> Build(FileInfo outputFile, ClassDefinitionModel model, int tabs = 0)
     {
         yield return AppendLine("{", tabs);
 
-        foreach (var line in Builders.SelectMany(builder => builder.Build(model, tabs + 1)))
+        foreach (var line in Builders.SelectMany(builder => builder.Build(outputFile, model, tabs + 1)))
         {
             yield return line;
         }

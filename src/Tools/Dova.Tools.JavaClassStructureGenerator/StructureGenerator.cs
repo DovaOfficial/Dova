@@ -5,15 +5,12 @@ internal static class StructureGenerator
     public static void Run(GeneratorConfiguration config)
     {
         var directoriesToSkip = config.SkipDirectories.Split(",");
+        
         var javaFiles = GetJavaSourceFiles(directoriesToSkip, config.SourcesDirectoryPath)
             .OrderBy(x => x.FullName)
             .ToList();
 
-        var tasks = javaFiles
-            .Select(javaFile => Task.Run(() => JavaFileProcessor.Run(config, javaFile)))
-            .ToArray();
-
-        Task.WaitAll(tasks);
+        Parallel.ForEach(javaFiles, javaFile => JavaFileProcessor.Run(config, javaFile));
     }
 
     private static IEnumerable<FileInfo> GetJavaSourceFiles(string[] directoriesToSkip, string path)

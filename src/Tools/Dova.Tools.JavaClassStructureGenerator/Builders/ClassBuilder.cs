@@ -13,6 +13,6 @@ internal class ClassBuilder : AbstractBuilder
         new ClassBodyBuilder(),
     };
     
-    public override IEnumerable<string> Build(ClassDefinitionModel model, int tabs = 0) => 
-        Builders.SelectMany(builder => builder.Build(model, tabs));
+    public override IEnumerable<string> Build(FileInfo outputFile, ClassDefinitionModel model, int tabs = 0) => 
+        Builders.SelectMany(builder => builder.Build(outputFile, model, tabs));
 }

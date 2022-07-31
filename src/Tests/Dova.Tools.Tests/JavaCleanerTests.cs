@@ -28,7 +28,9 @@ public class JavaCleanerTests
     [InlineData("java.util.Vector<java.util.Vector<java.text.EntryPair>>", "java.util.Vector<java.util.Vector<java.text.EntryPair>>")]
     [InlineData("java.util.Vector<java.util.Vector<java.text.EntryPair>>[]", "JavaArray<java.util.Vector<java.util.Vector<java.text.EntryPair>>>")]
     [InlineData("java.util.Class<java.util.Class<java.lang.Object>[]>", "java.util.Class<JavaArray<java.util.Class<java.lang.Object>>>")]
-    [InlineData("java.util.Class$InnerClass<java.util.Class<java.util.Class$InnerClass<?>>[]>[]", "JavaArray<java.util.Class.InnerClass<JavaArray<java.util.Class<java.util.Class.InnerClass<java.lang.Object>>>>>")]
+    [InlineData("java.util.Class$InnerClass<java.util.Class<java.util.Class$InnerClass<?>>[]>[]", "JavaArray<java.util.InnerClass<JavaArray<java.util.Class<java.util.InnerClass<java.lang.Object>>>>>")]
+    [InlineData("java.util.Spliterator$OfInt<java.util.Function<int>, java.util.List$ArrayList<?>, java.util.Class$InnerClass<java.lang.Integer>>", "java.util.OfInt<java.util.Function<int>, java.util.ArrayList<java.lang.Object>, java.util.InnerClass<java.lang.Integer>>")]
+    [InlineData("java.util.Function2<java.util.List$ArrayList<int>, java.util.List$ArrayList<double>>", "java.util.Function2<java.util.ArrayList<int>, java.util.ArrayList<double>>")]
     public void Should_clean_Java_class_name(string str, string validStr)
     {
         var cleanedStr = JavaCleaner.CleanJavaClassName(str);

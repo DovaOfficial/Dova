@@ -4,7 +4,7 @@ namespace Dova.Tools.JavaClassStructureGenerator.Builders;
 
 internal class JniReferencesBuilder : AbstractBuilder
 {
-    public override IEnumerable<string> Build(ClassDefinitionModel model, int tabs = 0)
+    public override IEnumerable<string> Build(FileInfo outputFile, ClassDefinitionModel model, int tabs = 0)
     {
         yield return AppendLine($"public static CSharpSystem.IntPtr {ClassPtrStr} {{ get; }}", tabs);
         yield return AppendLine($"public static CSharpSystem.IntPtr {ClassRefPtrStr} {{ get; }}", tabs);

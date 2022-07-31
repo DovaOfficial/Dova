@@ -14,7 +14,7 @@ internal abstract class AbstractBuilder : IBuilder
     protected const string ConstructorPtrsStr = "ConstructorPtrs";
     protected const string MethodPtrsStr = "MethodPtrs";
 
-    public abstract IEnumerable<string> Build(ClassDefinitionModel model, int tabs = 0);
+    public abstract IEnumerable<string> Build(FileInfo outputFile, ClassDefinitionModel model, int tabs = 0);
 
     public string AppendLine(string line, int tabs = 0)
     {
