@@ -120,17 +120,26 @@ internal static class JavaCleaner
     private static string PerformInnerCleanForGeneric(string str)
     {
         var startIndex = str.IndexOf("<", StringComparison.Ordinal);
-        var genericPrefix = str[..startIndex];
-        var genericPrefixCleaned = CleanInnerNamespace(genericPrefix);
-        var genericBody = str[(startIndex + 1)..^1];
-        
-        var genericArgs = genericBody.Split(",")
-            .Select(x => x.Trim())
-            .Select(CleanJavaClassName)
-            .ToArray();
 
-        var cleaned = string.Join(", ", genericArgs);
+        if (startIndex > 0)
+        {
+            var genericPrefix = str[..startIndex];
+            var genericPrefixCleaned = CleanInnerNamespace(genericPrefix);
+            var genericBody = str[(startIndex + 1)..^1];
         
-        return $"{genericPrefixCleaned}<{cleaned}>";
+            var genericArgs = genericBody.Split(",")
+                .Select(x => x.Trim())
+                .Select(CleanJavaClassName)
+                .ToArray();
+
+            var cleaned = string.Join(", ", genericArgs);
+        
+            return $"{genericPrefixCleaned}<{cleaned}>";
+        }
+        else
+        {
+            // TODO: Temporary fix - check why the param was 'L[]>' ????
+            return str;
+        }
     }
 }
