@@ -20,13 +20,13 @@ public class BuilderTests
         Assert.True(lines.Any());
     }
 
-    [Fact]
-    public void Should_generate_files()
+    [Theory]
+    [InlineData("/tmp/java.base/share/classes/java/lang/String.java.json")]
+    [InlineData("/tmp/java.sql/share/classes/java/sql/DriverManager.java.json")]
+    public void Should_generate_files(string path)
     {
-        const string Path = "/tmp/java.base/share/classes/java/lang/String.java.json";
-
-        var file = new FileInfo(Path);
-        var model = JavaFileParser.Parse(Path, file);
+        var file = new FileInfo(path);
+        var model = JavaFileParser.Parse(path, file);
         
         CSharpClassGenerator.Generate("/tmp", "/tmp", model);
     }

@@ -4,6 +4,15 @@ namespace Dova.Tools.JavaClassStructureGenerator;
 
 internal static class JavaCleaner
 {
+    private static IReadOnlyList<string> Letters { get; } = new List<string>
+    {
+        "A", "B", "C", "D", "E", 
+        "F", "G", "H", "I", "J",
+        "K", "L", "M", "N", "O", 
+        "P", "Q", "R", "S", "T",
+        "U", "W", "X", "Y", "Z"
+    };
+
     private static IEnumerable<string> CSharpKeywords { get; } = new List<string>
     {
         "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked", "class", "const",
@@ -142,4 +151,7 @@ internal static class JavaCleaner
             return str;
         }
     }
+
+    public static IReadOnlyList<string> CleanUnknownGenerics(IEnumerable<string> strings) => 
+        strings.Select((str, index) => str.Equals("?") ? Letters[index] : str).ToList();
 }

@@ -94,12 +94,14 @@ internal abstract class AbstractBuilder : IBuilder
             .Select(x => CleanJavaClassName(x.TypeName))
             .ToList();
 
-        if (parts.Count == 0)
+        var clearedParts = JavaCleaner.CleanUnknownGenerics(parts);
+
+        if (clearedParts.Count == 0)
         {
             return string.Empty;
         }
 
-        var combined = string.Join(", ", parts);
+        var combined = string.Join(", ", clearedParts);
 
         return $"<{combined}>";
     }
