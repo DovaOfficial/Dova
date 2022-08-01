@@ -34,6 +34,7 @@ internal class PropertiesBuilder : AbstractBuilder
             var returnTypePrefix = GetReturnTypePrefix(returnType);
 
             var fieldName = JavaCleaner.CleanJavaFieldName(field.Name).ToFirstUppercase();
+            var returnString = BuildReturnString(model, field, returnType);
 
             yield return AppendLine($"[{nameof(JniSignatureAttribute)}(\"{field.Signature}\", \"{field.Modifiers}\")]", tabs);
             yield return AppendLine($"public {staticPrefix}{returnType} {fieldName}", tabs);
@@ -41,9 +42,7 @@ internal class PropertiesBuilder : AbstractBuilder
             yield return AppendLine("get", tabs + 1);
             yield return AppendLine("{", tabs + 1);
             yield return AppendLine($"var ret = DovaJvm.Vm.Runtime.Get{staticMethodPrefix}{returnTypePrefix}Field({targetObjPtr}, {FieldPtrsStr}[{index}]);", tabs + 2);
-            
-            // TODO: What if we are returning an interface ??? - we cannot do 'new interface'
-            yield return AppendLine(IsObjectType(returnType) ? $"return new {returnType}(ret);" : $"return ret;", tabs + 2);
+            yield return AppendLine(returnString, tabs + 2);
             yield return AppendLine("}", tabs + 1);
             yield return AppendLine($"set => DovaJvm.Vm.Runtime.Set{staticMethodPrefix}{returnTypePrefix}Field({targetObjPtr}, {FieldPtrsStr}[{index}], {targetObjValue});", tabs + 1);
             yield return AppendLine("}", tabs);
