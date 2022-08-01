@@ -85,26 +85,22 @@ internal static class JavaCleaner
 
         if (parts.Length > 1)
         {
-            const string ToBeRemoved = "TO_BE_REMOVED";
-            
-            for (var i = 0; i < parts.Length - 1; ++i) // -1 because we don't want to include class name which is at last position
+            ret = parts.Aggregate((previous, next) =>
             {
-                if (parts[i].Length > 0 
-                    && char.IsUpper(parts[i][0])
-                    && !parts[i].Contains("<")
-                    && !parts[i].Contains(">"))
-                {
-                    parts[i] = ToBeRemoved;
-                }
-            }
-            
-            parts = parts
-                .Where(x => !x.Equals(ToBeRemoved))
-                .ToArray();
-            
+                var currentLastPart = previous.Split(".").Last();
+                var isClassNamePart = char.IsUpper(currentLastPart[0]);
+                return isClassNamePart ? $"{previous}_{next}" : $"{previous}.{next}";
+            });
+        }
+
+        if (parts.Length > 1
+            || ret.EndsWith(";")) // For namespaces
+        {
             var containedKeyword = CSharpKeywords
                 .Where(keyword => ret.Contains(keyword));
 
+            parts = ret.Split(".");
+            
             ret = string.Join(".", parts
                 .Select(part => 
                     containedKeyword.Any(part.StartsWith) 
@@ -119,7 +115,7 @@ internal static class JavaCleaner
     private static string PerformInnerClean(string str) =>
         str switch
         {
-            var s when !s.Contains(".") && !s.Contains("[]") && !s.Contains("<") => s, // i.e.: byte or MyClass
+            var s when !s.Contains(".") && !s.Contains("[]") && !s.Contains("<") => CleanInnerNamespace(s), // i.e.: byte or MyClass
             var s when s.Contains(".") && !s.Contains("[]") && !s.Contains("<") => CleanInnerNamespace(s), // i.e.: java.lang.Byte or com.package.MyClass
             var s when s.EndsWith("[]") => $"JavaArray<{CleanJavaClassName(s[..^2])}>", // i.e.: byte[] or java.lang.Byte[]
             var s when s.EndsWith(">") => PerformInnerCleanForGeneric(s),// i.e.: com.package.MyClass<...>
