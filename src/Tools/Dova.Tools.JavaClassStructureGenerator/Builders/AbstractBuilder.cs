@@ -108,5 +108,5 @@ internal abstract class AbstractBuilder : IBuilder
 
     // TODO: Implement better way of handling new objects of interface types.
     public static string BuildReturnString(ClassDefinitionModel classDefModel, ClassElementDefinitionModel classElDefModel, string returnType) =>
-        IsObjectType(returnType) ? $"DovaInterfaceFactory.Get<{returnType}>(ret);" : $"return ret;";
+        IsObjectType(returnType) ? $"return DovaInterfaceFactory.Get<{returnType}>(ret);" : $"return ret;";
 }
