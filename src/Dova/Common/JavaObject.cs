@@ -11,7 +11,7 @@ public abstract class JavaObject : IJavaObject
     /// <summary>
     /// Reference to the current object.
     /// </summary>
-    public IntPtr CurrentRefPtr { get; }
+    public virtual IntPtr CurrentRefPtr { get; }
 
     /// <summary>
     /// This constructor should not be used beside the generated classes.
