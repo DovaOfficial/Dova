@@ -106,8 +106,7 @@ internal abstract class AbstractBuilder : IBuilder
         return $"<{combined}>";
     }
 
-    // TODO: What if we are returning an interface ??? - we cannot do 'new interface'
-    // TODO: Use models to determine if return type is an interface (maybe we need to modify Java app)
+    // TODO: Implement better way of handling new objects of interface types.
     public static string BuildReturnString(ClassDefinitionModel classDefModel, ClassElementDefinitionModel classElDefModel, string returnType) =>
         IsObjectType(returnType) ? $"DovaInterfaceFactory.Get<{returnType}>(ret);" : $"return ret;";
 }
