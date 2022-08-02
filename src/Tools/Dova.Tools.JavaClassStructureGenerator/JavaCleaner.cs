@@ -125,27 +125,22 @@ internal static class JavaCleaner
     private static string PerformInnerCleanForGeneric(string str)
     {
         var startIndex = str.IndexOf("<", StringComparison.Ordinal);
-
-        if (startIndex > 0)
-        {
-            var genericPrefix = str[..startIndex];
-            var genericPrefixCleaned = CleanInnerNamespace(genericPrefix);
-            var genericBody = str[(startIndex + 1)..^1];
         
-            var genericArgs = genericBody.Split(",")
-                .Select(x => x.Trim())
-                .Select(CleanJavaClassName)
-                .ToArray();
-
-            var cleaned = string.Join(", ", genericArgs);
+        var genericPrefix = str[..startIndex];
+        var genericPrefixCleaned = CleanInnerNamespace(genericPrefix);
+        var genericBody = str[(startIndex + 1)..^1]; // skip '<' and '>'
         
-            return $"{genericPrefixCleaned}<{cleaned}>";
-        }
-        else
-        {
-            // TODO: Temporary fix - check why the param was 'L[]>' ????
-            return str;
-        }
+        var genericBodyParts = GenericBodyReader
+            .Read(genericBody)
+            .ToList();
+            
+        var genericArgs = genericBodyParts
+            .Select(CleanJavaClassName)
+            .ToArray();
+
+        var cleaned = string.Join(", ", genericArgs);
+        
+        return $"{genericPrefixCleaned}<{cleaned}>";
     }
 
     public static IReadOnlyList<string> CleanUnknownGenerics(IEnumerable<string> strings) => 
