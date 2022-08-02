@@ -10,7 +10,9 @@ internal static class StructureGenerator
             .OrderBy(x => x.FullName)
             .ToList();
 
-        Parallel.ForEach(javaFiles, javaFile => JavaFileProcessor.Run(config, javaFile));
+        CollectionProcessor.ForEachParallel(javaFiles, javaFile => JavaFileProcessor.Run(config, javaFile));
+
+        // TODO: [Idea] Maybe add some check if all files were created successfully - missing deps or something
     }
 
     private static IEnumerable<FileInfo> GetJavaSourceFiles(string[] directoriesToSkip, string path)

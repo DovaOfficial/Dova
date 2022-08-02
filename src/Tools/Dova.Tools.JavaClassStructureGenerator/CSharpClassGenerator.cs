@@ -44,18 +44,23 @@ internal static class CSharpClassGenerator
         }
     }
     
-    private static void GenerateInnerClasses(FileInfo outputFile, ClassDefinitionModel model)
+    private static void GenerateInnerClasses(FileInfo outputFile, ClassDefinitionModel model) => 
+        CollectionProcessor.ForEachParallel(model.InnerClassModels, innerClassModel => GenerateInnerClass(outputFile, innerClassModel));
+
+    private static void GenerateInnerClass(FileInfo outputFile, ClassDefinitionModel innerClassModel)
     {
-        Parallel.ForEach(model.InnerClassModels, innerClassModel =>
-        {
-            var outputFileName = outputFile.Name.Split(".")[0];
-            var innerClassFileName = $"{outputFileName}_{innerClassModel.ClassDetailsModel.ClassName}.cs";
-            var innerClassFullPath = Path.Combine(outputFile.DirectoryName, innerClassFileName);
-            var innerClassFile = new FileInfo(innerClassFullPath);
+        var outputFileName = outputFile.Name.Split(".")[0];
+        var innerClassName = $"{outputFileName}_{innerClassModel.ClassDetailsModel.ClassName}";
+
+        // We want to make sure that the inner class will have changed name
+        innerClassModel.ClassDetailsModel.ClassName = innerClassName;
             
-            Generate(innerClassFile, innerClassModel);
+        var innerClassFileName = $"{innerClassName}.cs";
+        var innerClassFullPath = Path.Combine(outputFile.DirectoryName, innerClassFileName);
+        var innerClassFile = new FileInfo(innerClassFullPath);
             
-            GenerateInnerClasses(innerClassFile, innerClassModel);
-        });
+        Generate(innerClassFile, innerClassModel);
+            
+        GenerateInnerClasses(innerClassFile, innerClassModel);
     }
 }
