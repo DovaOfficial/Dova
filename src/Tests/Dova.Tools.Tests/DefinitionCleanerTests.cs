@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Dova.Tools.Tests;
 
-public class JavaCleanerTests
+public class DefinitionCleanerTests
 {
     [Theory]
     [InlineData("", "")]
@@ -44,7 +44,7 @@ public class JavaCleanerTests
     [InlineData("java.util.Set<int,java.util.Map.Entry,L[]>", "java.util.Set<int, java.util.Map_Entry, JavaArray<L>>")]
     public void Should_clean_Java_class_name(string str, string validStr)
     {
-        var cleanedStr = JavaCleaner.CleanJavaClassName(str);
+        var cleanedStr = DefinitionCleaner.CleanJavaClassName(str);
         
         Assert.Equal(cleanedStr, validStr);
     }

@@ -2,6 +2,7 @@ namespace Dova.Tools.JavaClassStructureGenerator.Models;
 
 internal class ClassDefinitionModel
 {
+    public string ModuleName { get; set; }
     public ClassDetailsDefinitionModel ClassDetailsModel { get; set; }
     public ClassElementDefinitionModel BaseClassModel { get; set; }
     public IReadOnlyList<ClassElementDefinitionModel> InterfaceModels { get; set; } = new List<ClassElementDefinitionModel>();

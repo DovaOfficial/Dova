@@ -1,28 +1,107 @@
 package com.github.sejoslaw.dova;
 
+import java.lang.module.ModuleFinder;
+import java.lang.module.ModuleReference;
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class Main {
-    public static void main(String[] args) throws ClassNotFoundException {
-        var tempOutputPathFull = args[0]; // i.e.: /tmp/<JAVA_MODULE>/share/classes/com/sun/crypto/provider/AESCipher.java.gen
-        var javaClassFullName = args[1]; // i.e.: com.sun.crypto.provider.AESCipher
+    public static void main(String[] args) {
+        var moduleReferences = GetModuleReferences(args)
+                .stream()
+                .sorted(Comparator.comparing(moduleReference -> moduleReference.descriptor().name()))
+                .toList();
 
         try {
-            ProcessClass(tempOutputPathFull, javaClassFullName);
-        } catch(Exception e) {
+            var threads = moduleReferences
+                    .parallelStream()
+                    .map(moduleReference -> {
+                        var moduleName = moduleReference.descriptor().name();
+
+                        return new Thread(() -> {
+                            try {
+                                var innerThreads = moduleReference
+                                        .open()
+                                        .list()
+                                        .parallel()
+                                        .filter(classPath -> classPath.endsWith(".class") && !classPath.contains("-"))
+                                        .map(classPath -> {
+                                            var innerThreadName = moduleName + "---" + classPath;
+
+                                            return new Thread(() -> {
+                                                try {
+                                                    ProcessClass(moduleName, classPath, args[0]);
+                                                } catch (Exception ex) {
+                                                    System.err.println("Error in module: '" + moduleName + "' in classpath: '" + classPath + "' :" + ex);
+                                                }
+                                            }, innerThreadName);
+                                        })
+                                        .toList();
+
+                                innerThreads.forEach(Thread::start);
+
+                                for (var thread : innerThreads) {
+                                    try {
+                                        thread.join();
+                                    } catch (Exception ex) {
+                                        System.err.println("Error when joining thread: " + thread.getName() + ", :" + ex);
+                                    }
+                                }
+                            } catch (Exception e) {
+                                System.err.println("Error in module: '" + moduleName + "' :" + e);
+                            }
+                        }, moduleName);
+                    })
+                    .toList();
+
+            threads.forEach(Thread::start);
+
+            for (var thread : threads) {
+                try {
+                    thread.join();
+                } catch (Exception ex) {
+                    System.err.println("Error when joining thread: " + thread.getName() + ", :" + ex);
+                }
+            }
+        } catch (Exception e) {
             System.err.println(e);
-            throw e;
         }
     }
 
-    private static void ProcessClass(String tempOutputPathFull, String javaClassFullName) throws ClassNotFoundException {
-        var clazz = Class.forName(javaClassFullName);
+    private static Set<ModuleReference> GetModuleReferences(String[] args) {
+        if (args.length > 1 && !args[1].equals("")) {
+            var modulePathsStr = args[1].split(",");
+
+            var modulePaths = Stream
+                    .of(modulePathsStr)
+                    .map(Path::of)
+                    .toArray(Path[]::new);
+
+            return ModuleFinder.of(modulePaths).findAll();
+        }
+
+        return ModuleFinder.ofSystem().findAll();
+    }
+
+    private static void ProcessClass(String moduleName, String classPath, String paths) throws ClassNotFoundException {
+        if (ModelWriter.ModelExists(paths, moduleName, classPath)) {
+            return;
+        }
+
+        var className = classPath
+                .split("\\.")[0]
+                .replace('/', '.');
+
+        var clazz = Class.forName(className);
         var model = new ClassDefinitionModel();
 
+        model.ModuleName = moduleName;
+
         ProcessClass(clazz, model);
+
+        var tempOutputPathFull = ModelWriter.GetPath(paths, moduleName, classPath);
 
         ModelWriter.Write(tempOutputPathFull, model);
     }
@@ -34,7 +113,7 @@ public class Main {
         GetConstructors(clazz, model.ConstructorModels);
         GetFields(clazz, model.FieldModels);
         GetMethods(clazz, model.MethodModels);
-        GetInnerClasses(clazz, model.InnerClassModels);
+        GetInnerClasses(model.ModuleName, clazz, model.InnerClassModels);
     }
 
     private static void GetClassDetails(Class<?> clazz, ClassDetailsDefinitionModel model) {
@@ -230,9 +309,11 @@ public class Main {
         }
     }
 
-    private static void GetInnerClasses(Class<?> clazz, Collection<ClassDefinitionModel> models) {
+    private static void GetInnerClasses(String moduleName, Class<?> clazz, Collection<ClassDefinitionModel> models) {
         for (Class<?> innerClass : clazz.getDeclaredClasses()) {
             var model = new ClassDefinitionModel();
+
+            model.ModuleName = moduleName;
 
             ProcessClass(innerClass, model);
 

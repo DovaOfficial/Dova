@@ -9,7 +9,7 @@ internal static class CollectionProcessor
     {
         var parallelOptions = new ParallelOptions
         {
-            MaxDegreeOfParallelism = 5
+            MaxDegreeOfParallelism = 20
         };
         
         Parallel.ForEach(col, parallelOptions, callback);

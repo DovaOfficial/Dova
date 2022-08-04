@@ -1,8 +1,9 @@
+using System.Text;
 using Dova.Tools.JavaClassStructureGenerator.Builders;
 
 namespace Dova.Tools.JavaClassStructureGenerator;
 
-internal static class JavaCleaner
+internal static class DefinitionCleaner
 {
     private static IReadOnlyList<string> Letters { get; } = new List<string>
     {
@@ -76,6 +77,9 @@ internal static class JavaCleaner
 
         return ret;
     }
+    
+    public static IReadOnlyList<string> CleanUnknownGenerics(IEnumerable<string> strings) => 
+        strings.Select((str, index) => str.Equals("?") ? Letters[index] : str).ToList();
 
     private static string CleanInnerNamespace(string str)
     {
@@ -129,12 +133,8 @@ internal static class JavaCleaner
         var genericPrefix = str[..startIndex];
         var genericPrefixCleaned = CleanInnerNamespace(genericPrefix);
         var genericBody = str[(startIndex + 1)..^1]; // skip '<' and '>'
-        
-        var genericBodyParts = GenericBodyReader
-            .Read(genericBody)
-            .ToList();
-            
-        var genericArgs = genericBodyParts
+
+        var genericArgs = ReadGenericBody(genericBody)
             .Select(CleanJavaClassName)
             .ToArray();
 
@@ -143,6 +143,36 @@ internal static class JavaCleaner
         return $"{genericPrefixCleaned}<{cleaned}>";
     }
 
-    public static IReadOnlyList<string> CleanUnknownGenerics(IEnumerable<string> strings) => 
-        strings.Select((str, index) => str.Equals("?") ? Letters[index] : str).ToList();
+    private static IEnumerable<string> ReadGenericBody(string genericBody)
+    {
+        var body = genericBody.Replace(" ", "");
+        var depth = 0;
+        var sb = new StringBuilder();
+
+        foreach (var bodyChar in body)
+        {
+            switch (bodyChar)
+            {
+                case '<':
+                    sb.Append(bodyChar);
+                    depth++;
+                    break;
+                case '>':
+                    sb.Append(bodyChar);
+                    depth--;
+                    break;
+                case var ch when ch.Equals(',') && depth == 0:
+                    yield return sb.ToString();
+                    sb.Clear();
+                    break;
+                default:
+                    sb.Append(bodyChar);
+                    break;
+            }
+        }
+        
+        yield return sb.ToString();
+        
+        sb.Clear();
+    }
 }

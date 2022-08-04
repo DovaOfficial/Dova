@@ -8,7 +8,7 @@ internal class NamespaceBuilder : AbstractBuilder
     {
         yield return AppendLine("");
 
-        var cleanedNamespace = JavaCleaner.CleanJavaClassName(model.ClassDetailsModel.PackageName);
+        var cleanedNamespace = DefinitionCleaner.CleanJavaClassName(model.ClassDetailsModel.PackageName);
         var fullNamespace = $"Dova.JDK.{cleanedNamespace}";
 
         yield return AppendLine($"namespace {fullNamespace};");

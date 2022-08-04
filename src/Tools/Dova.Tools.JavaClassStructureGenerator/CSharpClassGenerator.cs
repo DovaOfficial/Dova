@@ -6,22 +6,19 @@ namespace Dova.Tools.JavaClassStructureGenerator;
 internal static class CSharpClassGenerator
 {
     private static CoreBuilder Builder { get; } = new();
-    
-    public static void Generate(string outputDirectoryPath, string javaOutputPathFull, ClassDefinitionModel model)
+
+    public static void Generate(string outputPathFull, ClassDefinitionModel model)
     {
-        var outputDirPath = Path.Combine(outputDirectoryPath, javaOutputPathFull);
+        var outputClassFile = new FileInfo(outputPathFull);
         
-        if (!Directory.Exists(outputDirPath))
+        if (!Directory.Exists(outputClassFile.DirectoryName))
         {
-            Directory.CreateDirectory(outputDirPath);
+            Directory.CreateDirectory(outputClassFile.DirectoryName);
         }
         
-        var outputFilePath = Path.Combine(outputDirPath, $"{model.ClassDetailsModel.ClassName}.cs");
-        var outputFile = new FileInfo(outputFilePath);
+        Generate(outputClassFile, model);
         
-        Generate(outputFile, model);
-
-        GenerateInnerClasses(outputFile, model);
+        GenerateInnerClasses(outputClassFile, model);
     }
 
     public static void Generate(FileInfo outputFile, ClassDefinitionModel model)

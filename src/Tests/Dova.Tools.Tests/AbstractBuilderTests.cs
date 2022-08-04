@@ -10,7 +10,7 @@ public class AbstractBuilderTests
     [InlineData("bool", "Boolean")]
     public void Should_prepare_return_type(string type, string retType)
     {
-        var cleaned = AbstractBuilder.GetReturnTypePrefix(JavaCleaner.CleanJavaClassName(type));
+        var cleaned = AbstractBuilder.GetReturnTypePrefix(DefinitionCleaner.CleanJavaClassName(type));
         
         Assert.Equal(cleaned, retType);
     }

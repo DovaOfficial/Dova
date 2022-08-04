@@ -5,8 +5,20 @@ import org.codehaus.jackson.map.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class ModelWriter {
+    public static String GetPath(String paths, String moduleName, String classPath) {
+        return Path.of(paths, moduleName, classPath.replace('$', '_') + ".dova").toString();
+    }
+
+    public static boolean ModelExists(String paths, String moduleName, String classPath) {
+        var pathStr = GetPath(paths, moduleName, classPath);
+        var path = Path.of(pathStr);
+
+        return Files.exists(path);
+    }
+
     public static void Write(String tempOutputPathFull, ClassDefinitionModel model) {
         var filePath = FileSystems.getDefault().getPath(tempOutputPathFull);
         var file = filePath.toFile();
@@ -14,10 +26,15 @@ public class ModelWriter {
         try {
             Files.deleteIfExists(filePath);
 
-            file.getParentFile().mkdirs();
-            file.createNewFile();
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
+            }
+
+            if (!file.exists()) {
+                file.createNewFile();
+            }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error occurred when preparing files for: " + filePath, e);
         }
 
         var mapper = new ObjectMapper();
@@ -25,7 +42,7 @@ public class ModelWriter {
         try {
             mapper.writeValue(file, model);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error occurred when writing JSON data to: " + filePath, e);
         }
     }
 }

@@ -2,16 +2,16 @@ using System.Diagnostics;
 
 namespace Dova.Tools.JavaClassStructureGenerator;
 
-internal static class JavaClassDefinitionGenerator
+internal static class ToolRunner
 {
-    public static void Generate(string classDefinitionGeneratorPath, string tempOutputPathFull, string javaClassFullName)
+    public static void Run(string classDefinitionGeneratorPath, string tempOutputPathFull, string javaModuleFinderPaths = "")
     {
         var process = new Process
         {
             StartInfo =
             {
                 FileName = "java",
-                Arguments = $"-jar {classDefinitionGeneratorPath} {tempOutputPathFull} {javaClassFullName}"
+                Arguments = $"-jar {classDefinitionGeneratorPath} {tempOutputPathFull} {javaModuleFinderPaths}"
             }
         };
 

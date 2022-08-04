@@ -33,7 +33,7 @@ internal abstract class AbstractBuilder : IBuilder
     }
 
     public static string CleanJavaClassName(string className) => 
-        JavaCleaner.CleanJavaClassName(className);
+        DefinitionCleaner.CleanJavaClassName(className);
 
     public static string GetReturnTypePrefix(string returnType) => 
         returnType switch
@@ -94,7 +94,7 @@ internal abstract class AbstractBuilder : IBuilder
             .Select(x => CleanJavaClassName(x.TypeName))
             .ToList();
 
-        var clearedParts = JavaCleaner.CleanUnknownGenerics(parts);
+        var clearedParts = DefinitionCleaner.CleanUnknownGenerics(parts);
 
         if (clearedParts.Count == 0)
         {

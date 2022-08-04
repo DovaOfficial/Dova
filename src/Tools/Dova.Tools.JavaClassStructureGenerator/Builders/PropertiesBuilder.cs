@@ -33,7 +33,7 @@ internal class PropertiesBuilder : AbstractBuilder
             
             var returnTypePrefix = GetReturnTypePrefix(returnType);
 
-            var fieldName = JavaCleaner.CleanJavaFieldName(field.Name).ToFirstUppercase();
+            var fieldName = DefinitionCleaner.CleanJavaFieldName(field.Name).ToFirstUppercase();
             var returnString = BuildReturnString(model, field, returnType);
 
             yield return AppendLine($"[{nameof(JniSignatureAttribute)}(\"{field.Signature}\", \"{field.Modifiers}\")]", tabs);
