@@ -9,6 +9,20 @@ internal class MethodsBuilder : AbstractBuilder
     {
         for (var index = 0; index < model.MethodModels.Count; ++index)
         {
+            /**
+             * TODO: Don't add 2 same method with similar signatures
+             *
+             * Example from java.lang.String
+             *
+             * [JniSignatureAttribute("(Ljava/lang/invoke/MethodHandles$Lookup;)Ljava/lang/Object;", "public volatile")]
+             * public virtual java.lang.Object resolveConstantDesc(java.lang.@invoke.MethodHandles_Lookup arg0)
+             *
+             * AND
+             *
+             * [JniSignatureAttribute("(Ljava/lang/invoke/MethodHandles$Lookup;)Ljava/lang/String;", "public")]
+             * public virtual java.lang.String resolveConstantDesc(java.lang.@invoke.MethodHandles_Lookup arg0)
+             */
+            
             yield return AppendLine("");
             
             var method = model.MethodModels[index];
@@ -31,6 +45,8 @@ internal class MethodsBuilder : AbstractBuilder
 
             var cleanedMethodName = DefinitionCleaner.CleanJavaMethodName(method.Name);
             var genericParams = GetGenericParametersFormatted(method.ParameterModels);
+            
+            // TODO: Add building generic params from generic parameter args, i.e.: "public virtual R transform(java.util.function.Function<java.lang.String, R> arg0)" - AbstractBuilder.GetGenericParameters
 
             yield return AppendLine($"[{nameof(JniSignatureAttribute)}(\"{method.Signature}\", \"{method.Modifiers}\")]", tabs);
             yield return AppendLine($"{methodModifier}{modifierPrefix}{returnType} {cleanedMethodName}{genericParams}({combinedParameters})", tabs);
