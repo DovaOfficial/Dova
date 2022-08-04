@@ -1,4 +1,3 @@
-using Dova.Common;
 using Dova.Tools.JavaClassStructureGenerator.Models;
 
 namespace Dova.Tools.JavaClassStructureGenerator.Builders;
@@ -11,7 +10,7 @@ internal class GenericBoundsBuilder : AbstractBuilder
         {
             var bounds = typeParam.BoundModels
                 .Select(x => CleanJavaClassName(x.Name))
-                .Select(x => x.Equals(JavaObjectFullName) ? nameof(IJavaObject) : x)
+                .Select(x => x.Equals(JavaObjectFullName) ? GetDefaultBounds() : x)
                 .ToList();
         
             var totalBounds = string.Join(", ", bounds);

@@ -1,4 +1,5 @@
 using System.Text;
+using Dova.Common;
 using Dova.Tools.JavaClassStructureGenerator.Models;
 
 namespace Dova.Tools.JavaClassStructureGenerator.Builders;
@@ -80,23 +81,31 @@ internal abstract class AbstractBuilder : IBuilder
     public static string GetCombinedParameterNames(IEnumerable<ParameterDefinitionModel> models) =>
         string.Join(", ", models.Select(x => x.Name));
 
-    public static string GetGenericParameters(IEnumerable<ParameterDefinitionModel> models)
+    public static IEnumerable<string> GetGenericParameters(IEnumerable<ParameterDefinitionModel> models)
     {
         if (!models.Any())
         {
-            return string.Empty;
+            return new List<string>();
         }
 
         var parts = models
             .Select(x => x.TypeParameterModels)
             .SelectMany(x => x)
-            .Where(x => !x.TypeName.Contains("."))
+            .Where(x => !x.TypeName.Contains(".") && !x.TypeName.Contains(" "))
             .Select(x => CleanJavaClassName(x.TypeName))
+            .Distinct()
             .ToList();
 
         var clearedParts = DefinitionCleaner.CleanUnknownGenerics(parts);
 
-        if (clearedParts.Count == 0)
+        return clearedParts;
+    }
+
+    public static string GetGenericParametersFormatted(IEnumerable<ParameterDefinitionModel> models)
+    {
+        var clearedParts = GetGenericParameters(models);
+
+        if (!clearedParts.Any())
         {
             return string.Empty;
         }
@@ -105,6 +114,8 @@ internal abstract class AbstractBuilder : IBuilder
 
         return $"<{combined}>";
     }
+
+    public static string GetDefaultBounds() => $"class, {nameof(IJavaObject)}";
 
     // TODO: Implement better way of handling new objects of interface types.
     public static string BuildReturnString(ClassDefinitionModel classDefModel, ClassElementDefinitionModel classElDefModel, string returnType) =>

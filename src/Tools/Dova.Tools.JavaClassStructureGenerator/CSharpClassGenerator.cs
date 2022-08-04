@@ -6,18 +6,27 @@ namespace Dova.Tools.JavaClassStructureGenerator;
 internal static class CSharpClassGenerator
 {
     private static CoreBuilder Builder { get; } = new();
+    private static object key = new();
 
     public static void Generate(string outputPathFull, ClassDefinitionModel model)
     {
         var outputClassFile = new FileInfo(outputPathFull);
-        
+
         if (!Directory.Exists(outputClassFile.DirectoryName))
         {
             Directory.CreateDirectory(outputClassFile.DirectoryName);
         }
-        
+
+        var fileName = outputClassFile.Name.Split(".")[0];
+
+        // Make sure the file and class names are equal
+        if (!model.ClassDetailsModel.ClassName.Equals(fileName))
+        {
+            model.ClassDetailsModel.ClassName = fileName;
+        }
+
         Generate(outputClassFile, model);
-        
+
         GenerateInnerClasses(outputClassFile, model);
     }
 
@@ -28,21 +37,23 @@ internal static class CSharpClassGenerator
             outputFile.Delete();
         }
         
-        outputFile.Create().Close();
-        
         var lines = Builder.Build(outputFile, model).ToList();
-        
-        using (var writer = new StreamWriter(outputFile.FullName))
+
+        lock (key)
         {
-            foreach (var line in lines)
+            using (var writer = new StreamWriter(outputFile.FullName))
             {
-                writer.WriteLine(line);
+                foreach (var line in lines)
+                {
+                    writer.WriteLine(line);
+                }
             }
         }
     }
-    
-    private static void GenerateInnerClasses(FileInfo outputFile, ClassDefinitionModel model) => 
-        CollectionProcessor.ForEachParallel(model.InnerClassModels, innerClassModel => GenerateInnerClass(outputFile, innerClassModel));
+
+    private static void GenerateInnerClasses(FileInfo outputFile, ClassDefinitionModel model) =>
+        CollectionProcessor.ForEachParallel(model.InnerClassModels,
+            innerClassModel => GenerateInnerClass(outputFile, innerClassModel));
 
     private static void GenerateInnerClass(FileInfo outputFile, ClassDefinitionModel innerClassModel)
     {
@@ -51,13 +62,13 @@ internal static class CSharpClassGenerator
 
         // We want to make sure that the inner class will have changed name
         innerClassModel.ClassDetailsModel.ClassName = innerClassName;
-            
+
         var innerClassFileName = $"{innerClassName}.cs";
         var innerClassFullPath = Path.Combine(outputFile.DirectoryName, innerClassFileName);
         var innerClassFile = new FileInfo(innerClassFullPath);
-            
+
         Generate(innerClassFile, innerClassModel);
-            
+
         GenerateInnerClasses(innerClassFile, innerClassModel);
     }
 }
