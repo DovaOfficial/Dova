@@ -20,7 +20,7 @@ internal static class StructureGenerator
 
         var definitionFilesInDirectory = dir
             .GetFiles()
-            .Where(fileInfo => fileInfo.Extension.Equals(".json") || fileInfo.Extension.Equals(".dova")) // TODO: Temporary, will be removed (json)
+            .Where(fileInfo => fileInfo.Extension.Equals(".dova"))
             .ToList();
 
         foreach (var subDir in dir.GetDirectories())

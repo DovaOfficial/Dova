@@ -8,7 +8,6 @@ internal static class DefinitionFileProcessor
         
         var outputPathFull = definitionFile.FullName
             .Replace(config.TempDirPath, config.OutputDirectoryPath)
-            .Replace(".class.json", ".cs") // TODO: Temporary, will be removed
             .Replace(".class.dova", ".cs");
         
         CSharpClassGenerator.Generate(outputPathFull, javaClassDefinitionModel);
