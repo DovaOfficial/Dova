@@ -7,25 +7,13 @@ internal class MethodsBuilder : AbstractBuilder
 {
     public override IEnumerable<string> Build(FileInfo outputFile, ClassDefinitionModel model, int tabs = 0)
     {
-        for (var index = 0; index < model.MethodModels.Count; ++index)
+        var filteredMethods = FilterMethodsToGenerate(model.MethodModels).ToList();
+        
+        for (var index = 0; index < filteredMethods.Count; ++index)
         {
-            /**
-             * TODO: Don't add 2 same method with similar signatures
-             *
-             * Example from java.lang.String
-             *
-             * [JniSignatureAttribute("(Ljava/lang/invoke/MethodHandles$Lookup;)Ljava/lang/Object;", "public volatile")]
-             * public virtual java.lang.Object resolveConstantDesc(java.lang.@invoke.MethodHandles_Lookup arg0)
-             *
-             * AND
-             *
-             * [JniSignatureAttribute("(Ljava/lang/invoke/MethodHandles$Lookup;)Ljava/lang/String;", "public")]
-             * public virtual java.lang.String resolveConstantDesc(java.lang.@invoke.MethodHandles_Lookup arg0)
-             */
-            
             yield return AppendLine("");
             
-            var method = model.MethodModels[index];
+            var method = filteredMethods[index];
             
             var modifierPrefix = model.ClassDetailsModel.IsInterface 
                 ? string.Empty 

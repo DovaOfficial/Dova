@@ -51,8 +51,10 @@ internal class JniReferencesBuilder : AbstractBuilder
         
             yield return AppendLine($"{ConstructorPtrsStr}.Add(DovaJvm.Vm.Runtime.{runtimeMethod}({ClassRefPtrStr}, \"{model.ClassDetailsModel.ClassName}\", \"{fieldModel.Signature}\"));", tabs + 1);
         }
+
+        var filteredMethods = FilterMethodsToGenerate(model.MethodModels);
         
-        foreach (var fieldModel in model.MethodModels)
+        foreach (var fieldModel in filteredMethods)
         {
             var runtimeMethod = fieldModel.IsStatic
                 ? "GetStaticMethodId"

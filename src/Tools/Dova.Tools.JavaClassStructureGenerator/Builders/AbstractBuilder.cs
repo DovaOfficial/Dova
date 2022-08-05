@@ -8,7 +8,7 @@ namespace Dova.Tools.JavaClassStructureGenerator.Builders;
 internal abstract class AbstractBuilder : IBuilder
 {
     public const string JavaObjectFullName = "java.lang.Object";
-    
+
     protected const string ClassPtrStr = "ClassPtr";
     protected const string ClassRefPtrStr = "ClassRefPtr";
     protected const string FieldPtrsStr = "FieldPtrs";
@@ -20,23 +20,23 @@ internal abstract class AbstractBuilder : IBuilder
     public string AppendLine(string line, int tabs = 0)
     {
         var sb = new StringBuilder();
-        
+
         for (var i = 0; i < tabs; ++i)
         {
             sb.Append("\t");
         }
-        
+
         sb.Append(line);
-        
+
         var newLine = sb.ToString();
-        
+
         return newLine;
     }
 
-    public static string CleanJavaClassName(string className) => 
+    public static string CleanJavaClassName(string className) =>
         DefinitionCleaner.CleanJavaClassName(className);
 
-    public static string GetReturnTypePrefix(string returnType) => 
+    public static string GetReturnTypePrefix(string returnType) =>
         returnType switch
         {
             var rt when IsObjectType(rt) => "Object",
@@ -55,26 +55,26 @@ internal abstract class AbstractBuilder : IBuilder
         var paramsWithTypes = models
             .Select(x => $"{CleanJavaClassName(x.Type)} {x.Name}")
             .ToList();
-        
+
         var combinedParamsWithTypes = string.Join(", ", paramsWithTypes);
-        
+
         return combinedParamsWithTypes;
     }
-    
+
     public static string CombineGenericTypes(IEnumerable<TypeParameterModel> models)
     {
         var genericParams = models
             .Select(x => x.VariableName)
             .ToList();
-    
+
         var genericVariables = string.Join(", ", genericParams);
         var genericArgs = string.Empty;
-    
+
         if (!string.IsNullOrWhiteSpace(genericVariables))
         {
             genericArgs = $"<{genericVariables}>";
         }
-    
+
         return genericArgs;
     }
 
@@ -115,9 +115,47 @@ internal abstract class AbstractBuilder : IBuilder
         return $"<{combined}>";
     }
 
+    public static IEnumerable<ClassElementDefinitionModel> FilterMethodsToGenerate(IEnumerable<ClassElementDefinitionModel> models)
+    {
+        var groupedByName = models.GroupBy(m => m.Name);
+        
+        foreach (var nameGroup in groupedByName) // i.e.: "resolveConstantDesc"
+        {
+            var groupedByParameters = nameGroup.GroupBy(x => x.ParameterModels.Count);
+
+            foreach (var parametersGroup in groupedByParameters) // i.e.: 1 param (or N params)
+            {
+                var combinedParametersGroups = parametersGroup.GroupBy(x =>
+                    string.Join(", ", x.ParameterModels.Select(m => m.Type)));
+
+                foreach (var combinedParametersGroup in combinedParametersGroups) // i.e.: "java.lang.@invoke.MethodHandles_Lookup" (or N combined params)
+                {
+                    var method = combinedParametersGroup.Count() == 1
+                        ? combinedParametersGroup.First()
+                        : FilterMethods(combinedParametersGroup); // Methods return different types
+
+                    yield return method;
+                }
+            }
+        }
+    }
+
     public static string GetDefaultBounds() => $"class, {nameof(IJavaObject)}";
 
     // TODO: Implement better way of handling new objects of interface types.
     public static string BuildReturnString(ClassDefinitionModel classDefModel, ClassElementDefinitionModel classElDefModel, string returnType) =>
         IsObjectType(returnType) ? $"return DovaInterfaceFactory.Get<{returnType}>(ret);" : $"return ret;";
+    
+    private static ClassElementDefinitionModel FilterMethods(IEnumerable<ClassElementDefinitionModel> models)
+    {
+        var notDefaultReturn = models.FirstOrDefault(x => !x.ReturnType.Equals(JavaObjectFullName));
+
+        if (notDefaultReturn != null)
+        {
+            return notDefaultReturn;
+        }
+
+        // TODO: Find most valid type beside java.lang.Object
+        return models.First();
+    }
 }
