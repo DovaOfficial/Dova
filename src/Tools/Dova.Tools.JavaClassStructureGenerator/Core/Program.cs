@@ -9,4 +9,4 @@ var generatorConfig = new ClassGeneratorConfig
     ForceGenerateJavaDefinitions = args.Length > 4 && bool.Parse(args[4]), // [Optional] forces call to generate java definitions using java tool from provided path
 };
 
-ClassGenerator.Generate(generatorConfig);
+ClassGenerator.Run(generatorConfig);

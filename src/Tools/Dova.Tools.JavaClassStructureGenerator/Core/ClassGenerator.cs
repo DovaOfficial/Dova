@@ -1,12 +1,15 @@
 using System.Diagnostics;
 using System.Text.Json;
+using Dova.Tools.JavaClassStructureGenerator.Builders;
 using Dova.Tools.JavaClassStructureGenerator.Models;
 
 namespace Dova.Tools.JavaClassStructureGenerator.Core;
 
 internal static class ClassGenerator
 {
-    public static void Generate(ClassGeneratorConfig config)
+    private static CoreBuilder Builder { get; } = new();
+    
+    public static void Run(ClassGeneratorConfig config)
     {
         if (config.ForceGenerateJavaDefinitions)
         {
@@ -66,14 +69,41 @@ internal static class ClassGenerator
             .Replace(config.TempDirPath, config.OutputDirectoryPath)
             .Replace(".class.dova", ".cs");
         
-        CSharpClassGenerator.Generate(outputPathFull, javaClassDefinitionModel);
+        GenerateClass(outputPathFull, javaClassDefinitionModel);
     }
-    
+
     public static ClassDefinitionModel ReadClassDefinition(string path)
     {
         var fileContent = File.ReadAllText(path);
         var model = JsonSerializer.Deserialize<ClassDefinitionModel>(fileContent);
         
         return model ?? throw new ArgumentException("Cannot read definition file at: " + path);
+    }
+    
+    public static void GenerateClass(string outputPathFull, ClassDefinitionModel model)
+    {
+        var outputFile = new FileInfo(outputPathFull);
+
+        if (!Directory.Exists(outputFile.DirectoryName))
+        {
+            Directory.CreateDirectory(outputFile.DirectoryName);
+        }
+
+        if (outputFile.Exists)
+        {
+            outputFile.Delete();
+        }
+
+        var lines = Builder
+            .Build(outputFile, model)
+            .ToList();
+
+        using (var writer = new StreamWriter(outputFile.FullName))
+        {
+            foreach (var line in lines)
+            {
+                writer.WriteLine(line);
+            }
+        }
     }
 }

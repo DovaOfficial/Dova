@@ -27,6 +27,6 @@ public class BuilderTests
     {
         var model = ClassGenerator.ReadClassDefinition(path);
         
-        CSharpClassGenerator.Generate(path, model);
+        ClassGenerator.GenerateClass(path, model);
     }
 }
