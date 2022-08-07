@@ -19,6 +19,13 @@ internal static class CSharpClassGenerator
 
         var fileName = outputClassFile.Name.Split(".")[0];
 
+        // Valid file should be a valid class name i.e.: 'java.lang.Object'
+        if (fileName.All(x => !char.IsUpper(x)))
+        {
+            Console.WriteLine($"Unknown class name: '{fileName}', for path: {outputClassFile.FullName}");
+            return;
+        }
+
         // Make sure the file and class names are equal
         if (!model.ClassDetailsModel.ClassName.Equals(fileName))
         {
