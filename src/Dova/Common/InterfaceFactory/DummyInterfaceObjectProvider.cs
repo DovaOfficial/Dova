@@ -2,7 +2,7 @@ using System.Runtime;
 
 namespace Dova.Common.InterfaceFactory;
 
-public sealed class DefaultInterfaceObjectProvider : IInterfaceObjectProvider
+public sealed class DummyInterfaceObjectProvider : IInterfaceObjectProvider
 {
     /// <summary>
     /// By default Dova doesn't support interface-type object creation (yet).
