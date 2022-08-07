@@ -42,6 +42,10 @@ public class DefinitionCleanerTests
     [InlineData("java.util.Set<int[],java.util.Map.Entry>", "java.util.Set<JavaArray<int>, java.util.Map_Entry>")]
     [InlineData("java.util.Set<int, java.util.Map.Entry, L[]>", "java.util.Set<int, java.util.Map_Entry, JavaArray<L>>")]
     [InlineData("java.util.Set<int,java.util.Map.Entry,L[]>", "java.util.Set<int, java.util.Map_Entry, JavaArray<L>>")]
+    [InlineData("java.lang.invoke.ClassSpecializer<T, K, S>.SpeciesData", "java.lang.@invoke.ClassSpecializer_SpeciesData")]
+    [InlineData("javax.swing.JComboBox<E>.AccessibleJComboBox.EditorAccessibleContext", "javax.swing.JComboBox_AccessibleJComboBox_EditorAccessibleContext")]
+    [InlineData("java.lang.invoke.ClassSpecializer<T, K, S>.SpeciesData<T, K, S>.SpeciesData", "java.lang.@invoke.ClassSpecializer_SpeciesData_SpeciesData")]
+    [InlineData("jdk.internal.loader.AbstractClassLoaderValue<CLV, V>$Sub<K>", "jdk.@internal.loader.AbstractClassLoaderValue_Sub<K>")]
     public void Should_clean_Java_class_name(string str, string validStr)
     {
         var cleanedStr = DefinitionCleaner.CleanJavaClassName(str);
