@@ -81,82 +81,82 @@ internal static class DefinitionCleaner
     public static IReadOnlyList<string> CleanUnknownGenerics(IEnumerable<string> strings) => 
         strings.Select((str, index) => str.Equals("?") ? Letters[index] : str).ToList();
 
-    private static string CleanInnerNamespace(string str)
-    {
-        var ret = str;
-        
-        var parts = ret.Split(".");
-
-        if (parts.Length > 1)
-        {
-            ret = parts.Aggregate((previous, next) =>
-            {
-                var currentLastPart = previous.Split(".").Last();
-                var isClassNamePart = char.IsUpper(currentLastPart[0]);
-                return isClassNamePart ? $"{previous}_{next}" : $"{previous}.{next}";
-            });
-        }
-
-        if (parts.Length > 1
-            || ret.EndsWith(";")) // For namespaces
-        {
-            var containedKeyword = CSharpKeywords
-                .Where(keyword => ret.Contains(keyword));
-
-            parts = ret.Split(".");
-            
-            ret = string.Join(".", parts
-                .Select(part => 
-                    containedKeyword.Any(part.StartsWith) 
-                    && !part.Contains(" ")
-                        ? $"@{part}" 
-                        : part));
-        }
-
-        return ret;
-    }
+    // private static string CleanInnerNamespace(string str)
+    // {
+    //     var ret = str;
+    //     
+    //     var parts = ret.Split(".");
+    //
+    //     if (parts.Length > 1)
+    //     {
+    //         ret = parts.Aggregate((previous, next) =>
+    //         {
+    //             var currentLastPart = previous.Split(".").Last();
+    //             var isClassNamePart = char.IsUpper(currentLastPart[0]);
+    //             return isClassNamePart ? $"{previous}_{next}" : $"{previous}.{next}";
+    //         });
+    //     }
+    //
+    //     if (parts.Length > 1
+    //         || ret.EndsWith(";")) // For namespaces
+    //     {
+    //         var containedKeyword = CSharpKeywords
+    //             .Where(keyword => ret.Contains(keyword));
+    //
+    //         parts = ret.Split(".");
+    //         
+    //         ret = string.Join(".", parts
+    //             .Select(part => 
+    //                 containedKeyword.Any(part.StartsWith) 
+    //                 && !part.Contains(" ")
+    //                     ? $"@{part}" 
+    //                     : part));
+    //     }
+    //
+    //     return ret;
+    // }
 
     private static string PerformInnerClean(string str) =>
         str switch
         {
-            var s when !s.Contains(".") && !s.Contains("[]") && !s.Contains("<") => CleanInnerNamespace(s), // i.e.: byte or MyClass
-            var s when s.Contains(".") && !s.Contains("[]") && !s.Contains("<") => CleanInnerNamespace(s), // i.e.: java.lang.Byte or com.package.MyClass
+            var s when !s.Contains(".") && !s.Contains("[]") && !s.Contains("<") => s, // CleanInnerNamespace(s), // i.e.: byte or MyClass
+            var s when s.Contains(".") && !s.Contains("[]") && !s.Contains("<") => s, // CleanInnerNamespace(s), // i.e.: java.lang.Byte or com.package.MyClass
             var s when s.EndsWith("[]") => $"JavaArray<{CleanJavaClassName(s[..^2])}>", // i.e.: byte[] or java.lang.Byte[]
             var s when s.EndsWith(">") && !s.Contains(">.") => PerformInnerCleanForGeneric(s),// i.e.: com.package.MyClass<...>
-            var s when s.Contains(">.") => CleanInnerGeneric(str), // i.e.: java.lang.invoke.ClassSpecializer<T, K, S>.SpeciesData
+            // var s when s.Contains(">.") => CleanInnerGeneric(str), // i.e.: java.lang.invoke.ClassSpecializer<T, K, S>.SpeciesData
             _ => str
         };
 
-    private static string CleanInnerGeneric(string str)
-    {
-        var ret = str;
-        
-        while (ret.Contains("<") && ret.Contains(">"))
-        {
-            var openBracketIndex = ret.IndexOf("<");
-            var closeBracketIndex = ret.IndexOf(">");
-
-            if (closeBracketIndex + 1 == ret.Length) // + 1 for ">" to check if it is a closing bracket at the end of the class name / definition
-            {
-                break;
-            }
-            
-            var subStr = ret[openBracketIndex..(closeBracketIndex + 2)]; // +2 in order to take additional ">."
-
-            ret = ret.Replace(subStr, "_");
-        }
-
-        ret = PerformInnerClean(ret);
-
-        return ret;
-    }
+    // private static string CleanInnerGeneric(string str)
+    // {
+    //     var ret = str;
+    //     
+    //     while (ret.Contains("<") && ret.Contains(">"))
+    //     {
+    //         var openBracketIndex = ret.IndexOf("<");
+    //         var closeBracketIndex = ret.IndexOf(">");
+    //
+    //         if (closeBracketIndex + 1 == ret.Length) // + 1 for ">" to check if it is a closing bracket at the end of the class name / definition
+    //         {
+    //             break;
+    //         }
+    //         
+    //         var subStr = ret[openBracketIndex..(closeBracketIndex + 2)]; // +2 in order to take additional ">."
+    //
+    //         ret = ret.Replace(subStr, "_");
+    //     }
+    //
+    //     ret = PerformInnerClean(ret);
+    //
+    //     return ret;
+    // }
 
     private static string PerformInnerCleanForGeneric(string str)
     {
         var startIndex = str.IndexOf("<", StringComparison.Ordinal);
         
         var genericPrefix = str[..startIndex];
-        var genericPrefixCleaned = CleanInnerNamespace(genericPrefix);
+        // var genericPrefixCleaned = CleanInnerNamespace(genericPrefix);
         var genericBody = str[(startIndex + 1)..^1]; // skip '<' and '>'
 
         var genericArgs = ReadGenericBody(genericBody)
@@ -165,7 +165,8 @@ internal static class DefinitionCleaner
 
         var cleaned = string.Join(", ", genericArgs);
         
-        return $"{genericPrefixCleaned}<{cleaned}>";
+        // return $"{genericPrefixCleaned}<{cleaned}>";
+        return $"{genericPrefix}<{cleaned}>";
     }
 
     private static IEnumerable<string> ReadGenericBody(string genericBody)

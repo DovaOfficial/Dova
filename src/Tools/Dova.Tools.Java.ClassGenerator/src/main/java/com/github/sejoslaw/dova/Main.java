@@ -1,5 +1,6 @@
 package com.github.sejoslaw.dova;
 
+import java.io.IOException;
 import java.lang.module.ModuleFinder;
 import java.lang.module.ModuleReference;
 import java.lang.reflect.*;
@@ -20,51 +21,99 @@ public class Main {
                     .map(moduleReference -> {
                         var moduleName = moduleReference.descriptor().name();
 
-                        return new Thread(() -> {
-                            try {
-                                var innerThreads = moduleReference
-                                        .open()
-                                        .list()
-                                        .parallel()
-                                        .filter(classPath -> classPath.endsWith(".class") && !classPath.contains("-"))
-                                        .map(classPath -> {
-                                            var innerThreadName = moduleName + "---" + classPath;
+                        try {
+                            return moduleReference
+                                    .open()
+                                    .list()
+                                    .parallel()
+                                    .filter(classPath -> classPath.endsWith(".class")
+                                            && !classPath.contains("-")
+                                            && !classPath.contains("$"))
+                                    .map(classPath -> {
+                                        var innerThreadName = moduleName + "---" + classPath;
 
-                                            return new Thread(() -> {
-                                                try {
-                                                    ProcessClass(moduleName, classPath, args[0]);
-                                                } catch (Exception ex) {
-                                                    System.err.println("Error in module: '" + moduleName + "' in classpath: '" + classPath + "' :" + ex);
-                                                }
-                                            }, innerThreadName);
-                                        })
-                                        .toList();
+                                        return new Thread(() -> {
+                                            try {
+                                                ProcessClass(moduleName, classPath, args[0]);
+                                            } catch (Exception ex) {
+                                                System.err.println("Error in module: '" + moduleName + "' in classpath: '" + classPath + "' :" + ex);
+                                            }
+                                        }, innerThreadName);
+                                    })
+                                    .toList();
+                        } catch (IOException e) {
+                            System.err.println("Error in module: '" + moduleName + "' :" + e);
+                            return null;
+                        }
 
-                                innerThreads.forEach(Thread::start);
-
-                                for (var thread : innerThreads) {
-                                    try {
-                                        thread.join();
-                                    } catch (Exception ex) {
-                                        System.err.println("Error when joining thread: " + thread.getName() + ", :" + ex);
-                                    }
-                                }
-                            } catch (Exception e) {
-                                System.err.println("Error in module: '" + moduleName + "' :" + e);
-                            }
-                        }, moduleName);
+//                        return new Thread(() -> {
+//                            try {
+//                                var innerThreads = moduleReference
+//                                        .open()
+//                                        .list()
+//                                        .parallel()
+//                                        .filter(classPath -> classPath.endsWith(".class")
+//                                                && !classPath.contains("-")
+//                                                && !classPath.contains("$"))
+//                                        .map(classPath -> {
+//                                            var innerThreadName = moduleName + "---" + classPath;
+//
+//                                            return new Thread(() -> {
+//                                                try {
+//                                                    ProcessClass(moduleName, classPath, args[0]);
+//                                                } catch (Exception ex) {
+//                                                    System.err.println("Error in module: '" + moduleName + "' in classpath: '" + classPath + "' :" + ex);
+//                                                }
+//                                            }, innerThreadName);
+//                                        })
+//                                        .toList();
+//
+//                                innerThreads.forEach(Thread::start);
+//
+//                                for (var thread : innerThreads) {
+//                                    try {
+//                                        if (thread.isAlive()) {
+//                                            thread.join();
+//                                        }
+//                                    } catch (Exception ex) {
+//                                        System.err.println("Error when joining thread: " + thread.getName() + ", :" + ex);
+//                                    }
+//                                }
+//                            } catch (Exception e) {
+//                                System.err.println("Error in module: '" + moduleName + "' :" + e);
+//                            }
+//                        }, moduleName);
                     })
+                    .filter(Objects::nonNull)
+                    .flatMap(List::stream)
                     .toList();
 
-            threads.forEach(Thread::start);
+            for (var thread : threads) {
+                thread.start();
+                Thread.sleep(10);
+            }
 
             for (var thread : threads) {
                 try {
-                    thread.join();
+                    if (thread.isAlive()) {
+                        thread.join();
+                    }
                 } catch (Exception ex) {
                     System.err.println("Error when joining thread: " + thread.getName() + ", :" + ex);
                 }
             }
+
+//            threads.forEach(Thread::start);
+//
+//            for (var thread : threads) {
+//                try {
+//                    if (thread.isAlive()) {
+//                        thread.join();
+//                    }
+//                } catch (Exception ex) {
+//                    System.err.println("Error when joining thread: " + thread.getName() + ", :" + ex);
+//                }
+//            }
         } catch (Exception e) {
             System.err.println(e);
         }

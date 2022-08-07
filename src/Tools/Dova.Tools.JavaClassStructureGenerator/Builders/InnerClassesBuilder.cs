@@ -9,11 +9,7 @@ internal class InnerClassesBuilder : AbstractBuilder
     public override IEnumerable<string> Build(FileInfo outputFile, ClassDefinitionModel model, int tabs = 0)
     {
         foreach (var innerClassModel in model.InnerClassModels)
-        {
-            yield return AppendLine("");
-            
-            foreach (var line in Builder.Build(outputFile, innerClassModel, tabs + 1))
-                yield return line;
-        }
+        foreach (var line in Builder.Build(outputFile, innerClassModel, tabs))
+            yield return line;
     }
 }

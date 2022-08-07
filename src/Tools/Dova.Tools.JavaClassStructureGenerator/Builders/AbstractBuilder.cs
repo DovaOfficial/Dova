@@ -1,5 +1,4 @@
 using System.Text;
-using Dova.Common;
 using Dova.Tools.JavaClassStructureGenerator.Common;
 using Dova.Tools.JavaClassStructureGenerator.Models;
 
@@ -141,7 +140,7 @@ internal abstract class AbstractBuilder : IBuilder
         }
     }
 
-    public static string GetDefaultBounds() => $"class, {nameof(IJavaObject)}";
+    public static string GetDefaultBounds() => JavaObjectFullName;
 
     // TODO: Implement better way of handling new objects of interface types.
     public static string BuildReturnString(ClassDefinitionModel classDefModel, ClassElementDefinitionModel classElDefModel, string returnType) =>

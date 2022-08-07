@@ -15,8 +15,9 @@ public class ModelWriter {
     public static boolean ModelExists(String paths, String moduleName, String classPath) {
         var pathStr = GetPath(paths, moduleName, classPath);
         var path = Path.of(pathStr);
+        var file = path.toFile();
 
-        return Files.exists(path);
+        return file.exists() && file.length() > 0;
     }
 
     public static void Write(String tempOutputPathFull, ClassDefinitionModel model) {
@@ -41,7 +42,8 @@ public class ModelWriter {
 
         try {
             mapper.writeValue(file, model);
-        } catch (IOException e) {
+            Thread.sleep(10);
+        } catch (Exception e) {
             throw new RuntimeException("Error occurred when writing JSON data to: " + filePath, e);
         }
     }
