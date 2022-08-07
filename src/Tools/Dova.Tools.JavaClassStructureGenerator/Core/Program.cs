@@ -1,4 +1,4 @@
-﻿using Dova.Tools.JavaClassStructureGenerator;
+﻿using Dova.Tools.JavaClassStructureGenerator.Core;
 
 var generatorConfig = new GeneratorConfiguration
 {

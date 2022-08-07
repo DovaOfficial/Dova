@@ -1,4 +1,4 @@
-namespace Dova.Tools.JavaClassStructureGenerator;
+namespace Dova.Tools.JavaClassStructureGenerator.Core;
 
 internal class GeneratorConfiguration
 {

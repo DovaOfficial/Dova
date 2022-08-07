@@ -1,4 +1,5 @@
 using Dova.Common;
+using Dova.Tools.JavaClassStructureGenerator.Common;
 using Dova.Tools.JavaClassStructureGenerator.Models;
 
 namespace Dova.Tools.JavaClassStructureGenerator.Builders;
@@ -15,13 +16,9 @@ internal class MethodsBuilder : AbstractBuilder
             
             var method = filteredMethods[index];
             
-            var modifierPrefix = model.ClassDetailsModel.IsInterface 
-                ? string.Empty 
-                : method.IsStatic 
-                    ? "static " 
-                    : method.HasParent 
-                        ? "override " 
-                        : "virtual ";
+            var modifierPrefix = method.IsStatic
+                ? "static "
+                : string.Empty;
             
             var combinedParameters = GetCombinedParameters(method.ParameterModels);
 

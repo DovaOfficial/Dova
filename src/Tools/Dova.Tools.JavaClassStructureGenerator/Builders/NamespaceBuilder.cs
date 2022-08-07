@@ -1,3 +1,4 @@
+using Dova.Tools.JavaClassStructureGenerator.Common;
 using Dova.Tools.JavaClassStructureGenerator.Models;
 
 namespace Dova.Tools.JavaClassStructureGenerator.Builders;

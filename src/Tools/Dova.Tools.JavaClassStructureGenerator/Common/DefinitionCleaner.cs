@@ -1,7 +1,7 @@
 using System.Text;
 using Dova.Tools.JavaClassStructureGenerator.Builders;
 
-namespace Dova.Tools.JavaClassStructureGenerator;
+namespace Dova.Tools.JavaClassStructureGenerator.Common;
 
 internal static class DefinitionCleaner
 {

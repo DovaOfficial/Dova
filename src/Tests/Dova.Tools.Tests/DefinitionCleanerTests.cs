@@ -1,4 +1,4 @@
-using Dova.Tools.JavaClassStructureGenerator;
+using Dova.Tools.JavaClassStructureGenerator.Common;
 using Xunit;
 
 namespace Dova.Tools.Tests;

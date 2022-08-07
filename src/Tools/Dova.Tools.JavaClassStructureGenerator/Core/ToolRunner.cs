@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Dova.Tools.JavaClassStructureGenerator;
+namespace Dova.Tools.JavaClassStructureGenerator.Core;
 
 internal static class ToolRunner
 {

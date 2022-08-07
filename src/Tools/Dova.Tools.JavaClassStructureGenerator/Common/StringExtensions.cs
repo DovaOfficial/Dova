@@ -1,4 +1,4 @@
-namespace Dova.Tools.JavaClassStructureGenerator;
+namespace Dova.Tools.JavaClassStructureGenerator.Common;
 
 public static class StringExtensions
 {

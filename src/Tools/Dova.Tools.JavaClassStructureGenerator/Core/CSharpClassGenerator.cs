@@ -1,7 +1,7 @@
 using Dova.Tools.JavaClassStructureGenerator.Builders;
 using Dova.Tools.JavaClassStructureGenerator.Models;
 
-namespace Dova.Tools.JavaClassStructureGenerator;
+namespace Dova.Tools.JavaClassStructureGenerator.Core;
 
 internal static class CSharpClassGenerator
 {
@@ -26,8 +26,6 @@ internal static class CSharpClassGenerator
         }
 
         Generate(outputClassFile, model);
-
-        GenerateInnerClasses(outputClassFile, model);
     }
 
     public static void Generate(FileInfo outputFile, ClassDefinitionModel model)
@@ -49,26 +47,5 @@ internal static class CSharpClassGenerator
                 }
             }
         }
-    }
-
-    private static void GenerateInnerClasses(FileInfo outputFile, ClassDefinitionModel model) =>
-        CollectionProcessor.ForEachParallel(model.InnerClassModels,
-            innerClassModel => GenerateInnerClass(outputFile, innerClassModel));
-
-    private static void GenerateInnerClass(FileInfo outputFile, ClassDefinitionModel innerClassModel)
-    {
-        var outputFileName = outputFile.Name.Split(".")[0];
-        var innerClassName = $"{outputFileName}_{innerClassModel.ClassDetailsModel.ClassName}";
-
-        // We want to make sure that the inner class will have changed name
-        innerClassModel.ClassDetailsModel.ClassName = innerClassName;
-
-        var innerClassFileName = $"{innerClassName}.cs";
-        var innerClassFullPath = Path.Combine(outputFile.DirectoryName, innerClassFileName);
-        var innerClassFile = new FileInfo(innerClassFullPath);
-
-        Generate(innerClassFile, innerClassModel);
-
-        GenerateInnerClasses(innerClassFile, innerClassModel);
     }
 }

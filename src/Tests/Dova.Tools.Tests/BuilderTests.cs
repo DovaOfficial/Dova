@@ -1,7 +1,7 @@
 using System.IO;
 using System.Linq;
-using Dova.Tools.JavaClassStructureGenerator;
 using Dova.Tools.JavaClassStructureGenerator.Builders;
+using Dova.Tools.JavaClassStructureGenerator.Core;
 using Xunit;
 
 namespace Dova.Tools.Tests;

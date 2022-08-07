@@ -1,4 +1,4 @@
-namespace Dova.Tools.JavaClassStructureGenerator;
+namespace Dova.Tools.JavaClassStructureGenerator.Core;
 
 internal static class StructureGenerator
 {
@@ -10,8 +10,13 @@ internal static class StructureGenerator
         }
 
         var definitionFiles = GetDefinitionFiles(config.TempDirPath);
+
+        var parallelOptions = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = 20
+        };
         
-        CollectionProcessor.ForEachParallel(definitionFiles, definitionFile => DefinitionFileProcessor.Process(config, definitionFile));
+        Parallel.ForEach(definitionFiles, parallelOptions, definitionFile => DefinitionFileProcessor.Process(config, definitionFile));
     }
 
     private static IEnumerable<FileInfo> GetDefinitionFiles(string path)

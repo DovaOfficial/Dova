@@ -11,6 +11,7 @@ internal class ClassBodyBuilder : AbstractBuilder
         new ConstructorsBuilder(),
         new ExtraMethodsBuilder(),
         new MethodsBuilder(),
+        new InnerClassesBuilder(),
     };
     
     public override IEnumerable<string> Build(FileInfo outputFile, ClassDefinitionModel model, int tabs = 0)

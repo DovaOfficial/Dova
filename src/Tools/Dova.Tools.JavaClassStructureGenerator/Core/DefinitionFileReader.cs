@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Dova.Tools.JavaClassStructureGenerator.Models;
 
-namespace Dova.Tools.JavaClassStructureGenerator;
+namespace Dova.Tools.JavaClassStructureGenerator.Core;
 
 internal static class DefinitionFileReader
 {
