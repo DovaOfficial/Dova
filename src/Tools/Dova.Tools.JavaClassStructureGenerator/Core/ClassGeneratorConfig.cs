@@ -1,6 +1,6 @@
 namespace Dova.Tools.JavaClassStructureGenerator.Core;
 
-internal class GeneratorConfiguration
+internal class ClassGeneratorConfig
 {
     public string OutputDirectoryPath { get; set; }
     public string TempDirPath { get; set; }

@@ -1,6 +1,6 @@
 ﻿using Dova.Tools.JavaClassStructureGenerator.Core;
 
-var generatorConfig = new GeneratorConfiguration
+var generatorConfig = new ClassGeneratorConfig
 {
     OutputDirectoryPath = args[0], // full output path where to generate C# classes i.e.: /home/<user>/Dev/Dotnet/Dova/src/Dova.JDK
     TempDirPath = args[1], // path to temporary directory where definition files will be generated i.e.: /tmp
@@ -9,4 +9,4 @@ var generatorConfig = new GeneratorConfiguration
     ForceGenerateJavaDefinitions = args.Length > 4 && bool.Parse(args[4]), // [Optional] forces call to generate java definitions using java tool from provided path
 };
 
-StructureGenerator.Run(generatorConfig);
+ClassGenerator.Generate(generatorConfig);

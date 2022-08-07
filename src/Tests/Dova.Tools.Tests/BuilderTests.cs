@@ -13,7 +13,7 @@ public class BuilderTests
     {
         const string Path = "/tmp/dova_generated/java.base/share/classes/java/lang/String.class.dova";
         
-        var javaClassDefinitionModel = DefinitionFileReader.Read(Path);
+        var javaClassDefinitionModel = ClassGenerator.ReadClassDefinition(Path);
         var file = new FileInfo(Path);
         var lines = new MethodsBuilder().Build(file, javaClassDefinitionModel).ToList();
         
@@ -25,7 +25,7 @@ public class BuilderTests
     [InlineData("/tmp/dova_generated/java.sql/share/classes/java/sql/DriverManager.class.dova")]
     public void Should_generate_files(string path)
     {
-        var model = DefinitionFileReader.Read(path);
+        var model = ClassGenerator.ReadClassDefinition(path);
         
         CSharpClassGenerator.Generate(path, model);
     }
