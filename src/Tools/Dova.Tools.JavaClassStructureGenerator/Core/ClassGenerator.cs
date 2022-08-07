@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using Dova.Tools.JavaClassStructureGenerator.Models;
 
@@ -9,7 +10,7 @@ internal static class ClassGenerator
     {
         if (config.ForceGenerateJavaDefinitions)
         {
-            ToolRunner.Run(config.JavaClassDefinitionGeneratorPath, config.TempDirPath, config.JavaModuleFinderPaths);
+            GenerateJavaClassDefinitions(config.JavaClassDefinitionGeneratorPath, config.TempDirPath, config.JavaModuleFinderPaths);
         }
 
         var definitionFiles = GetDefinitionFiles(config.TempDirPath);
@@ -20,6 +21,23 @@ internal static class ClassGenerator
         };
         
         Parallel.ForEach(definitionFiles, parallelOptions, definitionFile => Process(config, definitionFile));
+    }
+    
+    public static void GenerateJavaClassDefinitions(string classDefinitionGeneratorPath, string tempOutputPathFull, string javaModuleFinderPaths = "")
+    {
+        var process = new Process
+        {
+            StartInfo =
+            {
+                FileName = "java",
+                Arguments = $"-jar {classDefinitionGeneratorPath} {tempOutputPathFull} {javaModuleFinderPaths}"
+            }
+        };
+
+        process.ErrorDataReceived += (sender, e) => Console.WriteLine(sender.ToString());
+
+        process.Start();
+        process.WaitForExit();
     }
 
     public static IEnumerable<FileInfo> GetDefinitionFiles(string path)
