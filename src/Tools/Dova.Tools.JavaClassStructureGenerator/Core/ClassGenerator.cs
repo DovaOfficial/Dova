@@ -23,7 +23,7 @@ internal static class ClassGenerator
             MaxDegreeOfParallelism = 20
         };
         
-        Parallel.ForEach(definitionFiles, parallelOptions, definitionFile => Process(config, definitionFile));
+        Parallel.ForEach(definitionFiles, parallelOptions, definitionFile => ProcessDefinition(config, definitionFile));
     }
     
     public static void GenerateJavaClassDefinitions(string classDefinitionGeneratorPath, string tempOutputPathFull, string javaModuleFinderPaths = "")
@@ -61,7 +61,7 @@ internal static class ClassGenerator
         return definitionFilesInDirectory;
     }
     
-    public static void Process(ClassGeneratorConfig config, FileInfo definitionFile)
+    public static void ProcessDefinition(ClassGeneratorConfig config, FileInfo definitionFile)
     {
         var javaClassDefinitionModel = ReadClassDefinition(definitionFile.FullName);
 
