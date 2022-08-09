@@ -5,6 +5,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Copyright>DovaOfficial © 2022</Copyright>
+        <AssemblyVersion>0.1.0.0</AssemblyVersion>
     </PropertyGroup>
 
 </Project>
