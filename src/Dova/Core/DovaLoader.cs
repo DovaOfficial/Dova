@@ -38,8 +38,11 @@ internal static class DovaLoader
         {
             throw new InvalidCastException($"Unknown Java Runtime Path: {JvmFullPath}");
         }
-        
-        Resolvers.Add(JniFunctions.JavaJvmLibName, (_, _, _) => NativeLibrary.Load(JvmFullPath));
+
+        if (!Resolvers.ContainsKey(JniFunctions.JavaJvmLibName))
+        {
+            Resolvers.Add(JniFunctions.JavaJvmLibName, (_, _, _) => NativeLibrary.Load(JvmFullPath));
+        }
     }
 
     private static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath) => 
