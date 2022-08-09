@@ -7,7 +7,7 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Copyright>DovaOfficial © 2022</Copyright>
         <AssemblyVersion>0.1.0.0</AssemblyVersion>
-        <RepositoryUrl>https://github.com/OWNER/REPOSITORY</RepositoryUrl>
+        <RepositoryUrl>https://github.com/DovaOfficial/Dova</RepositoryUrl>
     </PropertyGroup>
 
 </Project>
