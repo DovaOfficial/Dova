@@ -33,8 +33,7 @@ internal class LineProcessor
     public void SaveLine()
     {
         var methodArgsWithVariables = Args.Select(x => $"{x} {x.ToLower()}").ToList();
-        var methodArgs = string.Join(',', methodArgsWithVariables)
-            .Replace(",", ", ")
+        var methodArgs = string.Join(", ", methodArgsWithVariables)
             .Replace("*,", ",");
         var mappedMethodArgs = JniTypesMapper.Map(methodArgs);
         var mappedReturnType = JniTypesMapper.Map(ReturnType);
