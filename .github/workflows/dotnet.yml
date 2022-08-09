@@ -22,7 +22,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore -v diag src/Dova/Dova.csproj
     - name: Test
-      run: dotnet test --no-build --verbosity normal -v diag src/Dova/Dova.csproj
+      run: dotnet test --no-build -v diag src/Dova/Dova.csproj
     - name: Pack
       run: dotnet pack --configuration Release -v diag src/Dova/Dova.csproj
     - name: Auth in Nuget
