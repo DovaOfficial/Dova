@@ -206,7 +206,7 @@ internal static class DefinitionCleaner
                         var newDefModel = new ClassElementDefinitionModel
                         {
                             Modifiers = defModel.Modifiers,
-                            Name = defModel.Name, // + $"_{index}",
+                            Name = defModel.Name,
                             Signature = defModel.Signature,
                             HasParent = defModel.HasParent,
                             IsStatic = defModel.IsStatic,
