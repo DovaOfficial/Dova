@@ -5,18 +5,19 @@ namespace Dova.Core;
 
 internal class DovaOptionsBuilder
 {
-    private readonly DovaConfiguration? _config;
+    private readonly DovaConfiguration _config;
 
-    public DovaOptionsBuilder(DovaConfiguration? config)
+    public DovaOptionsBuilder(DovaConfiguration config)
     {
         _config = config;
     }
 
     public IEnumerable<JavaVMOption> BuildJavaVmOptions()
     {
-        if (_config?.JavaClassPaths != null)
+        if (_config.JavaClassPaths != null)
         {
             var path = string.Join(Path.PathSeparator, _config.JavaClassPaths);
+            
             yield return new JavaVMOption
             {
                 optionString = $"-Djava.class.path={path}",
@@ -34,7 +35,7 @@ internal class DovaOptionsBuilder
         {
             options = Marshal.AllocCoTaskMem(javaVmOptionSize * javaVmOptions.Count),
             nOptions = javaVmOptions.Count,
-            version = (int)_config?.Version,
+            version = _config.Version,
             ignoreUnrecognized = true,
         };
 

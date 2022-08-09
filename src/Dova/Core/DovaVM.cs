@@ -11,11 +11,11 @@ namespace Dova.Core;
 /// </author>
 public unsafe class DovaVM : IDisposable
 {
-    private DovaConfiguration? Config { get; }
+    private DovaConfiguration Config { get; }
 
     public IJavaRuntime Runtime { get; }
 
-    public DovaVM(DovaConfiguration? config = null)
+    public DovaVM(DovaConfiguration config)
     {
         Config = config;
         Runtime = Initialize();
