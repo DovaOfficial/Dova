@@ -186,7 +186,9 @@ internal static class DefinitionCleaner
 
     public static IEnumerable<ClassElementDefinitionModel> GetMethodsToGenerate(string className, IEnumerable<ClassElementDefinitionModel> models)
     {
-        var groupedByName = models.GroupBy(m => m.Name);
+        var groupedByName = models
+            .Where(m => !m.Name.StartsWith("lambda$"))
+            .GroupBy(m => m.Name);
         
         foreach (var nameGroup in groupedByName) // i.e.: "resolveConstantDesc"
         {
