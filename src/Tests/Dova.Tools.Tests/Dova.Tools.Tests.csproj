@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Tools\Dova.Tools.JavaClassStructureGenerator\Dova.Tools.JavaClassStructureGenerator.csproj" />
+      <ProjectReference Include="..\..\Tools\Dova.Tools.DefinitionGenerator\Dova.Tools.DefinitionGenerator.csproj" />
     </ItemGroup>
 
 </Project>

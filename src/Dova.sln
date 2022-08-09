@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dova.Tools.DocumentationGen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dova.Tools.JavaRuntimeFunctionsImplementationsGenerator", "Tools\Dova.Tools.JavaRuntimeFunctionsImplementationsGenerator\Dova.Tools.JavaRuntimeFunctionsImplementationsGenerator.csproj", "{3042E656-2A85-48FA-BB0E-A276E2C47974}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dova.Tools.JavaClassStructureGenerator", "Tools\Dova.Tools.JavaClassStructureGenerator\Dova.Tools.JavaClassStructureGenerator.csproj", "{751EA9E1-3445-4BD0-B3FC-5EE2CF14F9BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dova.Tools.DefinitionGenerator", "Tools\Dova.Tools.DefinitionGenerator\Dova.Tools.DefinitionGenerator.csproj", "{751EA9E1-3445-4BD0-B3FC-5EE2CF14F9BC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dova.Tools.Tests", "Tests\Dova.Tools.Tests\Dova.Tools.Tests.csproj", "{00D9BA7B-BFB3-44F9-9646-A8AB78EF72AF}"
 EndProject
