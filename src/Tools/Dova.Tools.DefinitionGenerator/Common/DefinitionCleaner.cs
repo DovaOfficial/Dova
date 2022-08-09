@@ -146,7 +146,7 @@ internal static class DefinitionCleaner
         var ret = str.Replace("$", "");
 
         ret = CleanKeywords(ret);
-        ret += "Prop";
+        ret += "_Prop";
 
         if (ret.StartsWith("set_") 
             || ret.StartsWith("get_"))
