@@ -9,7 +9,7 @@ public class SimpleVMTests
     [Fact]
     public void Create_VM_without_job()
     {
-        using (var vm = new DovaVM())
+        using (var vm = new DovaVM(new DovaConfiguration()))
         {
         }
     }
