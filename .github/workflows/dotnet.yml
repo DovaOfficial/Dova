@@ -18,7 +18,7 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore -v diag
+      run: dotnet restore -v diag src/Dova.sln
     - name: Build
       run: dotnet build --no-restore
     - name: Test
