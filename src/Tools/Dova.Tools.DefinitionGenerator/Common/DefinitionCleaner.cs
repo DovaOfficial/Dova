@@ -230,7 +230,6 @@ internal static class DefinitionCleaner
         }
     }
     
-    // TODO: Implement better way of handling new objects of interface types.
     public static string GetReturnString(ClassDefinitionModel classDefModel, ClassElementDefinitionModel classElDefModel, string str) =>
         IsObject(str) ? $"return DovaInterfaceFactory.Get<{str}>(ret);" : $"return ret;";
 }
