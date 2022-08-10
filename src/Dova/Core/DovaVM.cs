@@ -9,7 +9,7 @@ namespace Dova.Core;
 /// <author>
 /// https://github.com/Sejoslaw/Dova
 /// </author>
-public unsafe class DovaVM
+public static unsafe class DovaVM
 {
     private static DovaConfiguration Config { get; set; }
 

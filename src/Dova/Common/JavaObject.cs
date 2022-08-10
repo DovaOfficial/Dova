@@ -21,6 +21,8 @@ public abstract class JavaObject : IJavaObject
     public JavaObject(IntPtr currentRefPtr)
     {
         CurrentRefPtr = currentRefPtr;
+        
+        DovaGuard.CheckForException();
     }
     
     #region Methods

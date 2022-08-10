@@ -38,5 +38,7 @@ public class SimpleVMTests
         var newString = DovaVM.Runtime.GetString("Hello World from JVM");
 
         DovaVM.Runtime.CallVoidMethodA(staticObjectField, methodPrintln, newString);
+        
+        DovaGuard.CheckForException();
     }
 }

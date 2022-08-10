@@ -3,7 +3,6 @@ using Dova.Tools.DefinitionGenerator.Models;
 
 namespace Dova.Tools.DefinitionGenerator.Builders;
 
-// TODO: Add checking if any error occurred -> IJavaRuntime.ExceptionOccurred (Field, Constructor, Method)
 internal abstract class AbstractBuilder : IBuilder
 {
     public abstract IEnumerable<string> Build(FileInfo outputFile, ClassDefinitionModel model, int tabs = 0);
