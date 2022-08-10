@@ -1,3 +1,4 @@
+using Dova.Common;
 using Dova.Internals.Types.Arrays;
 using Dova.Internals.Types.Objects;
 using Dova.Internals.Types.Primitives;
@@ -73,5 +74,8 @@ public static class Converters
         JLongArray jla => jla,
         JObjectArray joa => joa,
         JShortArray jsa => jsa,
+        
+        // Advanced cases
+        var o when o is IJavaObject jo => jo.CurrentRefPtr,
     };
 }
