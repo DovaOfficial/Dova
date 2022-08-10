@@ -56,12 +56,10 @@ internal class MethodsBuilder : AbstractBuilder
             if (returnTypeMethodPostfix.ToLower().Equals("void"))
             {
                 yield return AppendLine(methodCallback, tabs + 1);
-                yield return AppendLine($"DovaGuard.CheckForException();", tabs + 1);
             }
             else
             {
                 yield return AppendLine($"var ret = {methodCallback}", tabs + 1);
-                yield return AppendLine($"DovaGuard.CheckForException();", tabs + 1);
         
                 var returnString = DefinitionCleaner.GetReturnString(model, method, returnType);
                 
