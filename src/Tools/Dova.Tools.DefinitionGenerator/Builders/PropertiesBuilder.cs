@@ -37,10 +37,10 @@ internal class PropertiesBuilder : AbstractBuilder
             yield return AppendLine("{", tabs);
             yield return AppendLine("get", tabs + 1);
             yield return AppendLine("{", tabs + 1);
-            yield return AppendLine($"var ret = DovaJvm.Vm.Runtime.Get{staticMethodPrefix}{returnTypeMethodPostfix}Field({targetObjPtr}, {Constants.FieldPtrsStr}[{index}]);", tabs + 2);
+            yield return AppendLine($"var ret = DovaVM.Runtime.Get{staticMethodPrefix}{returnTypeMethodPostfix}Field({targetObjPtr}, {Constants.FieldPtrsStr}[{index}]);", tabs + 2);
             yield return AppendLine(returnString, tabs + 2);
             yield return AppendLine("}", tabs + 1);
-            yield return AppendLine($"set => DovaJvm.Vm.Runtime.Set{staticMethodPrefix}{returnTypeMethodPostfix}Field({targetObjPtr}, {Constants.FieldPtrsStr}[{index}], {returnValue});", tabs + 1);
+            yield return AppendLine($"set => DovaVM.Runtime.Set{staticMethodPrefix}{returnTypeMethodPostfix}Field({targetObjPtr}, {Constants.FieldPtrsStr}[{index}], {returnValue});", tabs + 1);
             yield return AppendLine("}", tabs);
         }
     }

@@ -7,26 +7,15 @@ namespace Dova.Tests;
 public class SimpleVMTests
 {
     [Fact]
-    public void Create_VM_without_job()
-    {
-        using (var vm = new DovaVM(new DovaConfiguration()))
-        {
-        }
-    }
-
-    [Fact]
     public void Create_VM_and_check_version()
     {
         var config = new DovaConfiguration
         {
         };
-        
-        using (var vm = new DovaVM(config))
-        {
-            var version = vm.Runtime.GetVersion();
-            
-            Assert.Equal(version, config.Version);
-        }
+
+        var version = DovaVM.Runtime.GetVersion();
+
+        Assert.Equal(version, config.Version);
     }
 
     [Fact]
@@ -36,19 +25,18 @@ public class SimpleVMTests
         {
         };
 
-        using (var vm = new DovaVM(config))
-        {
-            var systemClass = vm.Runtime.FindClass("java/lang/System");
-            var staticFieldOut = vm.Runtime.GetStaticFieldId(systemClass, "out", "Ljava/io/PrintStream;");
+        DovaVM.Initialize(config);
 
-            var printStreamClass = vm.Runtime.FindClass("java/io/PrintStream");
-            var methodPrintln = vm.Runtime.GetMethodId(printStreamClass, "println", "(Ljava/lang/String;)V");   
-            
-            var staticObjectField = vm.Runtime.GetStaticObjectField(systemClass, staticFieldOut);
+        var systemClass = DovaVM.Runtime.FindClass("java/lang/System");
+        var staticFieldOut = DovaVM.Runtime.GetStaticFieldId(systemClass, "out", "Ljava/io/PrintStream;");
 
-            var newString = vm.Runtime.GetString("Hello World from JVM");
+        var printStreamClass = DovaVM.Runtime.FindClass("java/io/PrintStream");
+        var methodPrintln = DovaVM.Runtime.GetMethodId(printStreamClass, "println", "(Ljava/lang/String;)V");
 
-            vm.Runtime.CallVoidMethodA(staticObjectField, methodPrintln, newString);
-        }
+        var staticObjectField = DovaVM.Runtime.GetStaticObjectField(systemClass, staticFieldOut);
+
+        var newString = DovaVM.Runtime.GetString("Hello World from JVM");
+
+        DovaVM.Runtime.CallVoidMethodA(staticObjectField, methodPrintln, newString);
     }
 }

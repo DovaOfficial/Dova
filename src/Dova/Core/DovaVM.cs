@@ -9,23 +9,19 @@ namespace Dova.Core;
 /// <author>
 /// https://github.com/Sejoslaw/Dova
 /// </author>
-public unsafe class DovaVM : IDisposable
+public unsafe class DovaVM
 {
-    private DovaConfiguration Config { get; }
+    private static DovaConfiguration Config { get; set; }
 
-    public IJavaRuntime Runtime { get; }
+    public static IJavaRuntime Runtime { get; private set; }
 
-    public DovaVM(DovaConfiguration config)
+    public static void Initialize(DovaConfiguration config)
     {
         Config = config;
         Runtime = Initialize();
     }
 
-    public void Dispose()
-    {
-    }
-
-    private IJavaRuntime Initialize()
+    private static IJavaRuntime Initialize()
     {
         var builder = new DovaOptionsBuilder(Config);
         

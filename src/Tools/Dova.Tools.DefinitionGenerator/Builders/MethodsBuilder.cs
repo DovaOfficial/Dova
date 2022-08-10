@@ -51,7 +51,7 @@ internal class MethodsBuilder : AbstractBuilder
                 combinedParameterNames = ", " + combinedParameterNames;
             }
             
-            var methodCallback = $"DovaJvm.Vm.Runtime.Call{staticMethodPrefix}{returnTypeMethodPostfix}MethodA({targetObjPtr}, {Constants.MethodPtrsStr}[{index}]{combinedParameterNames});";
+            var methodCallback = $"DovaVM.Runtime.Call{staticMethodPrefix}{returnTypeMethodPostfix}MethodA({targetObjPtr}, {Constants.MethodPtrsStr}[{index}]{combinedParameterNames});";
         
             if (returnTypeMethodPostfix.ToLower().Equals("void"))
             {

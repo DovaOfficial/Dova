@@ -34,8 +34,8 @@ internal class JniReferencesBuilder : AbstractBuilder
         yield return AppendLine($"static {constructorName}()", tabs);
         yield return AppendLine("{", tabs);
         
-        yield return AppendLine($"{Constants.ClassPtrStr} = DovaJvm.Vm.Runtime.FindClass(\"{model.ClassDetailsModel.Signature}\");", tabs + 1);
-        yield return AppendLine($"{Constants.ClassRefPtrStr} = DovaJvm.Vm.Runtime.NewGlobalRef({Constants.ClassPtrStr});", tabs + 1);
+        yield return AppendLine($"{Constants.ClassPtrStr} = DovaVM.Runtime.FindClass(\"{model.ClassDetailsModel.Signature}\");", tabs + 1);
+        yield return AppendLine($"{Constants.ClassRefPtrStr} = DovaVM.Runtime.NewGlobalRef({Constants.ClassPtrStr});", tabs + 1);
         
         foreach (var fieldModel in model.FieldModels)
         {
@@ -43,7 +43,7 @@ internal class JniReferencesBuilder : AbstractBuilder
                 ? "GetStaticFieldId"
                 : "GetFieldId";
         
-            yield return AppendLine($"{Constants.FieldPtrsStr}.Add(DovaJvm.Vm.Runtime.{runtimeMethod}({Constants.ClassRefPtrStr}, \"{fieldModel.Name}\", \"{fieldModel.Signature}\"));", tabs + 1);
+            yield return AppendLine($"{Constants.FieldPtrsStr}.Add(DovaVM.Runtime.{runtimeMethod}({Constants.ClassRefPtrStr}, \"{fieldModel.Name}\", \"{fieldModel.Signature}\"));", tabs + 1);
         }
 
         foreach (var fieldModel in model.ConstructorModels)
@@ -52,7 +52,7 @@ internal class JniReferencesBuilder : AbstractBuilder
                 ? "GetStaticMethodId"
                 : "GetMethodId";
         
-            yield return AppendLine($"{Constants.ConstructorPtrsStr}.Add(DovaJvm.Vm.Runtime.{runtimeMethod}({Constants.ClassRefPtrStr}, \"{constructorName}\", \"{fieldModel.Signature}\"));", tabs + 1);
+            yield return AppendLine($"{Constants.ConstructorPtrsStr}.Add(DovaVM.Runtime.{runtimeMethod}({Constants.ClassRefPtrStr}, \"{constructorName}\", \"{fieldModel.Signature}\"));", tabs + 1);
         }
         
         var filteredMethods = DefinitionCleaner
@@ -65,7 +65,7 @@ internal class JniReferencesBuilder : AbstractBuilder
                 ? "GetStaticMethodId"
                 : "GetMethodId";
         
-            yield return AppendLine($"{Constants.MethodPtrsStr}.Add(DovaJvm.Vm.Runtime.{runtimeMethod}({Constants.ClassRefPtrStr}, \"{fieldModel.Name}\", \"{fieldModel.Signature}\"));", tabs + 1);
+            yield return AppendLine($"{Constants.MethodPtrsStr}.Add(DovaVM.Runtime.{runtimeMethod}({Constants.ClassRefPtrStr}, \"{fieldModel.Name}\", \"{fieldModel.Signature}\"));", tabs + 1);
         }
         
         yield return AppendLine("}", tabs);

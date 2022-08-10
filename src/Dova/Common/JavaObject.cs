@@ -1,3 +1,4 @@
+using Dova.Core;
 using Dova.Core.Runtime;
 
 namespace Dova.Common;
@@ -24,10 +25,10 @@ public abstract class JavaObject : IJavaObject
     
     #region Methods
 
-    public virtual bool IsAssignableFrom(IntPtr classPtr) => DovaJvm.Vm.Runtime.IsAssignableFrom(GetJavaClassRaw(), classPtr);
-    public virtual bool IsSameObject(JavaObject javaObj) => DovaJvm.Vm.Runtime.IsSameObject(CurrentRefPtr, javaObj.CurrentRefPtr);
-    public virtual bool IsInstanceOf(IntPtr classPtr) => DovaJvm.Vm.Runtime.IsInstanceOf(CurrentRefPtr, classPtr);
-    public virtual string ToCSharpString() => DovaJvm.Vm.Runtime.GetString(CurrentRefPtr);
+    public virtual bool IsAssignableFrom(IntPtr classPtr) => DovaVM.Runtime.IsAssignableFrom(GetJavaClassRaw(), classPtr);
+    public virtual bool IsSameObject(JavaObject javaObj) => DovaVM.Runtime.IsSameObject(CurrentRefPtr, javaObj.CurrentRefPtr);
+    public virtual bool IsInstanceOf(IntPtr classPtr) => DovaVM.Runtime.IsInstanceOf(CurrentRefPtr, classPtr);
+    public virtual string ToCSharpString() => DovaVM.Runtime.GetString(CurrentRefPtr);
 
     #endregion
 
