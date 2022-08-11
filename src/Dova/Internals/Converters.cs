@@ -77,5 +77,9 @@ public static class Converters
         
         // Advanced cases
         var o when o is IJavaObject jo => jo.CurrentRefPtr,
+        
+        // Defaults
+        null => default,
+        var o when o is null => default,
     };
 }
