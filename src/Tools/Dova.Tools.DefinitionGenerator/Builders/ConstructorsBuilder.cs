@@ -35,7 +35,7 @@ internal class ConstructorsBuilder : AbstractBuilder
             }
         
             yield return AppendLine($"[{nameof(JniSignatureAttribute)}(\"{constructorModel.Signature}\", \"{constructorModel.Modifiers}\")]", tabs);
-            yield return AppendLine($"public {constructorName}({combinedParameters}) : base(DovaVM.Runtime.NewObjectA({Constants.ClassRefPtrStr}, {Constants.ConstructorPtrsStr}[{index}]{combinedParameterNames}))", tabs);
+            yield return AppendLine($"public {constructorName}({combinedParameters}) : base(DovaVM.Runtime.NewObjectA({Constants.ClassPtrStr}, {Constants.ConstructorPtrsStr}[{index}]{combinedParameterNames}))", tabs);
             yield return AppendLine("{", tabs);
             yield return AppendLine("}", tabs);
         }
