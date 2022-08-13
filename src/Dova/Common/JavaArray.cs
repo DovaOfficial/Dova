@@ -8,7 +8,7 @@ namespace Dova.Common;
 /// <summary>
 /// Represents an array in Java language.
 /// </summary>
-public unsafe class JavaArray<TElement> : JavaObject, IList<TElement>, IDisposable
+public unsafe class JavaArray<TElement> : JavaObject, IList<TElement>
 {
     public TElement this[int index]
     {
@@ -68,51 +68,100 @@ public unsafe class JavaArray<TElement> : JavaObject, IList<TElement>, IDisposab
     IEnumerator IEnumerable.GetEnumerator() =>
         GetEnumerator();
 
-    public void Add(TElement item)
-    {
-        throw new NotImplementedException();
-    }
+    public void Add(TElement item) => 
+        throw new DovaException($"JavaArray does not support adding new elements into array.");
 
     public void Clear()
     {
-        throw new NotImplementedException();
+        for (var index = 0; index < Count; ++index)
+        {
+            Buffer[index] = default;
+        }
+        
+        WriteBuffer();
     }
 
-    public bool Contains(TElement item)
-    {
-        throw new NotImplementedException();
-    }
+    public bool Contains(TElement item) => 
+        IndexOf(item) >= 0;
 
     public void CopyTo(TElement[] array, int arrayIndex)
     {
-        throw new NotImplementedException();
+        if (array == null)
+        {
+            throw new ArgumentNullException($"Null array passed.");
+        }
+
+        if (arrayIndex < 0)
+        {
+            throw new ArgumentOutOfRangeException($"Array Index cannot be less than 0, passed: {arrayIndex}");
+        }
+
+        if (arrayIndex >= Count)
+        {
+            throw new ArgumentOutOfRangeException($"Array Index cannot be more than Count, passed: {arrayIndex}");
+        }
+
+        for (var index = 0; index < Count; ++index)
+        {
+            array[index + arrayIndex] = Buffer[index];
+        }
     }
 
     public bool Remove(TElement item)
     {
-        throw new NotImplementedException();
+        var index = IndexOf(item);
+
+        if (index < 0)
+        {
+            return false;
+        }
+
+        RemoveAt(index);
+
+        return true;
     }
 
     public int IndexOf(TElement item)
     {
-        throw new NotImplementedException();
+        if (Count == 0 || item == null)
+        {
+            return -1;
+        }
+
+        if (ElementType.IsPrimitive)
+        {
+            for (var index = 0; index < Count; ++index)
+            {
+                if (Buffer[index].Equals(item))
+                {
+                    return index;
+                }
+            }
+        }
+
+        if (this.First() is IJavaObject && item is IJavaObject javaObject)
+        {
+            for (var index = 0; index < Count; ++index)
+            {
+                if ((Buffer[index] as IJavaObject).CurrentRefPtr == javaObject.CurrentRefPtr)
+                {
+                    return index;
+                }
+            }
+        }
+
+        return -1;
     }
 
     public void Insert(int index, TElement item)
     {
-        throw new NotImplementedException();
+        Buffer[index] = item;
+        
+        WriteBuffer();
     }
 
-    public void RemoveAt(int index)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Dispose()
-    {
-        // TODO: Release elements using IJavaRuntime
-        throw new NotImplementedException();
-    }
+    public void RemoveAt(int index) => 
+        Insert(index, default);
 
     /// <summary>
     /// Reads buffer from JNI
