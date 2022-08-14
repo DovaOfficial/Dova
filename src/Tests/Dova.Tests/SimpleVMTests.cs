@@ -12,6 +12,8 @@ public class SimpleVMTests
         var config = new DovaConfiguration
         {
         };
+        
+        DovaVM.Initialize(config);
 
         var version = DovaVM.Runtime.GetVersion();
 

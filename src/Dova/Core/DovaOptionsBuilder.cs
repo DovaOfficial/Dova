@@ -24,6 +24,20 @@ internal class DovaOptionsBuilder
                 extraInfo = null
             };
         }
+
+        if (_config.JvmOptions == null)
+        {
+            yield break;
+        }
+        
+        foreach (var option in _config.JvmOptions)
+        {
+            yield return new JavaVMOption
+            {
+                optionString = option,
+                extraInfo = null
+            };
+        }
     }
 
     public JavaVMInitArgs BuildJavaVmInitArgs(IEnumerable<JavaVMOption> options)
