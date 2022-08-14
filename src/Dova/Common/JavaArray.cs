@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using Dova.Common.Arrays;
 using Dova.Core;
 
 namespace Dova.Common;
@@ -28,7 +29,7 @@ public unsafe class JavaArray<TElement> : JavaObject, IList<TElement>
     /// <summary>
     /// Stores all read elements.
     /// </summary>
-    private TElement[] Buffer { get; }
+    internal TElement[] Buffer { get; }
 
     public int Count { get; }
 
@@ -166,7 +167,7 @@ public unsafe class JavaArray<TElement> : JavaObject, IList<TElement>
     /// <summary>
     /// Reads buffer from JNI
     /// </summary>
-    private void ReadBuffer()
+    public void ReadBuffer()
     {
         if (ElementType.IsPrimitive)
         {
@@ -198,6 +199,12 @@ public unsafe class JavaArray<TElement> : JavaObject, IList<TElement>
             return;
         }
 
+        if (ElementType == typeof(string))
+        {
+            JavaArrayStrings.ReadBuffer(this);
+            return;
+        }
+
         // Default constructor generated for each class in Dova.JDK, which takes only single IntPtr as a parameter
         var constructor = ElementType.GetConstructor(BindingFlags.Instance | BindingFlags.Public, new[] { typeof(IntPtr) });
 
@@ -213,7 +220,7 @@ public unsafe class JavaArray<TElement> : JavaObject, IList<TElement>
     /// <summary>
     /// Writes buffer to JNI
     /// </summary>
-    private void WriteBuffer()
+    public void WriteBuffer()
     {
         if (ElementType.IsPrimitive)
         {
@@ -245,7 +252,15 @@ public unsafe class JavaArray<TElement> : JavaObject, IList<TElement>
                 case var typeShort when typeShort == typeof(short):
                     DovaVM.Runtime.SetShortArrayRegion(CurrentRefPtr, 0, Count, (short*)handlePtr);
                     return;
+                default:
+                    throw new ArgumentOutOfRangeException($"Unknown primitive type: {ElementType}");
             }
+        }
+
+        if (ElementType == typeof(string))
+        {
+            JavaArrayStrings.WriteBuffer(this);
+            return;
         }
 
         for (var index = 0; index < Count; ++index)
@@ -272,6 +287,7 @@ public unsafe class JavaArray<TElement> : JavaObject, IList<TElement>
             var type when type == typeof(int) => DovaVM.Runtime.NewIntArray(count),
             var type when type == typeof(long) => DovaVM.Runtime.NewLongArray(count),
             var type when type == typeof(short) => DovaVM.Runtime.NewShortArray(count),
+            var type when type == typeof(string) => JavaArrayStrings.Initialize(count),
             _ => DovaVM.Runtime.NewObjectArray(count, classPtr, initialValue)
         };
 
@@ -282,35 +298,4 @@ public unsafe class JavaArray<TElement> : JavaObject, IList<TElement>
 
         return handlePtr;
     }
-}
-
-public class JavaArrayEnumerator<TElement> : IEnumerator<TElement>
-{
-    private JavaArray<TElement> Array { get; }
-
-    private int Index { get; set; }
-
-    public TElement Current => Array[Index];
-
-    object IEnumerator.Current => Current;
-
-    public JavaArrayEnumerator(JavaArray<TElement> array)
-    {
-        Array = array;
-
-        Reset();
-    }
-
-    public bool MoveNext()
-    {
-        Index++;
-
-        return Index < Array.Count;
-    }
-
-    public void Reset() =>
-        Index = 0;
-
-    public void Dispose() =>
-        Reset();
 }
